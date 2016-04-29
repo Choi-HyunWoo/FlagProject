@@ -184,6 +184,7 @@ public class DynamicGridView extends GridView {
         super.setOnItemClickListener(mLocalItemClickListener);
     }
 
+/*
     public boolean isUndoSupportEnabled() {
         return mUndoSupportEnabled;
     }
@@ -242,6 +243,7 @@ public class DynamicGridView extends GridView {
             reorderElements(transition.second, transition.first);
         }
     }
+*/
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void startWobbleAnimation() {
@@ -330,6 +332,7 @@ public class DynamicGridView extends GridView {
         getAdapterInterface().reorderItems(originalPosition, targetPosition);
     }
 
+
     private int getColumnCount() {
         return getAdapterInterface().getColumnCount();
     }
@@ -358,6 +361,9 @@ public class DynamicGridView extends GridView {
         mHoverCellCurrentBounds = new Rect(mHoverCellOriginalBounds);
 
         drawable.setBounds(mHoverCellCurrentBounds);
+
+        // Set Drawable alpha
+        drawable.setAlpha(255 / 2);
 
         return drawable;
     }
@@ -426,6 +432,7 @@ public class DynamicGridView extends GridView {
 
                 break;
 
+
             case MotionEvent.ACTION_MOVE:
                 if (mActivePointerId == INVALID_ID) {
                     break;
@@ -443,7 +450,7 @@ public class DynamicGridView extends GridView {
                             mHoverCellOriginalBounds.top + deltaY + mTotalOffsetY);
                     mHoverCell.setBounds(mHoverCellCurrentBounds);
                     invalidate();
-                    handleCellSwitch();
+//                    handleCellSwitch();
                     mIsMobileScrolling = false;
                     handleMobileCellScroll();
                     return false;
@@ -451,6 +458,11 @@ public class DynamicGridView extends GridView {
                 break;
 
             case MotionEvent.ACTION_UP:
+                if (mHoverCell != null) {
+                    if (mDropListener != null) {
+                        mDropListener.onActionDrop();
+                    }
+                }
                 touchEventsEnded();
 
                 if (mUndoSupportEnabled) {
@@ -460,21 +472,15 @@ public class DynamicGridView extends GridView {
                     }
                 }
 
-                if (mHoverCell != null) {
-                    if (mDropListener != null) {
-                        mDropListener.onActionDrop();
-                    }
-                }
                 break;
 
             case MotionEvent.ACTION_CANCEL:
-                touchEventsCancelled();
-
                 if (mHoverCell != null) {
                     if (mDropListener != null) {
                         mDropListener.onActionDrop();
                     }
                 }
+                touchEventsCancelled();
                 break;
 
             case MotionEvent.ACTION_POINTER_UP:
@@ -510,7 +516,7 @@ public class DynamicGridView extends GridView {
             if (mSelectedItemBitmapCreationListener != null)
                 mSelectedItemBitmapCreationListener.onPostSelectedItemBitmapCreation(selectedView, position, mMobileItemId);
             if (isPostHoneycomb())
-                selectedView.setVisibility(View.INVISIBLE);
+//                selectedView.setVisibility(View.INVISIBLE);
             mCellIsMobile = true;
             updateNeighborViewsForId(mMobileItemId);
             if (mDragListener != null) {
@@ -519,9 +525,11 @@ public class DynamicGridView extends GridView {
         }
     }
 
+
     private void handleMobileCellScroll() {
         mIsMobileScrolling = handleMobileCellScroll(mHoverCellCurrentBounds);
     }
+
 
     public boolean handleMobileCellScroll(Rect r) {
         int offset = computeVerticalScrollOffset();
@@ -623,7 +631,7 @@ public class DynamicGridView extends GridView {
     private void reset(View mobileView) {
         idList.clear();
         mMobileItemId = INVALID_ID;
-        mobileView.setVisibility(View.VISIBLE);
+//        mobileView.setVisibility(View.VISIBLE);
         mHoverCell = null;
         if (isPostHoneycomb() && mWobbleInEditMode) {
             if (mIsEditMode) {
@@ -632,6 +640,8 @@ public class DynamicGridView extends GridView {
                 stopWobble(true);
             }
         }
+
+/*
         //ugly fix for unclear disappearing items after reorder
         for (int i = 0; i < getLastVisiblePosition() - getFirstVisiblePosition(); i++) {
             View child = getChildAt(i);
@@ -639,6 +649,8 @@ public class DynamicGridView extends GridView {
                 child.setVisibility(View.VISIBLE);
             }
         }
+*/
+
         invalidate();
     }
 
@@ -734,7 +746,7 @@ public class DynamicGridView extends GridView {
 
             mDownY = mLastEventY;
             mDownX = mLastEventX;
-
+/*
             SwitchCellAnimator switchCellAnimator;
 
             if (isPostHoneycomb() && isPreLollipop())   //Between Android 3.0 and Android L
@@ -747,8 +759,12 @@ public class DynamicGridView extends GridView {
             updateNeighborViewsForId(mMobileItemId);
 
             switchCellAnimator.animateSwitchCell(originalPosition, targetPosition);
+*/
+
         }
+
     }
+
 
     private interface SwitchCellAnimator {
         void animateSwitchCell(final int originalPosition, final int targetPosition);
@@ -773,6 +789,7 @@ public class DynamicGridView extends GridView {
     /**
      * A {@link org.askerov.dynamicgrid.DynamicGridView.SwitchCellAnimator} for versions KitKat and below.
      */
+/*
     private class KitKatSwitchCellAnimator implements SwitchCellAnimator {
 
         private int mDeltaY;
@@ -820,10 +837,11 @@ public class DynamicGridView extends GridView {
             }
         }
     }
-
+*/
     /**
      * A {@link org.askerov.dynamicgrid.DynamicGridView.SwitchCellAnimator} for versions L and above.
      */
+/*
     private class LSwitchCellAnimator implements SwitchCellAnimator {
 
         private int mDeltaY;
@@ -866,6 +884,7 @@ public class DynamicGridView extends GridView {
             }
         }
     }
+*/
 
     private boolean belowLeft(Point targetColumnRowPair, Point mobileColumnRowPair) {
         return targetColumnRowPair.y > mobileColumnRowPair.y && targetColumnRowPair.x < mobileColumnRowPair.x;
@@ -911,6 +930,7 @@ public class DynamicGridView extends GridView {
         return getAdapter().getItemId(position);
     }
 
+/*
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void animateReorder(final int oldPosition, final int newPosition) {
         boolean isForward = newPosition > oldPosition;
@@ -956,7 +976,7 @@ public class DynamicGridView extends GridView {
         });
         resultSet.start();
     }
-
+*/
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private AnimatorSet createTranslationAnimations(View view, float startX, float endX, float startY, float endY) {
@@ -1061,7 +1081,7 @@ public class DynamicGridView extends GridView {
         public void onScrollStateChanged(AbsListView view, int scrollState) {
             mCurrentScrollState = scrollState;
             mScrollState = scrollState;
-            isScrollCompleted();
+            // isScrollCompleted();
             if (mUserScrollListener != null) {
                 mUserScrollListener.onScrollStateChanged(view, scrollState);
             }
@@ -1093,7 +1113,7 @@ public class DynamicGridView extends GridView {
             if (mCurrentFirstVisibleItem != mPreviousFirstVisibleItem) {
                 if (mCellIsMobile && mMobileItemId != INVALID_ID) {
                     updateNeighborViewsForId(mMobileItemId);
-                    handleCellSwitch();
+//                    handleCellSwitch();
                 }
             }
         }
@@ -1108,7 +1128,7 @@ public class DynamicGridView extends GridView {
             if (currentLastVisibleItem != previousLastVisibleItem) {
                 if (mCellIsMobile && mMobileItemId != INVALID_ID) {
                     updateNeighborViewsForId(mMobileItemId);
-                    handleCellSwitch();
+//                    handleCellSwitch();
                 }
             }
         }
