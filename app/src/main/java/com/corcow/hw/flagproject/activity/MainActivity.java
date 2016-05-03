@@ -34,6 +34,26 @@ public class MainActivity extends AppCompatActivity {
     String rootPath;
     File rootFile;
 
+    /** TODO . 코드 다듬기
+     *
+     * 1. 파일 경로 돌아가기 <<
+     *
+     * 2. Adapter에 여러 종류의 파일들을 multi-type item들로 관리할 수 있도록 변경
+     *   폴더 / 이미지 / 문서 등등의 파일 구분.
+     *
+     * 3. 파일 실행  << ★★★★★
+     *
+     * 4. 다른 화면에 대한 UI 기획
+     *
+     * 5. 로그인 및 회원가입
+     *
+     * 6. 파일 전송 및 내려받기...
+     *
+     * 7. 파일 드래그로 이동!!
+     *
+     * ----- 기능구현 완료! -----
+     *
+     * */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,14 +74,11 @@ public class MainActivity extends AppCompatActivity {
             );
         }
 
-
         // View Initialize
         fileGridView = (DynamicGridView)findViewById(R.id.fileGridView);
         pathView = (TextView)findViewById(R.id.pathView);
         mAdapter = new FileGridAdpater(MainActivity.this, 3);
         fileGridView.setAdapter(mAdapter);
-
-
 
         // root path, root directory, root file list 가져오기
         rootPath = Environment.getExternalStorageDirectory().getPath();
@@ -79,8 +96,6 @@ public class MainActivity extends AppCompatActivity {
             mAdapter.add(item);
         }
 
-
-
         // setting gridview callback
         fileGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -88,6 +103,9 @@ public class MainActivity extends AppCompatActivity {
                 String selectedPath = ((FileItem) mAdapter.getItem(position)).absolutePath;
                 File selectedFile = new File(selectedPath);
                 if (selectedFile.isDirectory()) {
+                    /**
+                     * 이부분 코드 다듬기 필요!!
+                     * */
                     // 선택된 item이 폴더인 경우
                     pathView.setText(selectedPath);     // 현재 경로명을 선택된 하위 경로로 변경
                     mAdapter.clear();
