@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 
 import org.askerov.dynamicgrid.BaseDynamicGridAdapter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,11 @@ public class FileGridAdpater extends BaseDynamicGridAdapter {
     @Override
     public void add(Object item) {
         super.add(item);
+        notifyDataSetChanged();
+    }
+
+    public void clear() {
+        super.clear();
         notifyDataSetChanged();
     }
 

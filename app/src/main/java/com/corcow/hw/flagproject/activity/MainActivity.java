@@ -1,46 +1,117 @@
 package com.corcow.hw.flagproject.activity;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.corcow.hw.flagproject.Cheeses;
 import com.corcow.hw.flagproject.R;
 
 import org.askerov.dynamicgrid.DynamicGridView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.File;
+
 
 public class MainActivity extends AppCompatActivity {
 
+    // Permission request const
+    public static final int MY_PERMISSIONS_REQUEST_READWRITE_STOREAGE = 0;
+
+    // Views
     DynamicGridView fileGridView;
+    TextView pathView;
     FileGridAdpater mAdapter;
+
+    // Variables
     int lastPosition;
+    String rootPath;
+    File rootFile;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // PERMISSION CHECK
+        /** 1. 권한 확인 변수 설정 (내가 필요로 하는 permission이 이 액티비티에서 허가되었는지를 판단) **/
+        int permissionCheck1 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        int permissionCheck2 = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        /** 2. 권한 요청 (PERMISSION_GRANTED = permission 인정;허가) **/
+        // 이 App에 대해 다음 permission들이 하나라도 허가되지 않았다면,
+        if (permissionCheck1 != PackageManager.PERMISSION_GRANTED || permissionCheck2 != PackageManager.PERMISSION_GRANTED) {
+            // 액티비티에서 permission들 요청
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_READWRITE_STOREAGE
+            );
+        }
+
+
+        // View Initialize
         fileGridView = (DynamicGridView)findViewById(R.id.fileGridView);
+        pathView = (TextView)findViewById(R.id.pathView);
         mAdapter = new FileGridAdpater(MainActivity.this, 3);
         fileGridView.setAdapter(mAdapter);
 
+
+
+        // root path, root directory, root file list 가져오기
+        rootPath = Environment.getExternalStorageDirectory().getPath();
+        rootFile = Environment.getExternalStorageDirectory();
+        pathView.setText(rootFile.getPath());       // 현재 Path 확인
+        File[] files = rootFile.listFiles();        // 현재 경로의 File 리스트 받아옴
+
+        // add items
+        for (File f : files) {
+            FileItem item = new FileItem();
+            item.fileIconImgResource = f.isDirectory() ? R.drawable.folder : R.drawable.file ;
+            item.fileName = f.getName();
+            item.isDirectory = f.isDirectory();
+            item.absolutePath = f.getAbsolutePath();
+            mAdapter.add(item);
+        }
+
+
+
+        // setting gridview callback
+        fileGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String selectedPath = ((FileItem) mAdapter.getItem(position)).absolutePath;
+                File selectedFile = new File(selectedPath);
+                if (selectedFile.isDirectory()) {
+                    // 선택된 item이 폴더인 경우
+                    pathView.setText(selectedPath);     // 현재 경로명을 선택된 하위 경로로 변경
+                    mAdapter.clear();
+                    for (File f : selectedFile.listFiles()) {
+                        FileItem item = new FileItem();
+                        item.fileIconImgResource = f.isDirectory() ? R.drawable.folder : R.drawable.file ;
+                        item.fileName = f.getName();
+                        item.isDirectory = f.isDirectory();
+                        item.absolutePath = f.getAbsolutePath();
+                        mAdapter.add(item);
+                    }
+                    mAdapter.notifyDataSetChanged();
+                } else {
+                    // 선택된 item이 파일인 경우
+                    // 실행! FileInputStream...
+                    Toast.makeText(MainActivity.this, selectedFile.getName()+"파일입니다.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         fileGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 fileGridView.startEditMode(position);
                 return true;
-            }
-        });
-        fileGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // 파일 실행 or 하위 경로로 이동
             }
         });
         fileGridView.setOnDragListener(new DynamicGridView.OnDragListener() {
@@ -52,23 +123,38 @@ public class MainActivity extends AppCompatActivity {
             public void onDragPositionsChanged(int oldPosition, int newPosition) {
                 // newPosition의 아이템이 파일이고, newPosition에서 3초동안 머무른다면 (값이 3초동안 같다면) 폴더생성!
                 Toast.makeText(MainActivity.this, "oldPosition"+oldPosition+", newPosition"+newPosition, Toast.LENGTH_SHORT).show();
-                lastPosition = newPosition;
             }
         });
         fileGridView.setOnDropListener(new DynamicGridView.OnDropListener() {
             @Override
             public void onActionDrop() {
                 fileGridView.stopEditMode();
-                Toast.makeText(MainActivity.this, ""+lastPosition, Toast.LENGTH_SHORT).show();
             }
         });
 
 
-        for (int i=0; i<20; i++) {
-            FileItem item = new FileItem();
-            item.fileIconImgResource = R.mipmap.ic_launcher;
-            item.fileName = "파일~"+i;
-            mAdapter.add(item);
+
+
+    }
+
+
+    /** 3. Permission 요청에 대한 응답을 Handle하는 callback 함수 override **/
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READWRITE_STOREAGE :
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the contacts-related task you need to do.
+                } else {
+                    // permission denied, boo! Disable the functionality that depends on this permission.
+                }
+                return;
         }
+
+        // other 'case' lines to check for other permissions this app might request
+
     }
 }

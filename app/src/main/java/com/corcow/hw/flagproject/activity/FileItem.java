@@ -5,7 +5,8 @@ package com.corcow.hw.flagproject.activity;
  */
 public class FileItem {
 
-    int file_type;
+    boolean isDirectory;
+
     int fileIconImgResource;
     String fileName;
     String absolutePath;
