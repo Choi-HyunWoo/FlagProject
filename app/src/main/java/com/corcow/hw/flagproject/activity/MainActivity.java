@@ -1,13 +1,20 @@
 package com.corcow.hw.flagproject.activity;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,7 +23,12 @@ import com.corcow.hw.flagproject.R;
 
 import org.askerov.dynamicgrid.DynamicGridView;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -41,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
      * 2. Adapter에 여러 종류의 파일들을 multi-type item들로 관리할 수 있도록 변경
      *   폴더 / 이미지 / 문서 등등의 파일 구분.
      *
-     * 3. 파일 실행  << ★★★★★
+     * 3. 파일 실행  << ★★★★★       완료
      *
      * 4. 다른 화면에 대한 UI 기획
      *
@@ -89,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         // add items
         for (File f : files) {
             FileItem item = new FileItem();
-            item.fileIconImgResource = f.isDirectory() ? R.drawable.folder : R.drawable.file ;
+            item.iconImgResource = f.isDirectory() ? R.drawable.folder : R.drawable.file ;
             item.fileName = f.getName();
             item.isDirectory = f.isDirectory();
             item.absolutePath = f.getAbsolutePath();
@@ -111,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                     mAdapter.clear();
                     for (File f : selectedFile.listFiles()) {
                         FileItem item = new FileItem();
-                        item.fileIconImgResource = f.isDirectory() ? R.drawable.folder : R.drawable.file ;
+                        item.iconImgResource = f.isDirectory() ? R.drawable.folder : R.drawable.file ;
                         item.fileName = f.getName();
                         item.isDirectory = f.isDirectory();
                         item.absolutePath = f.getAbsolutePath();
@@ -119,9 +131,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                     mAdapter.notifyDataSetChanged();
                 } else {
-                    // 선택된 item이 파일인 경우
-                    // 실행! FileInputStream...
-                    Toast.makeText(MainActivity.this, selectedFile.getName()+"파일입니다.", Toast.LENGTH_SHORT).show();
+                    // 선택된 item이 파일인 경우 파일 실행
+                    openFile(MainActivity.this, selectedFile);
+
                 }
             }
         });
@@ -150,11 +162,49 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
-
     }
 
+    /**
+     * 파일의 확장자 조회
+     *
+     * @param fileStr
+     * @return
+     */
+    public static String getExtension(String fileStr) {
+        return fileStr.substring(fileStr.lastIndexOf(".") + 1, fileStr.length());
+    }
+
+    /**
+     * Viewer로 연결
+     *
+     * @param content
+     * @param selectedFile
+     */
+    public static void openFile(Context content, File selectedFile) {
+        MimeTypeMap myMime = MimeTypeMap.getSingleton();
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        String fileExtension = getExtension(selectedFile.getName());
+
+        String mimeType = myMime.getMimeTypeFromExtension(fileExtension);
+        if (TextUtils.isEmpty(mimeType)) {
+            if (fileExtension.equalsIgnoreCase("xlsx") || fileExtension.equalsIgnoreCase("xls") || fileExtension.equalsIgnoreCase("xlsm"))
+                mimeType = "application/vnd.ms-excel";
+            else if (fileExtension.equalsIgnoreCase("doc") || fileExtension.equalsIgnoreCase("docx"))
+                mimeType = "application/msword";
+            else if (fileExtension.equalsIgnoreCase("hwp"))
+                mimeType = "application/hwp";
+            else if (fileExtension.equalsIgnoreCase("ppt") || fileExtension.equalsIgnoreCase("pptx"))
+                mimeType = "application/vnc.ms-powerpoint";
+        }
+
+        intent.setDataAndType(Uri.fromFile(selectedFile), mimeType);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try {
+            content.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(content, "No handler for this type of file.", Toast.LENGTH_LONG).show();
+        }
+    }
 
     /** 3. Permission 요청에 대한 응답을 Handle하는 callback 함수 override **/
     @Override

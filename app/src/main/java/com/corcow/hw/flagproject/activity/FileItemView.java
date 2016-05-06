@@ -28,7 +28,7 @@ public class FileItemView extends FrameLayout {
     }
 
     public void setFileItem(FileItem item) {
-        fileIconView.setImageResource(item.fileIconImgResource);
+        fileIconView.setImageResource(item.iconImgResource);
         fileNameView.setText(item.fileName);
     }
 
