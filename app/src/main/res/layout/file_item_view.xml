@@ -2,17 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="100dp"
     android:layout_height="wrap_content"
+    android:gravity="center"
     android:orientation="vertical">
 
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:gravity="center"
         android:id="@+id/image_file_icon" />
 
     <TextView
-        android:layout_width="100dp"
+        android:layout_width="60dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:text="파일명"
+        android:gravity="center"
         android:id="@+id/text_file_name" />
 </LinearLayout>

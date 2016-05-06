@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
+import com.corcow.hw.flagproject.Utilities;
 
 import org.askerov.dynamicgrid.DynamicGridView;
 
@@ -94,15 +95,12 @@ public class MainActivity extends AppCompatActivity {
         rootPath = Environment.getExternalStorageDirectory().getPath();
         rootFile = Environment.getExternalStorageDirectory();
         pathView.setText(rootFile.getPath());       // 현재 Path 확인
-        File[] files = rootFile.listFiles();        // 현재 경로의 File 리스트 받아옴
+        File[] files = rootFile.listFiles();        // 현재 경로의 File 리스트를 받아옴
 
         // add items
         for (File f : files) {
-            FileItem item = new FileItem();
+            FileItem item = new FileItem(f.getName(), f.getAbsolutePath());
             item.iconImgResource = f.isDirectory() ? R.drawable.folder : R.drawable.file ;
-            item.fileName = f.getName();
-            item.isDirectory = f.isDirectory();
-            item.absolutePath = f.getAbsolutePath();
             mAdapter.add(item);
         }
 
@@ -120,17 +118,14 @@ public class MainActivity extends AppCompatActivity {
                     pathView.setText(selectedPath);     // 현재 경로명을 선택된 하위 경로로 변경
                     mAdapter.clear();
                     for (File f : selectedFile.listFiles()) {
-                        FileItem item = new FileItem();
+                        FileItem item = new FileItem(f.getName(), f.getAbsolutePath());
                         item.iconImgResource = f.isDirectory() ? R.drawable.folder : R.drawable.file ;
-                        item.fileName = f.getName();
-                        item.isDirectory = f.isDirectory();
-                        item.absolutePath = f.getAbsolutePath();
                         mAdapter.add(item);
                     }
                     mAdapter.notifyDataSetChanged();
                 } else {
                     // 선택된 item이 파일인 경우 파일 실행
-                    openFile(MainActivity.this, selectedFile);
+                    openFile(selectedFile);
 
                 }
             }
@@ -150,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDragPositionsChanged(int oldPosition, int newPosition) {
                 // newPosition의 아이템이 파일이고, newPosition에서 3초동안 머무른다면 (값이 3초동안 같다면) 폴더생성!
-                Toast.makeText(MainActivity.this, "oldPosition"+oldPosition+", newPosition"+newPosition, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "oldPosition"+oldPosition+", newPosition"+newPosition, Toast.LENGTH_SHORT).show();
             }
         });
         fileGridView.setOnDropListener(new DynamicGridView.OnDropListener() {
@@ -163,31 +158,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    /**
-     * 파일의 확장자 조회
-     *
-     * @param fileStr
-     * @return
-     */
-    public static String getExtension(String fileStr) {
-        return fileStr.substring(fileStr.lastIndexOf(".") + 1, fileStr.length());
-    }
-
-    /**
-     * Viewer로 연결
-     *
-     * @param content
-     * @param selectedFile
-     */
-    public static void openFile(Context content, File selectedFile) {
+    // 파일 실행 Method
+    public void openFile(File selectedFile) {
         MimeTypeMap myMime = MimeTypeMap.getSingleton();
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        String fileExtension = getExtension(selectedFile.getName());
+        String fileExtension = Utilities.getExtension(selectedFile.getName());
 
         // MIME type map에서 가져오거나
         String mimeType = myMime.getMimeTypeFromExtension(fileExtension);
-        // 없는녀석은 수작업
+        // 없는녀석은 직접 mapping
         if (TextUtils.isEmpty(mimeType)) {
             if (fileExtension.equalsIgnoreCase("xlsx") || fileExtension.equalsIgnoreCase("xls") || fileExtension.equalsIgnoreCase("xlsm"))
                 mimeType = "application/vnd.ms-excel";
@@ -202,9 +181,9 @@ public class MainActivity extends AppCompatActivity {
         intent.setDataAndType(Uri.fromFile(selectedFile), mimeType);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
-            content.startActivity(intent);
+            startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(content, "No handler for this type of file.", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "No handler for this type of file.", Toast.LENGTH_LONG).show();
         }
     }
 
