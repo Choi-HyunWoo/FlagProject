@@ -53,15 +53,13 @@ public class MainActivity extends AppCompatActivity {
      * 2. Adapter에 여러 종류의 파일들을 multi-type item들로 관리할 수 있도록 변경
      *   폴더 / 이미지 / 문서 등등의 파일 구분.
      *
-     * 3. 파일 실행  << ★★★★★       완료
+     * 3. 다른 화면에 대한 UI 짜기
      *
-     * 4. 다른 화면에 대한 UI 기획
+     * 4. 로그인 및 회원가입
      *
-     * 5. 로그인 및 회원가입
+     * 5. 파일 전송 및 내려받기...
      *
-     * 6. 파일 전송 및 내려받기...
-     *
-     * 7. 파일 드래그로 이동!!
+     * 6. 파일 드래그로 이동!!
      *
      * ----- 기능구현 완료! -----
      *
@@ -164,6 +162,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
     /**
      * 파일의 확장자 조회
      *
@@ -185,7 +185,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         String fileExtension = getExtension(selectedFile.getName());
 
+        // MIME type map에서 가져오거나
         String mimeType = myMime.getMimeTypeFromExtension(fileExtension);
+        // 없는녀석은 수작업
         if (TextUtils.isEmpty(mimeType)) {
             if (fileExtension.equalsIgnoreCase("xlsx") || fileExtension.equalsIgnoreCase("xls") || fileExtension.equalsIgnoreCase("xlsm"))
                 mimeType = "application/vnd.ms-excel";
@@ -205,6 +207,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(content, "No handler for this type of file.", Toast.LENGTH_LONG).show();
         }
     }
+
+
 
     /** 3. Permission 요청에 대한 응답을 Handle하는 callback 함수 override **/
     @Override
