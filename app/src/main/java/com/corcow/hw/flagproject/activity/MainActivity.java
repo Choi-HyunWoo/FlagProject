@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
                 // Drop 시 draggingPosition에 grid 아이템이 존재한다면, (draggingPosition != -1)
                 // Drop position의 아이템이 파일인지 폴더인지 판별.
                 // 폴더라면 해당 폴더로 파일이 이동된다.  /  파일이라면 아무일 안생김.
-                if (draggingPosition != -1) {
+                if (draggingPosition != -1 && draggingPosition != originalPosition) {
                     File droppedFile = new File(((FileItem) mAdapter.getItem(draggingPosition)).absolutePath);
                     if (droppedFile.isDirectory()) {
                         Utilities.moveFile(((FileItem) mAdapter.getItem(originalPosition)).absolutePath, droppedFile.getAbsolutePath());
