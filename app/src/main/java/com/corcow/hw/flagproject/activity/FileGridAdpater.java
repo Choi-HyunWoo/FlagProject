@@ -23,6 +23,11 @@ public class FileGridAdpater extends BaseDynamicGridAdapter {
         notifyDataSetChanged();
     }
 
+    public void delete(int position) {
+        super.delete(position);
+        notifyDataSetChanged();
+    }
+
     public void clear() {
         super.clear();
         notifyDataSetChanged();

@@ -13,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
@@ -27,8 +28,12 @@ import org.askerov.dynamicgrid.DynamicGridView;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.List;
 
 
@@ -43,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
     FileGridAdpater mAdapter;
 
     // Variables
-    int lastPosition;
+    int originalPosition = -1;              // in Edit mode
+    int currentPosition = -1;            // in Edit mode
     String rootPath;
     File rootFile;
 
@@ -114,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
                     /**
                      * 이부분 코드 다듬기 필요!!
                      * */
+
                     // 선택된 item이 폴더인 경우
                     pathView.setText(selectedPath);     // 현재 경로명을 선택된 하위 경로로 변경
                     mAdapter.clear();
@@ -140,33 +147,54 @@ public class MainActivity extends AppCompatActivity {
         fileGridView.setOnDragListener(new DynamicGridView.OnDragListener() {
             @Override
             public void onDragStarted(int position) {
-                // 드래그 시작시 현재 위치 저장
+                // Drag 시작 위치 저장
+                originalPosition = position;
             }
             @Override
             public void onDragPositionsChanged(int oldPosition, int newPosition) {
-                // newPosition의 아이템이 파일이고, newPosition에서 3초동안 머무른다면 (값이 3초동안 같다면) 폴더생성!
-//                Toast.makeText(MainActivity.this, "oldPosition"+oldPosition+", newPosition"+newPosition, Toast.LENGTH_SHORT).show();
+                // Drag position이 변화 시 currentposition이 갱신
+                currentPosition = newPosition;
             }
         });
         fileGridView.setOnDropListener(new DynamicGridView.OnDropListener() {
             @Override
             public void onActionDrop() {
+                // Drop 시 position(currentPosition)에 grid 아이템이 존재한다면,
+                // Drop position의 아이템이 파일인지 폴더인지 판별
+                // 폴더라면 해당 폴더로 파일이 이동된다.  /  파일이라면 아무일 안생김
+                if (currentPosition != -1) {
+                    File droppedFile = new File(((FileItem) mAdapter.getItem(currentPosition)).absolutePath);
+                    if (droppedFile.isDirectory()) {
+                        moveFile(((FileItem) mAdapter.getItem(originalPosition)).absolutePath, droppedFile.getAbsolutePath());
+                        mAdapter.delete(originalPosition);          // GridView 에서도 지워준다.
+                    }
+                }
+
+                // Drop 시 Editmode는 종료, Drag를 시작한 position, Edit중인 current position을 초기화
                 fileGridView.stopEditMode();
+                originalPosition = -1;
+                currentPosition = -1;
             }
         });
 
     }
 
 
-    // 파일 실행 Method
+    /** openFile()  ... 파일 실행 함수
+     * selectedFile : 실행하고자 하는 파일
+     *
+     * .. 안드로이드는 확장자(extension)로 파일을 구분하여 실행하지 못함.
+     * .. MIME TYPE으로 구분.
+     * .. 파일 확장자(extension)와 MIME TYPE이 대응되는 MimeTypeMap 이라는 MAP이 존재함.
+     */
     public void openFile(File selectedFile) {
-        MimeTypeMap myMime = MimeTypeMap.getSingleton();
+        MimeTypeMap myMime = MimeTypeMap.getSingleton();                        // MIME TYPE & extension map
         Intent intent = new Intent(Intent.ACTION_VIEW);
         String fileExtension = Utilities.getExtension(selectedFile.getName());
 
-        // MIME type map에서 가져오거나
+        // MimeTypeMap에서 확장자에 해당하는 MIME type을 가져옴.
         String mimeType = myMime.getMimeTypeFromExtension(fileExtension);
-        // 없는녀석은 직접 mapping
+        // MimeTypeMap에 없는녀석은 직접 MIME을 mapping.
         if (TextUtils.isEmpty(mimeType)) {
             if (fileExtension.equalsIgnoreCase("xlsx") || fileExtension.equalsIgnoreCase("xls") || fileExtension.equalsIgnoreCase("xlsm"))
                 mimeType = "application/vnd.ms-excel";
@@ -186,6 +214,108 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "No handler for this type of file.", Toast.LENGTH_LONG).show();
         }
     }
+
+
+    /** moveFile()  ... 파일 이동 함수
+     * originPath : 이동 전 파일/폴더 경로 (Absolute Path)
+     * newPath : 이동 후 파일/폴더 경로 (Absolute Path)
+     */
+    private void moveFile(String originPath, String newPath) {
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            //create output directory if it doesn't exist
+            File originFile = new File(originPath);
+            if (originFile.isDirectory()) {
+                // 옮기려는 파일이 폴더인 경우
+                File[] originFiles = originFile.listFiles();        // 폴더 내의 파일들
+                for (File f : originFiles) {                        // 순회
+                    // recursive !
+                    moveFile(f.getAbsolutePath(), newPath + "/" + originFile.getName());
+                    originFile.delete();                            // 기존 폴더 삭제
+                }
+            } else {
+                // 옮기려는 파일이 단일 파일인 경우
+                File newFile = new File (newPath);          // 생성할 파일
+                if (!newFile.exists())                      // 디렉토리가없다면
+                    newFile.mkdirs();                       // 디렉토리 만들기
+                in = new FileInputStream(originPath);
+                out = new FileOutputStream(newPath + "/" + originFile.getName());
+
+                byte[] buffer = new byte[1024];
+                int read;
+                while ((read = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, read);
+                }
+                in.close();
+                in = null;
+
+                // write the output file
+                out.flush();
+                out.close();
+                out = null;
+
+                // 기존 위치의 파일 삭제
+                new File(originPath).delete();
+            }
+        }
+        catch (FileNotFoundException fnfe1) {
+            Log.e("tag", fnfe1.getMessage());
+        }
+        catch (Exception e) {
+            Log.e("tag", e.getMessage());
+        }
+    }
+
+
+    private void deleteFile(String inputPath, String inputFile) {
+        try {
+            // delete the original file
+            new File(inputPath + inputFile).delete();
+        }
+        catch (Exception e) {
+            Log.e("tag", e.getMessage());
+        }
+    }
+
+    private void copyFile(String inputPath, String inputFile, String outputPath) {
+
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            //create output directory if it doesn't exist
+            File dir = new File (outputPath);
+            if (!dir.exists())
+            {
+                dir.mkdirs();
+            }
+
+
+            in = new FileInputStream(inputPath + inputFile);
+            out = new FileOutputStream(outputPath + inputFile);
+
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            in.close();
+            in = null;
+
+            // write the output file (You have now copied the file)
+            out.flush();
+            out.close();
+            out = null;
+
+        }  catch (FileNotFoundException fnfe1) {
+            Log.e("tag", fnfe1.getMessage());
+        }
+        catch (Exception e) {
+            Log.e("tag", e.getMessage());
+        }
+
+    }
+
 
 
 

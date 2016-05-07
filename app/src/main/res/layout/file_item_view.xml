@@ -15,6 +15,7 @@
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:text="파일명"
+        android:singleLine="true"
         android:gravity="center"
         android:id="@+id/text_file_name" />
 </LinearLayout>
