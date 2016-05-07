@@ -2,12 +2,12 @@ package com.corcow.hw.flagproject.activity;
 
 import android.Manifest;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -21,20 +21,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
-import com.corcow.hw.flagproject.Utilities;
+import com.corcow.hw.flagproject.util.Utilities;
 
 import org.askerov.dynamicgrid.DynamicGridView;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -44,16 +40,40 @@ public class MainActivity extends AppCompatActivity {
 
     // Views
     DynamicGridView fileGridView;
-    TextView pathView;
+    TextView currentPathView;
     FileGridAdpater mAdapter;
-
     // Variables
-    int originalPosition = -1;              // in Edit mode
-    int currentPosition = -1;            // in Edit mode
-    String rootPath;
-    File rootFile;
+    int originalPosition = -1;           // in Edit mode
+    int draggingPosition = -1;           // in Edit mode
+    String rootPath;                     // SD card root storage path   ... back 키 조작 시 참조
+    String currentPath;                  // current path (현재 경로)
 
-    /** TODO . 코드 다듬기
+    /*--- Click Event Handler ---*/
+    // BackKey 두번 누르면 종료
+    boolean isBackPressed = false;
+    private static final int MESSAGE_BACKKEY_TIMEOUT = 1;           // Handler message
+    private static final int TIMEOUT_BACKKEY_DELAY = 2000;          // timeout delay
+    // 더블클릭 시 파일 실행
+    boolean isFirstClicked = false;
+    private static final int MESSAGE_FILE_OPEN_TIMEOUT = 2;         // Handler message
+    private static final int TIMEOUT_FILE_OPEN_DELAY = 1000;        // timeout delay
+    // Timeout handler
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_BACKKEY_TIMEOUT :
+                    isBackPressed = false;              // 시간이 지나도 안눌리면 false로
+                    break;
+                case MESSAGE_FILE_OPEN_TIMEOUT :
+                    isFirstClicked = false;
+                    break;
+            }
+        }
+    };
+
+
+    /** TODO .160508
      *
      * 1. 파일 경로 돌아가기 <<
      *
@@ -66,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
      *
      * 5. 파일 전송 및 내려받기...
      *
-     * 6. 파일 드래그로 이동!!
      *
      * ----- 기능구현 완료! -----
      *
@@ -93,46 +112,39 @@ public class MainActivity extends AppCompatActivity {
 
         // View Initialize
         fileGridView = (DynamicGridView)findViewById(R.id.fileGridView);
-        pathView = (TextView)findViewById(R.id.pathView);
-        mAdapter = new FileGridAdpater(MainActivity.this, 3);
+        currentPathView = (TextView)findViewById(R.id.currentPathView);
+        mAdapter = new FileGridAdpater(MainActivity.this, fileGridView.getNumColumns());
         fileGridView.setAdapter(mAdapter);
 
-        // root path, root directory, root file list 가져오기
-        rootPath = Environment.getExternalStorageDirectory().getPath();
-        rootFile = Environment.getExternalStorageDirectory();
-        pathView.setText(rootFile.getPath());       // 현재 Path 확인
-        File[] files = rootFile.listFiles();        // 현재 경로의 File 리스트를 받아옴
+        // 시작은 최상위 root directory.
+        rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        currentPath = rootPath;               // current path 를 root directory로
+        showFileList(currentPath);
 
-        // add items
-        for (File f : files) {
-            FileItem item = new FileItem(f.getName(), f.getAbsolutePath());
-            item.iconImgResource = f.isDirectory() ? R.drawable.folder : R.drawable.file ;
-            mAdapter.add(item);
-        }
-
-        // setting gridview callback
+        // FileGridView listeners
         fileGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedPath = ((FileItem) mAdapter.getItem(position)).absolutePath;
-                File selectedFile = new File(selectedPath);
-                if (selectedFile.isDirectory()) {
-                    /**
-                     * 이부분 코드 다듬기 필요!!
-                     * */
-
-                    // 선택된 item이 폴더인 경우
-                    pathView.setText(selectedPath);     // 현재 경로명을 선택된 하위 경로로 변경
-                    mAdapter.clear();
-                    for (File f : selectedFile.listFiles()) {
-                        FileItem item = new FileItem(f.getName(), f.getAbsolutePath());
-                        item.iconImgResource = f.isDirectory() ? R.drawable.folder : R.drawable.file ;
-                        mAdapter.add(item);
-                    }
-                    mAdapter.notifyDataSetChanged();
+                // 더블클릭 시 실행 (isFileSelected로 확인)
+                if (!isFirstClicked) {
+                    isFirstClicked = true;
+                    // Toast.makeText(MainActivity.this, "한번 더 누르면 실행됩니다.", Toast.LENGTH_SHORT).show();
+                    mHandler.sendEmptyMessageDelayed(MESSAGE_FILE_OPEN_TIMEOUT, TIMEOUT_FILE_OPEN_DELAY);           // TIMEOUT_FILE_OPEN_DELAY (1초) 기다림
                 } else {
-                    // 선택된 item이 파일인 경우 파일 실행
-                    openFile(selectedFile);
+                    // TIMEOUT_FILE_OPEN_DELAY 안에 또 눌린경우 (더블터치 한 경우)
+                    mHandler.removeMessages(MESSAGE_FILE_OPEN_TIMEOUT);
+                    isFirstClicked = false;
+                    // 동작
+                    String selectedPath = ((FileItem) mAdapter.getItem(position)).absolutePath;
+                    File selectedFile = new File(selectedPath);
+                    if (selectedFile.isDirectory()) {
+                        // 선택된 item이 폴더인 경우
+                        currentPath = selectedFile.getAbsolutePath();       // 경로 갱신
+                        showFileList(currentPath);                          // view 갱신
+                    } else {
+                        // 선택된 item이 파일인 경우
+                        Utilities.openFile(MainActivity.this, selectedFile);                             // 파일 실행
+                    }
 
                 }
             }
@@ -140,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
         fileGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                // LongClick 시 편집 모드 시작 (Drag Start)
                 fileGridView.startEditMode(position);
                 return true;
             }
@@ -152,20 +165,20 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public void onDragPositionsChanged(int oldPosition, int newPosition) {
-                // Drag position이 변화 시 currentposition이 갱신
-                currentPosition = newPosition;
+                // Drag position이 변화 시 draggingPosition 갱신
+                draggingPosition = newPosition;
             }
         });
         fileGridView.setOnDropListener(new DynamicGridView.OnDropListener() {
             @Override
             public void onActionDrop() {
-                // Drop 시 position(currentPosition)에 grid 아이템이 존재한다면,
-                // Drop position의 아이템이 파일인지 폴더인지 판별
-                // 폴더라면 해당 폴더로 파일이 이동된다.  /  파일이라면 아무일 안생김
-                if (currentPosition != -1) {
-                    File droppedFile = new File(((FileItem) mAdapter.getItem(currentPosition)).absolutePath);
+                // Drop 시 draggingPosition에 grid 아이템이 존재한다면, (draggingPosition != -1)
+                // Drop position의 아이템이 파일인지 폴더인지 판별.
+                // 폴더라면 해당 폴더로 파일이 이동된다.  /  파일이라면 아무일 안생김.
+                if (draggingPosition != -1) {
+                    File droppedFile = new File(((FileItem) mAdapter.getItem(draggingPosition)).absolutePath);
                     if (droppedFile.isDirectory()) {
-                        moveFile(((FileItem) mAdapter.getItem(originalPosition)).absolutePath, droppedFile.getAbsolutePath());
+                        Utilities.moveFile(((FileItem) mAdapter.getItem(originalPosition)).absolutePath, droppedFile.getAbsolutePath());
                         mAdapter.delete(originalPosition);          // GridView 에서도 지워준다.
                     }
                 }
@@ -173,157 +186,33 @@ public class MainActivity extends AppCompatActivity {
                 // Drop 시 Editmode는 종료, Drag를 시작한 position, Edit중인 current position을 초기화
                 fileGridView.stopEditMode();
                 originalPosition = -1;
-                currentPosition = -1;
+                draggingPosition = -1;
             }
         });
 
     }
 
-
-    /** openFile()  ... 파일 실행 함수
-     * selectedFile : 실행하고자 하는 파일
-     *
-     * .. 안드로이드는 확장자(extension)로 파일을 구분하여 실행하지 못함.
-     * .. MIME TYPE으로 구분.
-     * .. 파일 확장자(extension)와 MIME TYPE이 대응되는 MimeTypeMap 이라는 MAP이 존재함.
+    /** showFileList() ... 인자로 받은 path에 있는 파일들을 GridView에 띄우는 함수
+     * @param currentPath   :   currentPath를 갱신 후에 인자로 넣을 것.
      */
-    public void openFile(File selectedFile) {
-        MimeTypeMap myMime = MimeTypeMap.getSingleton();                        // MIME TYPE & extension map
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        String fileExtension = Utilities.getExtension(selectedFile.getName());
+    private void showFileList(String currentPath) {
+        currentPathView.setText(currentPath);        // 현재 Path 를 보여줌
+        File currentDir = new File(currentPath);
+        File[] files = currentDir.listFiles();       // 현재 경로의 File 리스트를 받아옴
 
-        // MimeTypeMap에서 확장자에 해당하는 MIME type을 가져옴.
-        String mimeType = myMime.getMimeTypeFromExtension(fileExtension);
-        // MimeTypeMap에 없는녀석은 직접 MIME을 mapping.
-        if (TextUtils.isEmpty(mimeType)) {
-            if (fileExtension.equalsIgnoreCase("xlsx") || fileExtension.equalsIgnoreCase("xls") || fileExtension.equalsIgnoreCase("xlsm"))
-                mimeType = "application/vnd.ms-excel";
-            else if (fileExtension.equalsIgnoreCase("doc") || fileExtension.equalsIgnoreCase("docx"))
-                mimeType = "application/msword";
-            else if (fileExtension.equalsIgnoreCase("hwp"))
-                mimeType = "application/hwp";
-            else if (fileExtension.equalsIgnoreCase("ppt") || fileExtension.equalsIgnoreCase("pptx"))
-                mimeType = "application/vnc.ms-powerpoint";
-        }
-
-        intent.setDataAndType(Uri.fromFile(selectedFile), mimeType);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        try {
-            startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(MainActivity.this, "No handler for this type of file.", Toast.LENGTH_LONG).show();
+        // add items to adapter
+        mAdapter.clear();
+        for (File f : files) {
+            FileItem item = new FileItem(f.getName(), f.getAbsolutePath());
+            item.iconImgResource = f.isDirectory() ? R.drawable.folder : R.drawable.file ;
+            mAdapter.add(item);
         }
     }
 
-
-    /** moveFile()  ... 파일 이동 함수
-     * originPath : 이동 전 파일/폴더 경로 (Absolute Path)
-     * newPath : 이동 후 파일/폴더 경로 (Absolute Path)
-     */
-    private void moveFile(String originPath, String newPath) {
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            //create output directory if it doesn't exist
-            File originFile = new File(originPath);
-            if (originFile.isDirectory()) {
-                // 옮기려는 파일이 폴더인 경우
-                File[] originFiles = originFile.listFiles();        // 폴더 내의 파일들
-                for (File f : originFiles) {                        // 순회
-                    // recursive !
-                    moveFile(f.getAbsolutePath(), newPath + "/" + originFile.getName());
-                    originFile.delete();                            // 기존 폴더 삭제
-                }
-            } else {
-                // 옮기려는 파일이 단일 파일인 경우
-                File newFile = new File (newPath);          // 생성할 파일
-                if (!newFile.exists())                      // 디렉토리가없다면
-                    newFile.mkdirs();                       // 디렉토리 만들기
-                in = new FileInputStream(originPath);
-                out = new FileOutputStream(newPath + "/" + originFile.getName());
-
-                byte[] buffer = new byte[1024];
-                int read;
-                while ((read = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, read);
-                }
-                in.close();
-                in = null;
-
-                // write the output file
-                out.flush();
-                out.close();
-                out = null;
-
-                // 기존 위치의 파일 삭제
-                new File(originPath).delete();
-            }
-        }
-        catch (FileNotFoundException fnfe1) {
-            Log.e("tag", fnfe1.getMessage());
-        }
-        catch (Exception e) {
-            Log.e("tag", e.getMessage());
-        }
-    }
-
-
-    private void deleteFile(String inputPath, String inputFile) {
-        try {
-            // delete the original file
-            new File(inputPath + inputFile).delete();
-        }
-        catch (Exception e) {
-            Log.e("tag", e.getMessage());
-        }
-    }
-
-    private void copyFile(String inputPath, String inputFile, String outputPath) {
-
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            //create output directory if it doesn't exist
-            File dir = new File (outputPath);
-            if (!dir.exists())
-            {
-                dir.mkdirs();
-            }
-
-
-            in = new FileInputStream(inputPath + inputFile);
-            out = new FileOutputStream(outputPath + inputFile);
-
-            byte[] buffer = new byte[1024];
-            int read;
-            while ((read = in.read(buffer)) != -1) {
-                out.write(buffer, 0, read);
-            }
-            in.close();
-            in = null;
-
-            // write the output file (You have now copied the file)
-            out.flush();
-            out.close();
-            out = null;
-
-        }  catch (FileNotFoundException fnfe1) {
-            Log.e("tag", fnfe1.getMessage());
-        }
-        catch (Exception e) {
-            Log.e("tag", e.getMessage());
-        }
-
-    }
-
-
-
-
-    /** 3. Permission 요청에 대한 응답을 Handle하는 callback 함수 override **/
+    /** 3. Permission 요청에 대한 응답을 handling 하는 callback 함수 **/
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_READWRITE_STOREAGE :
                 // If request is cancelled, the result arrays are empty.
@@ -334,8 +223,25 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return;
         }
-
         // other 'case' lines to check for other permissions this app might request
+    }
 
+
+    @Override
+    public void onBackPressed() {
+        if (currentPath.equals(rootPath)) {
+            if (!isBackPressed) {
+                isBackPressed = true;
+                Toast.makeText(MainActivity.this, "뒤로가기를 한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
+                mHandler.sendEmptyMessageDelayed(MESSAGE_BACKKEY_TIMEOUT, TIMEOUT_BACKKEY_DELAY);
+            } else {
+                // TIMEOUT_BACKKEY_DELAY 안에 또 눌린경우
+                mHandler.removeMessages(MESSAGE_BACKKEY_TIMEOUT);
+                super.onBackPressed();
+            }
+        } else {
+            currentPath = new File(currentPath).getParent();
+            showFileList(currentPath);
+        }
     }
 }

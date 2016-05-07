@@ -3,7 +3,7 @@ package com.corcow.hw.flagproject.manager;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.corcow.hw.flagproject.MyApplication;
+import com.corcow.hw.flagproject.util.MyApplication;
 
 /**
  * Created by multimedia on 2016-04-28.

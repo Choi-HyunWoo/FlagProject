@@ -1,7 +1,6 @@
 package com.corcow.hw.flagproject.activity;
 
-import com.corcow.hw.flagproject.R;
-import com.corcow.hw.flagproject.Utilities;
+import com.corcow.hw.flagproject.util.Utilities;
 
 /**
  * Created by multimedia on 2016-04-29.
