@@ -73,7 +73,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
      *
      * 1. 다른 화면에 대한 UI 짜기
      *  - 툴바!!!!!!!!!!!!!!!!!!!! << 햄버거+슬라이딩메뉴 ㄱㄱ
-     *  - 로그인 및 회원가입은 툴바의 햄버거 버튼과 슬라이딩 메뉴에서
+     *  - 로그인 및 회원가입은 툴바의 햄버거 버튼과 슬라이딩 메뉴에서 < ?
      *  - 상세 페이지
      *  - 다운로드
      *
@@ -88,18 +88,16 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
      *    - Delete
      *    - Modify..rename?
      *    - File Upload !!     << 제일중요!
-     *
-     *  3) 부모 폴더로의 파일 이동은?    <<<< ***** 매우중요!!!
-     *
-     *  <수정사항>
-     *  1) 이걸 Fragment로 이동...
-     *      발생할 Issue >> BACK KEY..
-     *      (has-a interface 구현해야할듯..)
+     *  3) 부모 폴더로의 파일 이동은?    <<<< ***** 중요!!!
      *
      *  <ISSUE>
-     *     파일 이동 시 issue...
+     *  1. 파일 이동 시 ISSUE...
      *     mMobileView의 position 인식 X..
      *     스크롤링 시 App 비정상 종료
+     *  2. Permission 설정 시 ISSUE
+     *     맨 처음 앱 구동시 권한 체크 전에 작업이 수행되어 앱이 꺼짐
+     *     그 뒤 권한 체크를 하고 ALLOW 할 시, 앱이 정상실행..
+     *     권한 체크를 어디서 할지 << ?
      * */
 
 
