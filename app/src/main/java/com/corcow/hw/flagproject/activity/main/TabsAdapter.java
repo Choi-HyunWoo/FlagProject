@@ -1,4 +1,4 @@
-package com.corcow.hw.flagproject.activity;
+package com.corcow.hw.flagproject.activity.main;
 
 import android.content.Context;
 import android.os.Bundle;

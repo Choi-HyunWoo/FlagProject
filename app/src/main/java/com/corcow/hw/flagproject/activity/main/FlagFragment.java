@@ -1,4 +1,4 @@
-package com.corcow.hw.flagproject.activity;
+package com.corcow.hw.flagproject.activity.main;
 
 
 import android.os.Bundle;
@@ -12,17 +12,18 @@ import com.corcow.hw.flagproject.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SettingsFragment extends Fragment {
+public class FlagFragment extends Fragment {
 
     /** TODO : 160511
      *
-     *  로그인 등등 설정 메뉴 기획
-     *  UI
+     *  툴바추가
+     *  다운로드
+     *  업로드 UI (Relative)
      *
      *
      *
      */
-    public SettingsFragment() {
+    public FlagFragment() {
         // Required empty public constructor
     }
 
@@ -31,7 +32,7 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_settings, container, false);
+        View view = inflater.inflate(R.layout.fragment_flag, container, false);
 
 
 

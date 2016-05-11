@@ -1,7 +1,6 @@
-package com.corcow.hw.flagproject.activity;
+package com.corcow.hw.flagproject.activity.main;
 
 import android.content.Context;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;

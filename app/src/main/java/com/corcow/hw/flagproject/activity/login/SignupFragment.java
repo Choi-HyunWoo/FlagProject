@@ -1,4 +1,4 @@
-package com.corcow.hw.flagproject.activity;
+package com.corcow.hw.flagproject.activity.login;
 
 
 import android.os.Bundle;
@@ -12,18 +12,10 @@ import com.corcow.hw.flagproject.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FlagFragment extends Fragment {
+public class SignupFragment extends Fragment {
 
-    /** TODO : 160511
-     *
-     *  툴바추가
-     *  다운로드
-     *  업로드 UI (Relative)
-     *
-     *
-     *
-     */
-    public FlagFragment() {
+
+    public SignupFragment() {
         // Required empty public constructor
     }
 
@@ -32,7 +24,8 @@ public class FlagFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_flag, container, false);
+        View view = inflater.inflate(R.layout.fragment_signup, container, false);
+
 
 
 

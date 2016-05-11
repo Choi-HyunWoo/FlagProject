@@ -1,14 +1,10 @@
-package com.corcow.hw.flagproject.activity;
+package com.corcow.hw.flagproject.activity.main;
 
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.askerov.dynamicgrid.BaseDynamicGridAdapter;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by multimedia on 2016-04-29.

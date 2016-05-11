@@ -9,9 +9,6 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
-import com.corcow.hw.flagproject.R;
-import com.corcow.hw.flagproject.activity.FileItem;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

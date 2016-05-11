@@ -1,4 +1,4 @@
-package com.corcow.hw.flagproject.activity;
+package com.corcow.hw.flagproject.activity.main;
 
 import com.corcow.hw.flagproject.util.Utilities;
 
