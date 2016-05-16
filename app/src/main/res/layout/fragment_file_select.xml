@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.corcow.hw.flagproject.activity.main.FileSelectDialog">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="current path"
+        android:id="@+id/currentPathView" />
+
+    <org.askerov.dynamicgrid.DynamicGridView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/fileGridView"
+        android:gravity="center"
+        android:numColumns="3" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/btn_select"
+            android:layout_marginRight="1dp"
+            android:textColor="@color/colorWhite"
+            android:background="@color/colorAccent"
+            android:text="선택" />
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/btn_cancel"
+            android:textColor="@color/colorWhite"
+            android:background="@color/colorAccent"
+            android:text="취소" />
+    </LinearLayout>
+
+</LinearLayout>

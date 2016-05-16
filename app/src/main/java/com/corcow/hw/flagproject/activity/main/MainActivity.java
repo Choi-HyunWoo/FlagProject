@@ -33,10 +33,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+/*
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.icon_logo);
         setSupportActionBar(toolbar);
-
+*/
 
 
         // PERMISSION CHECK
@@ -67,9 +68,9 @@ public class MainActivity extends AppCompatActivity {
         pager = (ViewPager)findViewById(R.id.pager);
         mAdapter = new TabsAdapter(this, getSupportFragmentManager(), tabHost, pager);
 
-        mAdapter.addTab(tabHost.newTabSpec(TAB_ID_FLAG).setIndicator("",getResources().getDrawable(R.drawable.file)), FlagFragment.class, null);
-        mAdapter.addTab(tabHost.newTabSpec(TAB_ID_FILEMNG).setIndicator("",getResources().getDrawable(R.drawable.file)), FileManagerFragment.class, null);
-        mAdapter.addTab(tabHost.newTabSpec(TAB_ID_SETTINGS).setIndicator("",getResources().getDrawable(R.drawable.file)), SettingsFragment.class, null);
+        mAdapter.addTab(tabHost.newTabSpec(TAB_ID_FLAG).setIndicator("",getResources().getDrawable(R.drawable.icon_tap_flag)), FlagFragment.class, null);
+        mAdapter.addTab(tabHost.newTabSpec(TAB_ID_FILEMNG).setIndicator("",getResources().getDrawable(R.drawable.icon_tap_fm)), FileManagerFragment.class, null);
+        mAdapter.addTab(tabHost.newTabSpec(TAB_ID_SETTINGS).setIndicator("",getResources().getDrawable(R.drawable.icon_tap_options)), SettingsFragment.class, null);
         setTabColor(tabHost);
 
         mAdapter.setOnTabChangedListener(new TabHost.OnTabChangeListener() {

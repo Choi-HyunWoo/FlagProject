@@ -3,10 +3,12 @@ package com.corcow.hw.flagproject.activity.main;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import com.corcow.hw.flagproject.R;
 
@@ -24,6 +26,9 @@ public class FlagFragment extends Fragment {
      *
      *
      */
+
+    ImageView uploadView;
+
     public FlagFragment() {
         // Required empty public constructor
 
@@ -36,6 +41,15 @@ public class FlagFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_flag, container, false);
 
+        uploadView = (ImageView) view.findViewById(R.id.btn_file_upload);
+        uploadView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 파일 선택 Dialog 출력
+                FileSelectDialog dlg = new FileSelectDialog();
+                dlg.show(getActivity().getSupportFragmentManager(), "");
+            }
+        });
 
 
         return view;
