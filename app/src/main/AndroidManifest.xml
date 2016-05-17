@@ -12,23 +12,24 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
-        <activity android:name=".activity.SplashActivity"
-            android:theme="@style/FullScreen">
+        <activity
+            android:name=".activity.SplashActivity"
+            android:theme="@style/FullScreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".activity.main.MainActivity"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity
+            android:name=".activity.main.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" >
         </activity>
-
         <activity android:name=".activity.login.LoginActivity" >
         </activity>
         <activity
-            android:name=".activity.BlankSampleActivity"
+            android:name=".activity.UserPageActivity"
             android:label="@string/title_activity_blank_sample"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>

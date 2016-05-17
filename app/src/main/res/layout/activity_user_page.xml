@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.corcow.hw.flagproject.activity.BlankSampleActivity">
+    tools:context="com.corcow.hw.flagproject.activity.UserPageActivity">
 
     <android.support.design.widget.AppBarLayout android:layout_height="wrap_content"
         android:layout_width="match_parent" android:theme="@style/AppTheme.AppBarOverlay">
@@ -21,19 +21,16 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/page_owner"
+                android:textColor="@color/colorWhite"
                 android:textSize="20sp"
-                android:text="http://flag.to/"/>
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="flag/id"
-                android:id="@+id/toolbar_editText"/>
+                android:text="User Page"/>
 
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_blank_sample" />
+    <include layout="@layout/content_user_page" />
 
     <android.support.design.widget.FloatingActionButton android:id="@+id/fab"
         android:layout_width="wrap_content" android:layout_height="wrap_content"

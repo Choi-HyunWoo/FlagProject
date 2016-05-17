@@ -1,16 +1,24 @@
 package com.corcow.hw.flagproject.activity.main;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.TabHost;
 
 import com.corcow.hw.flagproject.R;
+import com.corcow.hw.flagproject.activity.UserPageActivity;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -18,27 +26,26 @@ public class MainActivity extends AppCompatActivity {
     // Permission request const
     public static final int MY_PERMISSIONS_REQUEST_READWRITE_STOREAGE = 0;
 
-    // Pager settings
+    // Pager tab define
     private static final String TAB_TAG = "currentTab";
     private static final String TAB_ID_FLAG = "tab_flag";
     private static final String TAB_ID_FILEMNG = "tab_filemng";
     private static final String TAB_ID_SETTINGS = "tab_settings";
 
+    // Intent Extra define
+    public static final String EXTRA_KEY_WHOS_PAGE = "whosPage";
+    public static final String EXTRA_VALUE_MYPAGE = "myPage";
+
     TabHost tabHost;
     ViewPager pager;
     TabsAdapter mAdapter;
+
+    FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-/*
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.icon_logo);
-        setSupportActionBar(toolbar);
-*/
-
 
         // PERMISSION CHECK
         /** 1. 권한 확인 변수 설정 (내가 필요로 하는 permission이 이 액티비티에서 허가되었는지를 판단) **/
@@ -61,6 +68,16 @@ public class MainActivity extends AppCompatActivity {
         }
         */
 
+        // fab button
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, UserPageActivity.class);
+                intent.putExtra(EXTRA_KEY_WHOS_PAGE, EXTRA_VALUE_MYPAGE);
+                startActivity(intent);
+            }
+        });
 
         tabHost = (TabHost) findViewById(android.R.id.tabhost);
         tabHost.setup();
@@ -70,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
         mAdapter.addTab(tabHost.newTabSpec(TAB_ID_FLAG).setIndicator("",getResources().getDrawable(R.drawable.icon_tap_flag)), FlagFragment.class, null);
         mAdapter.addTab(tabHost.newTabSpec(TAB_ID_FILEMNG).setIndicator("",getResources().getDrawable(R.drawable.icon_tap_fm)), FileManagerFragment.class, null);
-        mAdapter.addTab(tabHost.newTabSpec(TAB_ID_SETTINGS).setIndicator("",getResources().getDrawable(R.drawable.icon_tap_options)), SettingsFragment.class, null);
+        mAdapter.addTab(tabHost.newTabSpec(TAB_ID_SETTINGS).setIndicator("", getResources().getDrawable(R.drawable.icon_tap_options)), SettingsFragment.class, null);
         setTabColor(tabHost);
 
         mAdapter.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
@@ -78,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
             public void onTabChanged(String tabId) {
                 setTabColor(tabHost);
                 if (tabId.equals(TAB_ID_FLAG)) {
-                    // actionBar.setTitle("FLAG 탭에 맞는 Actionbar로");
+                    //
                 } else if (tabId.equals(TAB_ID_FILEMNG)) {
                     // actionBar.setTitle("FileManager에 맞는 Actionbar로");
                 } else {
@@ -87,9 +104,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
     }
-
 
     public void setTabColor(TabHost tabhost) {
         for(int i=0;i<tabhost.getTabWidget().getChildCount();i++) {
@@ -98,17 +113,10 @@ public class MainActivity extends AppCompatActivity {
         tabhost.getTabWidget().getChildAt(tabhost.getCurrentTab()).setBackgroundColor(getResources().getColor(R.color.colorAccent)); // selected
     }
 
-    /*
 
-    public void pushFileManagerFragment() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, new FileManagerFragment()).addToBackStack(null).commit();
-    }
 
-    public void popFileManagerFragment() {
-        getSupportFragmentManager().popBackStack();
-    }
 
-    */
+
 
     /** 3. Permission 요청에 대한 응답을 handling 하는 callback 함수 **/
     @Override

@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btn_file_upload"
-            android:src="@drawable/icon_file_upload_2" />
+            android:src="@drawable/icon_upload" />
 
         <TextView
             android:layout_width="wrap_content"

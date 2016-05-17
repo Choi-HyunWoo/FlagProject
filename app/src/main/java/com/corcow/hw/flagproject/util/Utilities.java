@@ -1,9 +1,13 @@
 package com.corcow.hw.flagproject.util;
 
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -25,6 +29,54 @@ public class Utilities {
 
     public static String getExtension(String fileName) {
         return fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
+    }
+
+    public static Bitmap getThumbnail(Context context, String path) {
+        Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new String[] { MediaStore.MediaColumns._ID }, MediaStore.MediaColumns.DATA + "=?",
+                new String[] { path }, null);
+        if (cursor != null && cursor.moveToFirst())
+        {
+            int id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
+            cursor.close();
+            return MediaStore.Images.Thumbnails.getThumbnail(context.getContentResolver(), id, MediaStore.Images.Thumbnails.MICRO_KIND, null);
+        }
+        cursor.close();
+        return null;
+    }
+
+    public static String getThumnailPath(Context context, String path)
+    {
+        String result = null;
+        long imageId = -1;
+        try
+        {
+            String[] projection = new String[] { MediaStore.MediaColumns._ID };
+            String selection = MediaStore.MediaColumns.DATA + "=?";
+            String[] selectionArgs = new String[] { path };
+            Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst())
+            {
+                imageId = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
+            }
+            cursor.close();
+
+            cursor = MediaStore.Images.Thumbnails.queryMiniThumbnail(context.getContentResolver(), imageId, MediaStore.Images.Thumbnails.MINI_KIND, null);
+            if (cursor != null && cursor.getCount() > 0)
+            {
+                cursor.moveToFirst();
+                result = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Thumbnails.DATA));
+            }
+            cursor.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        if (TextUtils.isEmpty(result))
+            result = path;
+
+        return result;
     }
 
     /** openFile()  ... 파일 실행

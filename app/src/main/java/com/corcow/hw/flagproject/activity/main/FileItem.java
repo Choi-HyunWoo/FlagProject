@@ -7,6 +7,9 @@ import com.corcow.hw.flagproject.util.Utilities;
  */
 public class FileItem {
 
+    public static final int IS_IMAGE_FILE = -1111;
+    public static final int IS_VIDEO_FILE = -2222;
+
     String extension;           // 확장자명
 
     int iconImgResource;

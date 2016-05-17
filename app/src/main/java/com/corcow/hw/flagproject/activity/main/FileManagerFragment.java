@@ -2,10 +2,16 @@ package com.corcow.hw.flagproject.activity.main;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,17 +71,9 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         }
     };
 
-
-
     /** TODO .160508
      * 0. Adapter에 여러 종류의 파일들을 multi-type item들로 관리할 수 있도록 변경
      *   폴더 / 이미지(thumbnail) / 문서(종류별로 아이콘..?) 등등 파일 구분 방법 찾기.
-     *
-     * 1. 다른 화면에 대한 UI 짜기
-     *  - 툴바!!!!!!!!!!!!!!!!!!!! << 햄버거+슬라이딩메뉴 ㄱㄱ
-     *  - 로그인 및 회원가입은 툴바의 햄버거 버튼과 슬라이딩 메뉴에서 < ?
-     *  - 상세 페이지
-     *  - 다운로드
      *
      * 2. 로그인 및 회원가입 구현 , Auto login...
      *
@@ -101,14 +99,11 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
      * */
 
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_file_manager, container, false);
-
 
         // View Initialize
         fileGridView = (DynamicGridView)view.findViewById(R.id.fileGridView);
@@ -207,7 +202,29 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         mAdapter.clear();
         for (File f : files) {
             FileItem item = new FileItem(f.getName(), f.getAbsolutePath());
-            item.iconImgResource = f.isDirectory() ? R.drawable.folder : R.drawable.file ;
+            if (f.isDirectory()) {
+                item.iconImgResource = R.drawable.folder;
+            } else if (item.extension.equalsIgnoreCase("jpg") || item.extension.equalsIgnoreCase("jpeg")
+                    || item.extension.equalsIgnoreCase("png") || item.extension.equalsIgnoreCase("bmp")
+                    || item.extension.equalsIgnoreCase("gif")) {
+                item.iconImgResource = FileItem.IS_IMAGE_FILE;
+            } else if (item.extension.equalsIgnoreCase("avi") || item.extension.equalsIgnoreCase("mp4")) {
+                item.iconImgResource = FileItem.IS_VIDEO_FILE;
+            } else if (item.extension.equalsIgnoreCase("hwp")) {
+                item.iconImgResource = R.drawable.icon_file_hwp;
+            } else if (item.extension.equalsIgnoreCase("ppt") || (item.extension.equalsIgnoreCase("pptx"))) {
+                item.iconImgResource = R.drawable.icon_file_ppt;
+            } else if (item.extension.equalsIgnoreCase("xls") || item.extension.equalsIgnoreCase("xlsx")
+                    || item.extension.equalsIgnoreCase("xlsm")) {
+                item.iconImgResource = R.drawable.icon_file_xls;
+            } else if (item.extension.equalsIgnoreCase("pdf")) {
+                //item.iconImgResource = R.drawable.icon_file_pdf;
+                item.iconImgResource = R.drawable.file;
+            } else {
+                item.iconImgResource = R.drawable.file;
+            }
+
+            //item.iconImgResource = f.isDirectory() ? R.drawable.folder : R.drawable.file ;
             mAdapter.add(item);
         }
     }
