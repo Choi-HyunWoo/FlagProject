@@ -76,6 +76,7 @@ public abstract class BaseDynamicGridAdapter extends AbstractDynamicGridAdapter 
     }
 
 
+
     @Override
     public int getCount() {
         return mItems.size();

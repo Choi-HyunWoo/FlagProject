@@ -7,11 +7,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
@@ -64,6 +66,7 @@ public class FileSelectDialog extends DialogFragment {
     int draggingPosition = -1;           // in Edit mode
     String rootPath;                     // SD card root storage path   ... back 키 조작 시 참조
     String currentPath;                  // current path (현재 경로)
+    boolean isScrolled = false;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -130,6 +133,18 @@ public class FileSelectDialog extends DialogFragment {
                 }
             }
         });
+        fileGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                isScrolled = true;
+                Log.d("onScrollStateChanged", "scrollState:" + scrollState);
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
         fileGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -154,21 +169,31 @@ public class FileSelectDialog extends DialogFragment {
         fileGridView.setOnDropListener(new DynamicGridView.OnDropListener() {
             @Override
             public void onActionDrop() {
-                // Drop 시 draggingPosition에 grid 아이템이 존재한다면, (draggingPosition != -1)
-                // Drop position의 아이템이 파일인지 폴더인지 판별.
-                // 폴더라면 해당 폴더로 파일이 이동된다.  /  파일이라면 아무일 안생김.
-                if (draggingPosition != -1 && draggingPosition != originalPosition) {
-                    File droppedFile = new File(((FileItem) mAdapter.getItem(draggingPosition)).absolutePath);
-                    if (droppedFile.isDirectory()) {
-                        Utilities.moveFile(((FileItem) mAdapter.getItem(originalPosition)).absolutePath, droppedFile.getAbsolutePath());
-                        mAdapter.delete(originalPosition);          // GridView 에서도 지워준다.
-                    }
-                }
+                if (!isScrolled) {
+                    // 스크롤 되지 않았을 때만 파일 이동이 가능!
 
-                // Drop 시 Editmode는 종료, Drag를 시작한 position, Edit중인 current position을 초기화
-                fileGridView.stopEditMode();
-                originalPosition = -1;
-                draggingPosition = -1;
+                    // Drop 시 draggingPosition에 grid 아이템이 존재한다면, (draggingPosition != -1)
+                    // Drop position의 아이템이 파일인지 폴더인지 판별.
+                    // 폴더라면 해당 폴더로 파일이 이동된다.  /  파일이라면 아무일 안생김.
+                    if (draggingPosition != -1 && draggingPosition != originalPosition) {
+                        File droppedFile = new File(((FileItem) mAdapter.getItem(draggingPosition)).absolutePath);
+                        if (droppedFile.isDirectory()) {
+                            Utilities.moveFile(((FileItem) mAdapter.getItem(originalPosition)).absolutePath, droppedFile.getAbsolutePath());
+                            mAdapter.delete(originalPosition);          // GridView 에서도 지워준다.
+                        }
+                    }
+
+                    // Drop 시 Editmode는 종료, Drag를 시작한 position, Edit중인 current position을 초기화
+                    fileGridView.stopEditMode();
+                    originalPosition = -1;
+                    draggingPosition = -1;
+                } else {
+                    // 스크롤 되었다면 Drop 시 스크롤 변수를 False로 초기화
+                    isScrolled = false;
+                    fileGridView.stopEditMode();
+                    originalPosition = -1;
+                    draggingPosition = -1;
+                }
             }
         });
 
@@ -207,7 +232,7 @@ public class FileSelectDialog extends DialogFragment {
         for (File f : files) {
             FileItem item = new FileItem(f.getName(), f.getAbsolutePath());
             if (f.isDirectory()) {
-                item.iconImgResource = R.drawable.icon_file_folder;
+                item.iconImgResource = R.drawable.icon_file_folder_small;
             } else if (item.extension.equalsIgnoreCase("jpg") || item.extension.equalsIgnoreCase("jpeg")
                     || item.extension.equalsIgnoreCase("png") || item.extension.equalsIgnoreCase("bmp")
                     || item.extension.equalsIgnoreCase("gif")) {
@@ -215,21 +240,22 @@ public class FileSelectDialog extends DialogFragment {
             } else if (item.extension.equalsIgnoreCase("avi") || item.extension.equalsIgnoreCase("mp4")) {
                 item.iconImgResource = FileItem.IS_VIDEO_FILE;
             } else if (item.extension.equalsIgnoreCase("mp3")) {
-                item.iconImgResource = R.drawable.icon_file_mp3;
+                item.iconImgResource = R.drawable.icon_file_mp3_small;
             } else if (item.extension.equalsIgnoreCase("wmv")) {
-                item.iconImgResource = R.drawable.icon_file_wmv;
+                item.iconImgResource = R.drawable.icon_file_wmv_small;
             } else if (item.extension.equalsIgnoreCase("hwp")) {
-                item.iconImgResource = R.drawable.icon_file_hwp;
+                item.iconImgResource = R.drawable.icon_file_hwp_small;
             } else if (item.extension.equalsIgnoreCase("ppt") || (item.extension.equalsIgnoreCase("pptx"))) {
-                item.iconImgResource = R.drawable.icon_file_ppt;
+                item.iconImgResource = R.drawable.icon_file_ppt_small;
             } else if (item.extension.equalsIgnoreCase("xls") || item.extension.equalsIgnoreCase("xlsx")
                     || item.extension.equalsIgnoreCase("xlsm")) {
-                item.iconImgResource = R.drawable.icon_file_xls;
+                item.iconImgResource = R.drawable.icon_file_xls_small;
             } else if (item.extension.equalsIgnoreCase("pdf")) {
-                item.iconImgResource = R.drawable.icon_file_pdf;
+                item.iconImgResource = R.drawable.icon_file_pdf_small;
             } else {
-                item.iconImgResource = R.drawable.file;
+                item.iconImgResource = R.drawable.icon_file_unknown_small;
             }
+
 
             if (!f.getName().startsWith(".")) {
                 mAdapter.add(item);

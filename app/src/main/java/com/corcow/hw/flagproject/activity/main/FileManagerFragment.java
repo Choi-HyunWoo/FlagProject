@@ -2,14 +2,17 @@ package com.corcow.hw.flagproject.activity.main;
 
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,11 +38,23 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
     DynamicGridView fileGridView;
     TextView currentPathView;
     FileGridAdpater mAdapter;
-    // Variables
-    int originalPosition = -1;           // in Edit mode
-    int draggingPosition = -1;           // in Edit mode
+
+    // Variables in Editmode
+    int originalPosition = -1;
+    String originalPath="";                // Drag를 시작한 파일/폴더의 Path (DragStarted에서 저장)
+    int draggingPosition = -1;             // Drag 동안의 위치
+    String targetPath;                     // Drop 시 해당하는 파일의 Path
+
+    // CONST
     String rootPath;                     // SD card root storage path   ... back 키 조작 시 참조
     String currentPath;                  // current path (현재 경로)
+
+    // scrolled check
+    boolean isScrolled = false;
+
+    // Double Touch
+    // First position check
+    int firstTouchedPosition = -1;
 
     /*--- Click Event Handler ---*/
     // BackKey 두번 누르면 종료
@@ -48,8 +63,8 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
     private static final int TIMEOUT_BACKKEY_DELAY = 2000;          // timeout delay
     // 더블클릭 시 파일 실행
     boolean isFirstClicked = false;
-    private static final int MESSAGE_FILE_OPEN_TIMEOUT = 2;         // Handler message
-    private static final int TIMEOUT_FILE_OPEN_DELAY = 1000;        // timeout delay
+    private static final int MESSAGE_DOUBLE_TOUCH_TIMEOUT = 2;         // Handler message
+    private static final int TIMEOUT_DOUBLE_TOUCH_DELAY = 1000;        // timeout delay
     // Timeout handler
     Handler mHandler = new Handler() {
         @Override
@@ -58,8 +73,9 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                 case MESSAGE_BACKKEY_TIMEOUT :
                     isBackPressed = false;              // 시간이 지나도 안눌리면 false로
                     break;
-                case MESSAGE_FILE_OPEN_TIMEOUT :
+                case MESSAGE_DOUBLE_TOUCH_TIMEOUT :
                     isFirstClicked = false;
+                    firstTouchedPosition = -1;
                     break;
             }
         }
@@ -115,27 +131,41 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // 더블클릭 시 실행 (isFileSelected로 확인)
-                if (!isFirstClicked) {
+                if (!isFirstClicked) {                      // 첫 클릭이라면,
                     isFirstClicked = true;
+                    firstTouchedPosition = position;        // x초 뒤에 position -1로 초기화
                     // Toast.makeText(MainActivity.this, "한번 더 누르면 실행됩니다.", Toast.LENGTH_SHORT).show();
-                    mHandler.sendEmptyMessageDelayed(MESSAGE_FILE_OPEN_TIMEOUT, TIMEOUT_FILE_OPEN_DELAY);           // TIMEOUT_FILE_OPEN_DELAY (1초) 기다림
+                    mHandler.sendEmptyMessageDelayed(MESSAGE_DOUBLE_TOUCH_TIMEOUT, TIMEOUT_DOUBLE_TOUCH_DELAY);           // TIMEOUT_FILE_OPEN_DELAY (1초) 기다림
                 } else {
-                    // TIMEOUT_FILE_OPEN_DELAY 안에 또 눌린경우 (더블터치 한 경우)
-                    mHandler.removeMessages(MESSAGE_FILE_OPEN_TIMEOUT);
-                    isFirstClicked = false;
-                    // 동작
-                    String selectedPath = ((FileItem) mAdapter.getItem(position)).absolutePath;
-                    File selectedFile = new File(selectedPath);
-                    if (selectedFile.isDirectory()) {
-                        // 선택된 item이 폴더인 경우
-                        currentPath = selectedFile.getAbsolutePath();       // 경로 갱신
-                        showFileList(currentPath);                          // view 갱신
-                    } else {
-                        // 선택된 item이 파일인 경우
-                        Utilities.openFile(getActivity(), selectedFile);                             // 파일 실행
+                    if(firstTouchedPosition == position) {
+                        // TIMEOUT_FILE_OPEN_DELAY 안에 또 눌린경우 (더블터치 한 경우)
+                        mHandler.removeMessages(MESSAGE_DOUBLE_TOUCH_TIMEOUT);
+                        isFirstClicked = false;
+                        // 동작
+                        String selectedPath = ((FileItem) mAdapter.getItem(position)).absolutePath;
+                        File selectedFile = new File(selectedPath);
+                        if (selectedFile.isDirectory()) {
+                            // 선택된 item이 폴더인 경우
+                            currentPath = selectedFile.getAbsolutePath();       // 경로 갱신
+                            showFileList(currentPath);                          // view 갱신
+                        } else {
+                            // 선택된 item이 파일인 경우
+                            Utilities.openFile(getActivity(), selectedFile);                             // 파일 실행
+                        }
                     }
-
                 }
+            }
+        });
+        fileGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                isScrolled = true;
+                Log.d("onScrollStateChanged", "scrollState:"+scrollState);
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
             }
         });
         fileGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -152,6 +182,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                 // Drag 시작 위치 저장
                 originalPosition = position;
             }
+
             @Override
             public void onDragPositionsChanged(int oldPosition, int newPosition) {
                 // Drag position이 변화 시 draggingPosition 갱신
@@ -161,21 +192,31 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         fileGridView.setOnDropListener(new DynamicGridView.OnDropListener() {
             @Override
             public void onActionDrop() {
-                // Drop 시 draggingPosition에 grid 아이템이 존재한다면, (draggingPosition != -1)
-                // Drop position의 아이템이 파일인지 폴더인지 판별.
-                // 폴더라면 해당 폴더로 파일이 이동된다.  /  파일이라면 아무일 안생김.
-                if (draggingPosition != -1 && draggingPosition != originalPosition) {
-                    File droppedFile = new File(((FileItem) mAdapter.getItem(draggingPosition)).absolutePath);
-                    if (droppedFile.isDirectory()) {
-                        Utilities.moveFile(((FileItem) mAdapter.getItem(originalPosition)).absolutePath, droppedFile.getAbsolutePath());
-                        mAdapter.delete(originalPosition);          // GridView 에서도 지워준다.
-                    }
-                }
+                if (!isScrolled) {
+                    // 스크롤 되지 않았을 때만 파일 이동이 가능!
 
-                // Drop 시 Editmode는 종료, Drag를 시작한 position, Edit중인 current position을 초기화
-                fileGridView.stopEditMode();
-                originalPosition = -1;
-                draggingPosition = -1;
+                    // Drop 시 draggingPosition에 grid 아이템이 존재한다면, (draggingPosition != -1)
+                    // Drop position의 아이템이 파일인지 폴더인지 판별.
+                    // 폴더라면 해당 폴더로 파일이 이동된다.  /  파일이라면 아무일 안생김.
+                    if (draggingPosition != -1 && draggingPosition != originalPosition) {
+                        File droppedFile = new File(((FileItem) mAdapter.getItem(draggingPosition)).absolutePath);
+                        if (droppedFile.isDirectory()) {
+                            Utilities.moveFile(((FileItem) mAdapter.getItem(originalPosition)).absolutePath, droppedFile.getAbsolutePath());
+                            mAdapter.delete(originalPosition);          // GridView 에서도 지워준다.
+                        }
+                    }
+
+                    // Drop 시 Editmode는 종료, Drag를 시작한 position, Edit중인 current position을 초기화
+                    fileGridView.stopEditMode();
+                    originalPosition = -1;
+                    draggingPosition = -1;
+                } else {
+                    // 스크롤 되었다면 Drop 시 스크롤 변수를 False로 초기화
+                    isScrolled = false;
+                    fileGridView.stopEditMode();
+                    originalPosition = -1;
+                    draggingPosition = -1;
+                }
             }
         });
 
@@ -197,7 +238,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         for (File f : files) {
             FileItem item = new FileItem(f.getName(), f.getAbsolutePath());
             if (f.isDirectory()) {
-                item.iconImgResource = R.drawable.icon_file_folder;
+                item.iconImgResource = R.drawable.icon_file_folder_small;
             } else if (item.extension.equalsIgnoreCase("jpg") || item.extension.equalsIgnoreCase("jpeg")
                     || item.extension.equalsIgnoreCase("png") || item.extension.equalsIgnoreCase("bmp")
                     || item.extension.equalsIgnoreCase("gif")) {
@@ -205,20 +246,20 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
             } else if (item.extension.equalsIgnoreCase("avi") || item.extension.equalsIgnoreCase("mp4")) {
                 item.iconImgResource = FileItem.IS_VIDEO_FILE;
             } else if (item.extension.equalsIgnoreCase("mp3")) {
-                item.iconImgResource = R.drawable.icon_file_mp3;
+                item.iconImgResource = R.drawable.icon_file_mp3_small;
             } else if (item.extension.equalsIgnoreCase("wmv")) {
-                item.iconImgResource = R.drawable.icon_file_wmv;
+                item.iconImgResource = R.drawable.icon_file_wmv_small;
             } else if (item.extension.equalsIgnoreCase("hwp")) {
-                item.iconImgResource = R.drawable.icon_file_hwp;
+                item.iconImgResource = R.drawable.icon_file_hwp_small;
             } else if (item.extension.equalsIgnoreCase("ppt") || (item.extension.equalsIgnoreCase("pptx"))) {
-                item.iconImgResource = R.drawable.icon_file_ppt;
+                item.iconImgResource = R.drawable.icon_file_ppt_small;
             } else if (item.extension.equalsIgnoreCase("xls") || item.extension.equalsIgnoreCase("xlsx")
                     || item.extension.equalsIgnoreCase("xlsm")) {
-                item.iconImgResource = R.drawable.icon_file_xls;
+                item.iconImgResource = R.drawable.icon_file_xls_small;
             } else if (item.extension.equalsIgnoreCase("pdf")) {
-                item.iconImgResource = R.drawable.icon_file_pdf;
+                item.iconImgResource = R.drawable.icon_file_pdf_small;
             } else {
-                item.iconImgResource = R.drawable.file;
+                item.iconImgResource = R.drawable.icon_file_unknown_small;
             }
 
             if (!f.getName().startsWith(".")) {

@@ -130,9 +130,9 @@ public class Utilities {
             if (originFile.isDirectory()) {
                 // 옮기려는 파일이 폴더인 경우
                 File[] originFiles = originFile.listFiles();        // 폴더 내의 파일들
-                for (File f : originFiles) {                        // 순회
+                for (File childFile : originFiles) {                        // 순회
                     // 회심의 recursive !!
-                    moveFile(f.getAbsolutePath(), newPath + "/" + originFile.getName());
+                    moveFile(childFile.getAbsolutePath(), newPath + "/" + originFile.getName());
                     originFile.delete();                            // 기존 폴더 삭제
                 }
             } else {
