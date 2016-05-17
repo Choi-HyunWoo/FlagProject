@@ -21,9 +21,9 @@
     <org.askerov.dynamicgrid.DynamicGridView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:numColumns="3"
         android:id="@+id/fileGridView"
-        android:gravity="center"
-        android:numColumns="3" />
+        android:gravity="center" />
 
 
 </LinearLayout>

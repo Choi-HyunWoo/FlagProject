@@ -102,7 +102,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         // View Initialize
         fileGridView = (DynamicGridView)view.findViewById(R.id.fileGridView);
         currentPathView = (TextView)view.findViewById(R.id.currentPathView);
-        mAdapter = new FileGridAdpater(getActivity(), fileGridView.getNumColumns());
+        mAdapter = new FileGridAdpater(getActivity(), 3);
         fileGridView.setAdapter(mAdapter);
 
         // 시작은 최상위 root directory.
