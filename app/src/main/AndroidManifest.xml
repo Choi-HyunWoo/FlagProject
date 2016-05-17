@@ -29,7 +29,7 @@
         <activity android:name=".activity.login.LoginActivity" >
         </activity>
         <activity
-            android:name=".activity.UserPageActivity"
+            android:name=".activity.userpage.UserPageActivity"
             android:label="@string/title_activity_blank_sample"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>

@@ -33,7 +33,7 @@ public class FileItemView extends FrameLayout {
         fileNameView = (TextView)findViewById(R.id.text_file_name);
     }
 
-    public void setFileItem(FileItem item) {
+    public void setViewItem(FileItem item) {
         if (item.iconImgResource == FileItem.IS_IMAGE_FILE) {
 //            Utilities.getThumnailPath(getContext(), item.absolutePath);
             File imgFile = new File(Utilities.getThumnailPath(getContext(),item.absolutePath));

@@ -46,7 +46,7 @@ public class FileGridAdpater extends BaseDynamicGridAdapter {
         } else {
             view = new FileItemView(parent.getContext());
         }
-        view.setFileItem((FileItem)getItem(position));
+        view.setViewItem((FileItem)getItem(position));
         return view;
     }
 }

@@ -1,4 +1,4 @@
-package com.corcow.hw.flagproject.activity;
+package com.corcow.hw.flagproject.activity.userpage;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.corcow.hw.flagproject.R;
@@ -18,6 +19,9 @@ public class UserPageActivity extends AppCompatActivity {
 
     TextView ownerNameView;
     String pageOwner;
+
+    ListView listView;
+
 
     /** TODO 160517
      *

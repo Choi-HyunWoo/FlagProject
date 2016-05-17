@@ -81,7 +81,7 @@ public class NetworkManager {
     }
 
     // Sign up 회원가입
-    public void signUp(Context context, String userID, String userPW, String email, final OnResultListener<String> listener) {
+    public void signUp(Context context, String userID, String userPW, String email, final OnResultListener<LoginResult> listener) {
         RequestParams params = new RequestParams();
         params.put(REQ_TYPE, TYPE_APP);
         params.put("userID", userID);
@@ -96,7 +96,8 @@ public class NetworkManager {
 
             @Override
             public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-                listener.onSuccess(responseString);
+                Login resultResponse = gson.fromJson(responseString, Login.class);
+                listener.onSuccess(resultResponse.result);
             }
         });
     }

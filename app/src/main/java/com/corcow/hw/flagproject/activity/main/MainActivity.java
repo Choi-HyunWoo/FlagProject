@@ -9,16 +9,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.ScaleAnimation;
 import android.widget.TabHost;
 
 import com.corcow.hw.flagproject.R;
-import com.corcow.hw.flagproject.activity.UserPageActivity;
+import com.corcow.hw.flagproject.activity.userpage.UserPageActivity;
 
 
 public class MainActivity extends AppCompatActivity {

@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:singleLine="true"
-        android:id="@+id/edit_emailView" />
+        android:id="@+id/edit_idView" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -50,23 +50,45 @@
         android:inputType="textPassword"
         android:id="@+id/edit_passwordCheckView" />
 
-    <CheckBox
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginBottom="50dp"
-        android:text="이용약관"
-        android:id="@+id/checkBox_accesstermsCheck" />
+        android:singleLine="true"
+        android:text="이메일" />
 
-
-    <Button
+    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="가입"
-        android:id="@+id/btn_finish"
-        android:background="@color/colorAccent"
-        android:textColor="@color/colorWhite"
-        android:stateListAnimator="@null" />
+        android:singleLine="true"
+        android:inputType="textPassword"
+        android:id="@+id/edit_emailView" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginRight="1dp"
+            android:text="가입"
+            android:id="@+id/btn_submit"
+            android:background="@color/colorAccent"
+            android:textColor="@color/colorWhite"
+            android:stateListAnimator="@null" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="취소"
+            android:id="@+id/btn_cancel"
+            android:background="@color/colorAccent"
+            android:textColor="@color/colorWhite"
+            android:stateListAnimator="@null" />
+    </LinearLayout>
 
     <!--
     <Button
