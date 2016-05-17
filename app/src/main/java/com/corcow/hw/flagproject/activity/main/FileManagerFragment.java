@@ -218,14 +218,14 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                     || item.extension.equalsIgnoreCase("xlsm")) {
                 item.iconImgResource = R.drawable.icon_file_xls;
             } else if (item.extension.equalsIgnoreCase("pdf")) {
-                //item.iconImgResource = R.drawable.icon_file_pdf;
-                item.iconImgResource = R.drawable.file;
+                item.iconImgResource = R.drawable.icon_file_pdf;
             } else {
                 item.iconImgResource = R.drawable.file;
             }
 
-            //item.iconImgResource = f.isDirectory() ? R.drawable.folder : R.drawable.file ;
-            mAdapter.add(item);
+            if (!f.getName().startsWith(".")) {
+                mAdapter.add(item);
+            }
         }
     }
 

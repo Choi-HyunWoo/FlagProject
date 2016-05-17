@@ -1,5 +1,6 @@
 package com.corcow.hw.flagproject.util;
 
+import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -7,11 +8,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
+
+import com.corcow.hw.flagproject.R;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -164,6 +168,33 @@ public class Utilities {
         }
     }
 
+
+    public static File downloadFile (Context context, String url, String filename) {
+        File direct = new File(Environment.getExternalStorageDirectory() + "/" + "FLAG");
+
+        if (!direct.exists()) {
+            direct.mkdirs();
+        } else {
+            File file = new File(Environment.getExternalStorageDirectory() + "/" + "FLAG" + "/" + filename);
+            if(file.exists())
+                file.delete();
+        }
+
+        DownloadManager mgr = (DownloadManager) context.getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE);
+
+        Uri downloadUri = Uri.parse(url);
+        DownloadManager.Request request = new DownloadManager.Request(downloadUri);
+
+        request.setAllowedNetworkTypes(
+                DownloadManager.Request.NETWORK_WIFI
+                        | DownloadManager.Request.NETWORK_MOBILE)
+                .setAllowedOverRoaming(false).setTitle(context.getResources().getString(R.string.app_name))
+                .setDescription("Downloading Share Image for " + context.getResources().getString(R.string.app_name))
+                .setDestinationInExternalPublicDir("/" + "FLAG", filename);
+
+        mgr.enqueue(request);
+        return direct;
+    }
 
     public static void deleteFile(String inputPath, String inputFile) {
         try {

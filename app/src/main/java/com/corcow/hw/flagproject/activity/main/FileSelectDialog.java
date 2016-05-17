@@ -209,8 +209,30 @@ public class FileSelectDialog extends DialogFragment {
         mAdapter.clear();
         for (File f : files) {
             FileItem item = new FileItem(f.getName(), f.getAbsolutePath());
-            item.iconImgResource = f.isDirectory() ? R.drawable.folder : R.drawable.file ;
-            mAdapter.add(item);
+            if (f.isDirectory()) {
+                item.iconImgResource = R.drawable.folder;
+            } else if (item.extension.equalsIgnoreCase("jpg") || item.extension.equalsIgnoreCase("jpeg")
+                    || item.extension.equalsIgnoreCase("png") || item.extension.equalsIgnoreCase("bmp")
+                    || item.extension.equalsIgnoreCase("gif")) {
+                item.iconImgResource = FileItem.IS_IMAGE_FILE;
+            } else if (item.extension.equalsIgnoreCase("avi") || item.extension.equalsIgnoreCase("mp4")) {
+                item.iconImgResource = FileItem.IS_VIDEO_FILE;
+            } else if (item.extension.equalsIgnoreCase("hwp")) {
+                item.iconImgResource = R.drawable.icon_file_hwp;
+            } else if (item.extension.equalsIgnoreCase("ppt") || (item.extension.equalsIgnoreCase("pptx"))) {
+                item.iconImgResource = R.drawable.icon_file_ppt;
+            } else if (item.extension.equalsIgnoreCase("xls") || item.extension.equalsIgnoreCase("xlsx")
+                    || item.extension.equalsIgnoreCase("xlsm")) {
+                item.iconImgResource = R.drawable.icon_file_xls;
+            } else if (item.extension.equalsIgnoreCase("pdf")) {
+                item.iconImgResource = R.drawable.icon_file_pdf;
+            } else {
+                item.iconImgResource = R.drawable.file;
+            }
+
+            if (!f.getName().startsWith(".")) {
+                mAdapter.add(item);
+            }
         }
     }
 
