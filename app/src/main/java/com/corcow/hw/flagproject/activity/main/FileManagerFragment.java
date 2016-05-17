@@ -2,16 +2,10 @@ package com.corcow.hw.flagproject.activity.main;
 
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.ThumbnailUtils;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -203,13 +197,17 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         for (File f : files) {
             FileItem item = new FileItem(f.getName(), f.getAbsolutePath());
             if (f.isDirectory()) {
-                item.iconImgResource = R.drawable.folder;
+                item.iconImgResource = R.drawable.icon_file_folder;
             } else if (item.extension.equalsIgnoreCase("jpg") || item.extension.equalsIgnoreCase("jpeg")
                     || item.extension.equalsIgnoreCase("png") || item.extension.equalsIgnoreCase("bmp")
                     || item.extension.equalsIgnoreCase("gif")) {
                 item.iconImgResource = FileItem.IS_IMAGE_FILE;
             } else if (item.extension.equalsIgnoreCase("avi") || item.extension.equalsIgnoreCase("mp4")) {
                 item.iconImgResource = FileItem.IS_VIDEO_FILE;
+            } else if (item.extension.equalsIgnoreCase("mp3")) {
+                item.iconImgResource = R.drawable.icon_file_mp3;
+            } else if (item.extension.equalsIgnoreCase("wmv")) {
+                item.iconImgResource = R.drawable.icon_file_wmv;
             } else if (item.extension.equalsIgnoreCase("hwp")) {
                 item.iconImgResource = R.drawable.icon_file_hwp;
             } else if (item.extension.equalsIgnoreCase("ppt") || (item.extension.equalsIgnoreCase("pptx"))) {

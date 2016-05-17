@@ -5,10 +5,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +14,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -210,13 +207,17 @@ public class FileSelectDialog extends DialogFragment {
         for (File f : files) {
             FileItem item = new FileItem(f.getName(), f.getAbsolutePath());
             if (f.isDirectory()) {
-                item.iconImgResource = R.drawable.folder;
+                item.iconImgResource = R.drawable.icon_file_folder;
             } else if (item.extension.equalsIgnoreCase("jpg") || item.extension.equalsIgnoreCase("jpeg")
                     || item.extension.equalsIgnoreCase("png") || item.extension.equalsIgnoreCase("bmp")
                     || item.extension.equalsIgnoreCase("gif")) {
                 item.iconImgResource = FileItem.IS_IMAGE_FILE;
             } else if (item.extension.equalsIgnoreCase("avi") || item.extension.equalsIgnoreCase("mp4")) {
                 item.iconImgResource = FileItem.IS_VIDEO_FILE;
+            } else if (item.extension.equalsIgnoreCase("mp3")) {
+                item.iconImgResource = R.drawable.icon_file_mp3;
+            } else if (item.extension.equalsIgnoreCase("wmv")) {
+                item.iconImgResource = R.drawable.icon_file_wmv;
             } else if (item.extension.equalsIgnoreCase("hwp")) {
                 item.iconImgResource = R.drawable.icon_file_hwp;
             } else if (item.extension.equalsIgnoreCase("ppt") || (item.extension.equalsIgnoreCase("pptx"))) {
