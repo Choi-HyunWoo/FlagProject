@@ -4,6 +4,7 @@ import android.content.Context;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.corcow.hw.flagproject.R;
@@ -15,6 +16,7 @@ import com.corcow.hw.flagproject.util.Utilities;
 public class SendView extends FrameLayout {
 
     ImageView fileImageView;
+    LinearLayout inputContainer;
     TextView fileNameView;
     EditText flagNameView;
 
@@ -26,11 +28,19 @@ public class SendView extends FrameLayout {
     private void init() {
         inflate(getContext(), R.layout.send_view, this);
         fileImageView = (ImageView)findViewById(R.id.file_image);
+        inputContainer = (LinearLayout)findViewById(R.id.input_container);
         fileNameView = (TextView)findViewById(R.id.file_name);
         flagNameView = (EditText)findViewById(R.id.flag_name);
     }
 
+    public void setMesuredHeight(int parentMesuredHeight) {
+        setMinimumHeight(parentMesuredHeight);
+        fileImageView.setMinimumHeight(parentMesuredHeight);
+        inputContainer.setMinimumHeight(parentMesuredHeight);
+    }
+
     public void setViewItem(String fileName) {
+        fileNameView.setText(fileName);
         String extension = Utilities.getExtension(fileName);
         if (extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("jpeg")
                 || extension.equalsIgnoreCase("png") || extension.equalsIgnoreCase("bmp")
@@ -54,5 +64,4 @@ public class SendView extends FrameLayout {
             fileImageView.setImageResource(R.drawable.icon_file_unknown_small);
         }
     }
-
 }

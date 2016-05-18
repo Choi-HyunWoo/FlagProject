@@ -16,6 +16,10 @@ public class FileItem {
     String fileName;
     String absolutePath;
 
+    FileItem () {
+
+    }
+
     FileItem (String fileName, String absolutePath) {
         extension = Utilities.getExtension(fileName);
         this.fileName = fileName;

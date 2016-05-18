@@ -9,12 +9,11 @@ import android.widget.BaseAdapter;
  */
 public class SendViewAdapter extends BaseAdapter{
 
-    String fileName;
-    String filePath;
+    FileItem item = new FileItem();
 
-    public void setSendItem(String fileName, String filePath) {
-        this.fileName = fileName;
-        this.filePath = filePath;
+    public void setSendItem(String fileName, String absolutePath) {
+        item.fileName = fileName;
+        item.absolutePath = absolutePath;
         notifyDataSetChanged();
     }
 
@@ -25,7 +24,7 @@ public class SendViewAdapter extends BaseAdapter{
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return item;
     }
 
     @Override
@@ -35,8 +34,15 @@ public class SendViewAdapter extends BaseAdapter{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        SendView view = new SendView(parent.getContext());
-        view.setViewItem(fileName);
+        SendView view = null;
+        if (convertView != null) {
+            view = (SendView)convertView;
+        } else {
+            view = new SendView(parent.getContext());
+        }
+        view.setMinimumHeight(parent.getMeasuredHeight());
+        view.setViewItem(item.fileName);
+//        view.setMesuredHeight(parent.getMeasuredHeight());
         return view;
     }
 }
