@@ -2,6 +2,11 @@ package com.corcow.hw.flagproject.activity.main;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Environment;
@@ -41,9 +46,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
 
     // Variables in Editmode
     int originalPosition = -1;
-    String originalPath="";                // Drag를 시작한 파일/폴더의 Path (DragStarted에서 저장)
     int draggingPosition = -1;             // Drag 동안의 위치
-    String targetPath;                     // Drop 시 해당하는 파일의 Path
 
     // CONST
     String rootPath;                     // SD card root storage path   ... back 키 조작 시 참조
@@ -54,7 +57,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
 
     // Double Touch
     // First position check
-    int firstTouchedPosition = -1;
+    int mFirstTouchedPosition = -1;
 
     /*--- Click Event Handler ---*/
     // BackKey 두번 누르면 종료
@@ -75,7 +78,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                     break;
                 case MESSAGE_DOUBLE_TOUCH_TIMEOUT :
                     isFirstClicked = false;
-                    firstTouchedPosition = -1;
+                    mFirstTouchedPosition = -1;
                     break;
             }
         }
@@ -121,6 +124,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         mAdapter = new FileGridAdpater(getActivity(), 3);
         fileGridView.setAdapter(mAdapter);
 
+
         // 시작은 최상위 root directory.
         rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
         currentPath = rootPath;               // current path 를 root directory로
@@ -130,18 +134,56 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         fileGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // 더블클릭 시 실행 (isFileSelected로 확인)
-                if (!isFirstClicked) {                      // 첫 클릭이라면,
+/*
+                mCheckedPosition = position;
+                View tv = (View)fileGridView.getChildAt(position);
+                tv.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+*/
+                mAdapter.setSelectedState(true, position);
+                /** 더블클릭 구현
+                 *
+                 * boolean isFirstClicked  :  TIMEOUT 시간 안에 첫번째 click이 있었는지 확인하는 변수
+                 * 1) isFirstClicked == false
+                 *   : 아무 아이템도 클릭이 안된 상태 (첫번째 클릭 시 true로 전환)
+                 * 2) isFirstClicked == true
+                 *   : 특정 아이템이 클릭된 상태 (TIMEOUT을 초과할 때까지 다음 입력이 없을 시 false로 전환)
+                 *
+                 * int mFirstTouchedPosition  :  첫번째 click이 있었다면, 어떤 position의 item을 클릭했는지 저장하는 변수
+                 * 1) mFirstTouchedPosition == -1
+                 *  : 아무것도 클릭이 안되었거나 TIMEOUT이 지나 isFirstClicked가 해제되었다면 mFirstTouchedPosition을 -1로 초기화
+                 * 2) mFirstTouchedPosition != -1
+                 *  : FirstClick이 있던 위치(position)가 mFirstTouchedPosition에 저장. 이 값은 TIMEOUT 시간 뒤에 -1로 초기화된다.
+                 *
+                 *  <Algorithm>
+                 *  1. 클릭 시 첫번째 클릭이라면 (isFirstClicked가 FALSE 라면),
+                 *  isFirstClicked를 TRUE로 전환 , mFirstTouchedPosition에 클릭된 item position을 저장.
+                 *  handler에서 TIMEOUT 시간을 세는 동안 다음 클릭이 없는 경우 isFirstClicked = FALSE, mFirstTouchedPosition = -1로 reset
+                 *
+                 *  2. 클릭 시 두번째 클릭이라면 (isFirstClicked 가 TRUE 라면),
+                 *  첫번째 클릭된 아이템 position(mFirstTouchedPosition)과 두번째 클릭된 아이템의 position이 같은지 확인.
+                 *  - 같다면 DOUBLE TOUCH이다. >> 더블클릭 시 하려고 했던 원하는 Logic 수행
+                 *  - 다르다면 DOUBLE Touch가 아닌, 다른 아이템의 클릭이다. >> 핸들러 대기상태를 삭제후 방금 전 클릭된 아이템으로 첫 클릭 로직 수행
+                 *
+                 *
+                 */
+                // 첫 클릭이라면,
+                if (!isFirstClicked) {
                     isFirstClicked = true;
-                    firstTouchedPosition = position;        // x초 뒤에 position -1로 초기화
-                    // Toast.makeText(MainActivity.this, "한번 더 누르면 실행됩니다.", Toast.LENGTH_SHORT).show();
+                    mFirstTouchedPosition = position;        // TIMEOUT 뒤에 position -1로 초기화
                     mHandler.sendEmptyMessageDelayed(MESSAGE_DOUBLE_TOUCH_TIMEOUT, TIMEOUT_DOUBLE_TOUCH_DELAY);           // TIMEOUT_FILE_OPEN_DELAY (1초) 기다림
-                } else {
-                    if(firstTouchedPosition == position) {
-                        // TIMEOUT_FILE_OPEN_DELAY 안에 또 눌린경우 (더블터치 한 경우)
+                }
+                // 첫 클릭 후 TIMEOUT 대기상태라면 (첫 클릭이 있은 후 시간제한이 지나지 않았다면)
+                else {
+                    // 뭐가 눌렸는지 확인하자
+                    // TIMEOUT_DOUBLE_TOUCH_DELAY 안에 같은 아이템이 또 눌린경우 (더블터치 된 경우)
+                    if(mFirstTouchedPosition == position) {
+
+                        // Handler 대기상태 및 CHECK 변수 초기화
                         mHandler.removeMessages(MESSAGE_DOUBLE_TOUCH_TIMEOUT);
                         isFirstClicked = false;
-                        // 동작
+                        mFirstTouchedPosition = -1;
+
+                        // 작업 수행
                         String selectedPath = ((FileItem) mAdapter.getItem(position)).absolutePath;
                         File selectedFile = new File(selectedPath);
                         if (selectedFile.isDirectory()) {
@@ -152,6 +194,16 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                             // 선택된 item이 파일인 경우
                             Utilities.openFile(getActivity(), selectedFile);                             // 파일 실행
                         }
+
+                    }
+                    // TIMEOUT_DOUBLE_TOUCH_DELAY 안에 눌리긴 했지만 다른 아이템이 눌린경우
+                    else {    // << mFirstTouchedPosition != position
+                        // Handler 대기상태 삭제
+                        mHandler.removeMessages(MESSAGE_DOUBLE_TOUCH_TIMEOUT);
+                        // 방금 눌려진 아이템에 대한 클릭 대기상태 시작
+                        isFirstClicked = true;
+                        mFirstTouchedPosition = position;        // TIMEOUT 뒤에 position -1로 초기화
+                        mHandler.sendEmptyMessageDelayed(MESSAGE_DOUBLE_TOUCH_TIMEOUT, TIMEOUT_DOUBLE_TOUCH_DELAY);           // TIMEOUT_FILE_OPEN_DELAY (1초) 기다림
                     }
                 }
             }
@@ -162,10 +214,8 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                 isScrolled = true;
                 Log.d("onScrollStateChanged", "scrollState:"+scrollState);
             }
-
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
             }
         });
         fileGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {

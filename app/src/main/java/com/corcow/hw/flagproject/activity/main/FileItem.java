@@ -22,4 +22,10 @@ public class FileItem {
         this.absolutePath = absolutePath;
     }
 
+    // select setting
+    public boolean isSelected = false;
+    public void setSelectedState (boolean selectedState) {
+        isSelected = selectedState;
+    }
+
 }

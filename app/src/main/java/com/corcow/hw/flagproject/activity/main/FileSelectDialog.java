@@ -38,8 +38,9 @@ public class FileSelectDialog extends DialogFragment {
     private static final int TIMEOUT_BACKKEY_DELAY = 2000;          // timeout delay
     // 더블클릭 시 파일 실행
     boolean isFirstClicked = false;
-    private static final int MESSAGE_FILE_OPEN_TIMEOUT = 2;         // Handler message
-    private static final int TIMEOUT_FILE_OPEN_DELAY = 1000;        // timeout delay
+    int mFirstTouchedPosition = -1;
+    private static final int MESSAGE_DOUBLE_TOUCH_TIMEOUT = 2;         // Handler message
+    private static final int TIMEOUT_DOUBLE_TOUCH_DELAY = 1000;        // timeout delay
     // Timeout handler
     Handler mHandler = new Handler() {
         @Override
@@ -48,7 +49,7 @@ public class FileSelectDialog extends DialogFragment {
                 case MESSAGE_BACKKEY_TIMEOUT :
                     isBackPressed = false;              // 시간이 지나도 안눌리면 false로
                     break;
-                case MESSAGE_FILE_OPEN_TIMEOUT :
+                case MESSAGE_DOUBLE_TOUCH_TIMEOUT :
                     isFirstClicked = false;
                     break;
             }
@@ -109,27 +110,77 @@ public class FileSelectDialog extends DialogFragment {
         fileGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // 더블클릭 시 실행 (isFileSelected로 확인)
+/*
+                mCheckedPosition = position;
+                View tv = (View)fileGridView.getChildAt(position);
+                tv.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+*/
+                mAdapter.setSelectedState(true, position);
+                /** 더블클릭 구현
+                 *
+                 * boolean isFirstClicked  :  TIMEOUT 시간 안에 첫번째 click이 있었는지 확인하는 변수
+                 * 1) isFirstClicked == false
+                 *   : 아무 아이템도 클릭이 안된 상태 (첫번째 클릭 시 true로 전환)
+                 * 2) isFirstClicked == true
+                 *   : 특정 아이템이 클릭된 상태 (TIMEOUT을 초과할 때까지 다음 입력이 없을 시 false로 전환)
+                 *
+                 * int mFirstTouchedPosition  :  첫번째 click이 있었다면, 어떤 position의 item을 클릭했는지 저장하는 변수
+                 * 1) mFirstTouchedPosition == -1
+                 *  : 아무것도 클릭이 안되었거나 TIMEOUT이 지나 isFirstClicked가 해제되었다면 mFirstTouchedPosition을 -1로 초기화
+                 * 2) mFirstTouchedPosition != -1
+                 *  : FirstClick이 있던 위치(position)가 mFirstTouchedPosition에 저장. 이 값은 TIMEOUT 시간 뒤에 -1로 초기화된다.
+                 *
+                 *  <Algorithm>
+                 *  1. 클릭 시 첫번째 클릭이라면 (isFirstClicked가 FALSE 라면),
+                 *  isFirstClicked를 TRUE로 전환 , mFirstTouchedPosition에 클릭된 item position을 저장.
+                 *  handler에서 TIMEOUT 시간을 세는 동안 다음 클릭이 없는 경우 isFirstClicked = FALSE, mFirstTouchedPosition = -1로 reset
+                 *
+                 *  2. 클릭 시 두번째 클릭이라면 (isFirstClicked 가 TRUE 라면),
+                 *  첫번째 클릭된 아이템 position(mFirstTouchedPosition)과 두번째 클릭된 아이템의 position이 같은지 확인.
+                 *  - 같다면 DOUBLE TOUCH이다. >> 더블클릭 시 하려고 했던 원하는 Logic 수행
+                 *  - 다르다면 DOUBLE Touch가 아닌, 다른 아이템의 클릭이다. >> 핸들러 대기상태를 삭제후 방금 전 클릭된 아이템으로 첫 클릭 로직 수행
+                 *
+                 *
+                 */
+                // 첫 클릭이라면,
                 if (!isFirstClicked) {
                     isFirstClicked = true;
-                    // Toast.makeText(MainActivity.this, "한번 더 누르면 실행됩니다.", Toast.LENGTH_SHORT).show();
-                    mHandler.sendEmptyMessageDelayed(MESSAGE_FILE_OPEN_TIMEOUT, TIMEOUT_FILE_OPEN_DELAY);           // TIMEOUT_FILE_OPEN_DELAY (1초) 기다림
-                } else {
-                    // TIMEOUT_FILE_OPEN_DELAY 안에 또 눌린경우 (더블터치 한 경우)
-                    mHandler.removeMessages(MESSAGE_FILE_OPEN_TIMEOUT);
-                    isFirstClicked = false;
-                    // 동작
-                    String selectedPath = ((FileItem) mAdapter.getItem(position)).absolutePath;
-                    File selectedFile = new File(selectedPath);
-                    if (selectedFile.isDirectory()) {
-                        // 선택된 item이 폴더인 경우
-                        currentPath = selectedFile.getAbsolutePath();       // 경로 갱신
-                        showFileList(currentPath);                          // view 갱신
-                    } else {
-                        // 선택된 item이 파일인 경우
-                        Utilities.openFile(getActivity(), selectedFile);                             // 파일 실행
-                    }
+                    mFirstTouchedPosition = position;        // TIMEOUT 뒤에 position -1로 초기화
+                    mHandler.sendEmptyMessageDelayed(MESSAGE_DOUBLE_TOUCH_TIMEOUT, TIMEOUT_DOUBLE_TOUCH_DELAY);           // TIMEOUT_FILE_OPEN_DELAY (1초) 기다림
+                }
+                // 첫 클릭 후 TIMEOUT 대기상태라면 (첫 클릭이 있은 후 시간제한이 지나지 않았다면)
+                else {
+                    // 뭐가 눌렸는지 확인하자
+                    // TIMEOUT_DOUBLE_TOUCH_DELAY 안에 같은 아이템이 또 눌린경우 (더블터치 된 경우)
+                    if(mFirstTouchedPosition == position) {
 
+                        // Handler 대기상태 및 CHECK 변수 초기화
+                        mHandler.removeMessages(MESSAGE_DOUBLE_TOUCH_TIMEOUT);
+                        isFirstClicked = false;
+                        mFirstTouchedPosition = -1;
+
+                        // 작업 수행
+                        String selectedPath = ((FileItem) mAdapter.getItem(position)).absolutePath;
+                        File selectedFile = new File(selectedPath);
+                        if (selectedFile.isDirectory()) {
+                            // 선택된 item이 폴더인 경우
+                            currentPath = selectedFile.getAbsolutePath();       // 경로 갱신
+                            showFileList(currentPath);                          // view 갱신
+                        } else {
+                            // 선택된 item이 파일인 경우
+                            Utilities.openFile(getActivity(), selectedFile);                             // 파일 실행
+                        }
+
+                    }
+                    // TIMEOUT_DOUBLE_TOUCH_DELAY 안에 눌리긴 했지만 다른 아이템이 눌린경우
+                    else {    // << mFirstTouchedPosition != position
+                        // Handler 대기상태 삭제
+                        mHandler.removeMessages(MESSAGE_DOUBLE_TOUCH_TIMEOUT);
+                        // 방금 눌려진 아이템에 대한 클릭 대기상태 시작
+                        isFirstClicked = true;
+                        mFirstTouchedPosition = position;        // TIMEOUT 뒤에 position -1로 초기화
+                        mHandler.sendEmptyMessageDelayed(MESSAGE_DOUBLE_TOUCH_TIMEOUT, TIMEOUT_DOUBLE_TOUCH_DELAY);           // TIMEOUT_FILE_OPEN_DELAY (1초) 기다림
+                    }
                 }
             }
         });

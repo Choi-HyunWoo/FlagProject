@@ -25,6 +25,8 @@ import java.util.List;
 public class FileGridAdpater extends BaseDynamicGridAdapter {
 
 //    ArrayList<FileItem> items = new ArrayList<FileItem>();
+//
+//    int mSelectedPosition = -1;
 
     public FileGridAdpater(Context context, int columnCount) {
         super(context, columnCount);
@@ -46,6 +48,10 @@ public class FileGridAdpater extends BaseDynamicGridAdapter {
         notifyDataSetChanged();
     }
 
+    public void setSelectedState(boolean selectedState, int position) {
+        ((FileItem)super.getItem(position)).setSelectedState(selectedState);
+        notifyDataSetChanged();
+    }
 
     @Override
     public Object getItem(int position) {
@@ -54,17 +60,7 @@ public class FileGridAdpater extends BaseDynamicGridAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        /*
-        FileItemView view = null;
-        if (convertView != null) {
-            view = (FileItemView) convertView;
-        } else {
-            view = new FileItemView(parent.getContext());
-        }
-        view.setViewItem((FileItem)getItem(position));
-        return view;
-        */
-        ItemViewHolder holder;
+       ItemViewHolder holder;
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.file_item_view, null);
             holder = new ItemViewHolder(convertView);
@@ -72,7 +68,14 @@ public class FileGridAdpater extends BaseDynamicGridAdapter {
         } else {
             holder = (ItemViewHolder)convertView.getTag();
         }
-        holder.build((FileItem)getItem(position));
+        holder.build((FileItem) getItem(position));
+
+        if (((FileItem)super.getItem(position)).isSelected){
+            convertView.setBackgroundColor(getContext().getResources().getColor(R.color.colorAccent));
+        } else {
+            convertView.setBackgroundColor(getContext().getResources().getColor(android.R.color.transparent));
+        }
+
         return convertView;
     }
 
