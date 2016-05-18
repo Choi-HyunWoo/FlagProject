@@ -169,6 +169,24 @@ public class Utilities {
     }
 
 
+    public static void DeleteDir (String path)
+    {
+        File file = new File(path);
+        File[] childFileList = file.listFiles();
+        for(File childFile : childFileList)
+        {
+            if(childFile.isDirectory()) {
+                DeleteDir(childFile.getAbsolutePath());     //하위 디렉토리 루프
+            }
+            else {
+                childFile.delete();    //하위 파일삭제
+            }
+        }
+        file.delete();    //root 삭제
+    }
+
+
+
     public static File downloadFile (Context context, String url, String filename) {
         File direct = new File(Environment.getExternalStorageDirectory() + "/" + "FLAG");
 

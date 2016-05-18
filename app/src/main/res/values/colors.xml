@@ -7,5 +7,5 @@
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorDDDDDD">#DDDDDD</color>
-
+    <color name="sky_background">#228FC1</color>
 </resources>
