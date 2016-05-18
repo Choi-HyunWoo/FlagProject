@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
@@ -27,11 +28,14 @@ public class FlagFragment extends Fragment {
      *
      */
 
+    LinearLayout selectContainer;
     ImageView uploadView;
+    FileSelectDialog dialog;
+    String selectedFileName = "";
+    String selectedFilePath = "";
 
     public FlagFragment() {
         // Required empty public constructor
-
     }
 
 
@@ -42,16 +46,24 @@ public class FlagFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_flag, container, false);
 
+        selectContainer = (LinearLayout) view.findViewById(R.id.select_container);
         uploadView = (ImageView) view.findViewById(R.id.btn_file_upload);
         uploadView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // 파일 선택 Dialog 출력
-                FileSelectDialog dlg = new FileSelectDialog();
-                dlg.show(getActivity().getSupportFragmentManager(), "");
+                dialog = new FileSelectDialog();
+                dialog.setDialogResult(new FileSelectDialog.OnDialogResult() {
+                    @Override
+                    public void finish(String name, String path) {
+                        selectedFileName = name;
+                        selectedFilePath = path;
+                        Toast.makeText(getContext(), selectedFileName, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                dialog.show(getActivity().getSupportFragmentManager(), "");
             }
         });
-
 
         return view;
     }

@@ -59,6 +59,10 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
     // First position check
     int mFirstTouchedPosition = -1;
 
+    // selected position
+    int selectedPos = -1;
+    int preSelectedPos = -1;
+
     /*--- Click Event Handler ---*/
     // BackKey 두번 누르면 종료
     boolean isBackPressed = false;
@@ -134,12 +138,24 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         fileGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-/*
-                mCheckedPosition = position;
-                View tv = (View)fileGridView.getChildAt(position);
-                tv.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-*/
-                mAdapter.setSelectedState(true, position);
+
+                // Item select
+                selectedPos = position;
+                if (preSelectedPos == -1) {
+                    // 첫번째 클릭
+                    mAdapter.setSelectedState(true, preSelectedPos, selectedPos);
+                    preSelectedPos = selectedPos;
+                } else if (preSelectedPos != selectedPos) {
+                    // 다른놈 클릭
+                    mAdapter.setSelectedState(true, preSelectedPos, selectedPos);
+                    preSelectedPos = selectedPos;
+                } else if (preSelectedPos == selectedPos) {
+                    // 같은놈 클릭
+                    mAdapter.setSelectedState(false, preSelectedPos, selectedPos);
+                    selectedPos = -1;
+                    preSelectedPos = -1;
+                }
+
                 /** 더블클릭 구현
                  *
                  * boolean isFirstClicked  :  TIMEOUT 시간 안에 첫번째 click이 있었는지 확인하는 변수

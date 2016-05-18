@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:id="@+id/file_upload_container"
+        android:id="@+id/select_container"
         android:gravity="center"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true">
@@ -25,11 +25,10 @@
             android:textColor="@color/colorAccent"
             android:textSize="20sp"
             android:layout_marginTop="10dp"
-            android:text="FLAG Cloud에 파일을 업로드하세요!"
-            android:id="@+id/textView" />
+            android:text="FLAG Cloud에 파일을 업로드하세요!" />
     </LinearLayout>
 
-    <!--
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -58,6 +57,6 @@
             android:id="@+id/editText"
             android:layout_gravity="center_horizontal|top" />
     </LinearLayout>
-    -->
+
 
 </RelativeLayout>

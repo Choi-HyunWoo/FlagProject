@@ -48,8 +48,13 @@ public class FileGridAdpater extends BaseDynamicGridAdapter {
         notifyDataSetChanged();
     }
 
-    public void setSelectedState(boolean selectedState, int position) {
-        ((FileItem)super.getItem(position)).setSelectedState(selectedState);
+    public void setSelectedState(boolean selectedState, int preSelectedPos, int selectedPos) {
+        if (preSelectedPos != -1) {
+            ((FileItem) super.getItem(preSelectedPos)).setSelectedState(false);
+            ((FileItem) super.getItem(selectedPos)).setSelectedState(selectedState);
+        } else {
+            ((FileItem) super.getItem(selectedPos)).setSelectedState(selectedState);
+        }
         notifyDataSetChanged();
     }
 

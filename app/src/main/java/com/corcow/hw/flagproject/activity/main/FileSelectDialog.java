@@ -69,6 +69,20 @@ public class FileSelectDialog extends DialogFragment {
     String currentPath;                  // current path (현재 경로)
     boolean isScrolled = false;
 
+    // select
+    int preSelectedPos = -1;
+    int selectedPos = -1;
+
+
+    // Dialog Result interface
+    public interface OnDialogResult {
+        void finish (String name, String path);
+    }
+    OnDialogResult mDialogResult; // the callback
+    public void setDialogResult(OnDialogResult dialogResult){
+        mDialogResult = dialogResult;
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -110,12 +124,24 @@ public class FileSelectDialog extends DialogFragment {
         fileGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-/*
-                mCheckedPosition = position;
-                View tv = (View)fileGridView.getChildAt(position);
-                tv.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-*/
-                mAdapter.setSelectedState(true, position);
+
+                // Item select
+                selectedPos = position;
+                if (preSelectedPos == -1) {
+                    // 첫번째 클릭
+                    mAdapter.setSelectedState(true, preSelectedPos, selectedPos);
+                    preSelectedPos = selectedPos;
+                } else if (preSelectedPos != selectedPos) {
+                    // 다른놈 클릭
+                    mAdapter.setSelectedState(true, preSelectedPos, selectedPos);
+                    preSelectedPos = selectedPos;
+                } else if (preSelectedPos == selectedPos) {
+                    // 같은놈 클릭
+                    mAdapter.setSelectedState(false, preSelectedPos, selectedPos);
+                    selectedPos = -1;
+                    preSelectedPos = -1;
+                }
+
                 /** 더블클릭 구현
                  *
                  * boolean isFirstClicked  :  TIMEOUT 시간 안에 첫번째 click이 있었는지 확인하는 변수
@@ -142,6 +168,7 @@ public class FileSelectDialog extends DialogFragment {
                  *
                  *
                  */
+
                 // 첫 클릭이라면,
                 if (!isFirstClicked) {
                     isFirstClicked = true;
@@ -172,6 +199,7 @@ public class FileSelectDialog extends DialogFragment {
                         }
 
                     }
+
                     // TIMEOUT_DOUBLE_TOUCH_DELAY 안에 눌리긴 했지만 다른 아이템이 눌린경우
                     else {    // << mFirstTouchedPosition != position
                         // Handler 대기상태 삭제
@@ -248,15 +276,27 @@ public class FileSelectDialog extends DialogFragment {
             }
         });
 
-
+        // 선택 버튼
         selectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // 선택된 파일을 Parent Fragment로
-                Toast.makeText(getContext(), "파일을 선택해 주세요", Toast.LENGTH_SHORT).show();
+                if (selectedPos != -1) {
+                    String selectedFileName = ((FileItem)mAdapter.getItem(selectedPos)).fileName;
+                    String selectedFilePath = ((FileItem)mAdapter.getItem(selectedPos)).absolutePath;
+                    File selectedFile = new File(selectedFilePath);
+                    if (selectedFile.isDirectory()) {
+                        Toast.makeText(getContext(), "폴더는 선택할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        mDialogResult.finish(selectedFileName, selectedFilePath);
+                        FileSelectDialog.this.dismiss();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "파일을 선택해 주세요", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-
+        // 취소 버튼
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -306,7 +346,6 @@ public class FileSelectDialog extends DialogFragment {
             } else {
                 item.iconImgResource = R.drawable.icon_file_unknown_small;
             }
-
 
             if (!f.getName().startsWith(".")) {
                 mAdapter.add(item);
