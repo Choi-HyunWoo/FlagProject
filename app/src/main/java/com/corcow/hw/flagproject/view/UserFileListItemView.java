@@ -1,4 +1,4 @@
-package com.corcow.hw.flagproject.activity.userpage;
+package com.corcow.hw.flagproject.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -7,6 +7,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.corcow.hw.flagproject.R;
+import com.corcow.hw.flagproject.model.UserFileListItem;
 
 /**
  * Created by multimedia on 2016-05-17.

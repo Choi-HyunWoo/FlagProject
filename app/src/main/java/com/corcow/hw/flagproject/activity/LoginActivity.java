@@ -1,10 +1,12 @@
-package com.corcow.hw.flagproject.activity.login;
+package com.corcow.hw.flagproject.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.WindowManager;
 
+import com.corcow.hw.flagproject.fragment.LoginFragment;
 import com.corcow.hw.flagproject.R;
+import com.corcow.hw.flagproject.fragment.SignupFragment;
 
 public class LoginActivity extends AppCompatActivity {
 

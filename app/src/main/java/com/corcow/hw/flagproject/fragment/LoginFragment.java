@@ -1,15 +1,9 @@
-package com.corcow.hw.flagproject.activity.login;
+package com.corcow.hw.flagproject.fragment;
 
 
-import android.app.DownloadManager;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,14 +14,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
-import com.corcow.hw.flagproject.json.LoginResult;
+import com.corcow.hw.flagproject.activity.LoginActivity;
+import com.corcow.hw.flagproject.model.json.LoginResult;
 import com.corcow.hw.flagproject.manager.NetworkManager;
 import com.corcow.hw.flagproject.manager.PropertyManager;
 import com.corcow.hw.flagproject.manager.UserManager;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 
 /**
  * A simple {@link Fragment} subclass.

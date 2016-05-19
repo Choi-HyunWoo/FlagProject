@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_blank_sample"
-    tools:context="com.corcow.hw.flagproject.activity.main.MainActivity">
+    tools:context="com.corcow.hw.flagproject.activity.MainActivity">
 
     <TabHost
         android:id="@android:id/tabhost"

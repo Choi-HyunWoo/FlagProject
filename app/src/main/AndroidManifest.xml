@@ -23,14 +23,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.main.MainActivity"
+            android:name=".activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden" >
         </activity>
-        <activity android:name=".activity.login.LoginActivity" >
+        <activity android:name=".activity.LoginActivity" >
         </activity>
         <activity
-            android:name=".activity.userpage.UserPageActivity"
+            android:name=".activity.UserPageActivity"
             android:label="@string/title_activity_blank_sample"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>

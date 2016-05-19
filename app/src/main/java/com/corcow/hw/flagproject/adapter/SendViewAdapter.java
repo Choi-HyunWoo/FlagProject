@@ -1,8 +1,11 @@
-package com.corcow.hw.flagproject.activity.main;
+package com.corcow.hw.flagproject.adapter;
 
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+
+import com.corcow.hw.flagproject.view.SendView;
+import com.corcow.hw.flagproject.model.FileItem;
 
 /**
  * Created by multimedia on 2016-05-18.

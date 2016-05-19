@@ -1,4 +1,4 @@
-package com.corcow.hw.flagproject.libpackage;
+package com.corcow.hw.flagproject.view.libpackage;
 
 import android.content.Context;
 import android.graphics.Bitmap;

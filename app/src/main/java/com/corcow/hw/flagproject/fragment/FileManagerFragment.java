@@ -1,27 +1,25 @@
-package com.corcow.hw.flagproject.activity.main;
+package com.corcow.hw.flagproject.fragment;
 
-import android.app.Dialog;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
+import com.corcow.hw.flagproject.activity.MainActivity;
+import com.corcow.hw.flagproject.adapter.FileGridAdpater;
+import com.corcow.hw.flagproject.model.FileItem;
 import com.corcow.hw.flagproject.util.Utilities;
 
 import org.askerov.dynamicgrid.DynamicGridView;
@@ -29,9 +27,38 @@ import org.askerov.dynamicgrid.DynamicGridView;
 import java.io.File;
 
 /**
- * Created by multimedia on 2016-05-17.
+ * A simple {@link Fragment} subclass.
  */
-public class FileSelectDialog extends DialogFragment {
+public class FileManagerFragment extends Fragment implements MainActivity.OnBackPressedListener {
+
+
+    public FileManagerFragment() {
+        // Required empty public constructor
+    }
+
+    // Views
+    DynamicGridView fileGridView;
+    TextView currentPathView;
+    FileGridAdpater mAdapter;
+
+    // Variables in Editmode
+    int originalPosition = -1;
+    int draggingPosition = -1;             // Drag 동안의 위치
+
+    // CONST
+    String rootPath;                     // SD card root storage path   ... back 키 조작 시 참조
+    String currentPath;                  // current path (현재 경로)
+
+    // scrolled check
+    boolean isScrolled = false;
+
+    // Double Touch
+    // First position check
+    int mFirstTouchedPosition = -1;
+
+    // selected position
+    int selectedPos = -1;
+    int preSelectedPos = -1;
 
     /*--- Click Event Handler ---*/
     // BackKey 두번 누르면 종료
@@ -40,7 +67,6 @@ public class FileSelectDialog extends DialogFragment {
     private static final int TIMEOUT_BACKKEY_DELAY = 2000;          // timeout delay
     // 더블클릭 시 파일 실행
     boolean isFirstClicked = false;
-    int mFirstTouchedPosition = -1;
     private static final int MESSAGE_DOUBLE_TOUCH_TIMEOUT = 2;         // Handler message
     private static final int TIMEOUT_DOUBLE_TOUCH_DELAY = 1000;        // timeout delay
     // Timeout handler
@@ -53,68 +79,52 @@ public class FileSelectDialog extends DialogFragment {
                     break;
                 case MESSAGE_DOUBLE_TOUCH_TIMEOUT :
                     isFirstClicked = false;
+                    mFirstTouchedPosition = -1;
                     break;
             }
         }
     };
 
-    // Views
-    DynamicGridView fileGridView;
-    TextView currentPathView;
-    FileGridAdpater mAdapter;
-    Button selectBtn, cancelBtn;
-
-    // Variables
-    int originalPosition = -1;           // in Edit mode
-    int draggingPosition = -1;           // in Edit mode
-    String rootPath;                     // SD card root storage path   ... back 키 조작 시 참조
-    String currentPath;                  // current path (현재 경로)
-    boolean isScrolled = false;
-
-    // select
-    int preSelectedPos = -1;
-    int selectedPos = -1;
-
-
-    // Dialog Result interface
-    public interface OnDialogResult {
-        void finish (String name, String path);
-    }
-    OnDialogResult mDialogResult; // the callback
-    public void setDialogResult(OnDialogResult dialogResult){
-        mDialogResult = dialogResult;
-    }
+    /** TODO .160508
+     * 0. Adapter에 여러 종류의 파일들을 multi-type item들로 관리할 수 있도록 변경
+     *   폴더 / 이미지(thumbnail) / 문서(종류별로 아이콘..?) 등등 파일 구분 방법 찾기.
+     *
+     * 2. 로그인 및 회원가입 구현 , Auto login...
+     *
+     * 3. 파일 전송 및 내려받기 <<< 핵심
+     *
+     *  <추가>
+     *  1) 파일 단일 클릭 시 파일 선택.. (선택 시 Background 변경...)
+     *  2) 선택 상태에서 할 일 구현
+     *    - Copy & Paste
+     *    - Delete
+     *    - Modify..rename?
+     *    - File Upload !!     << 제일중요!
+     *  3) 부모 폴더로의 파일 이동은?    <<<< ***** 중요!!!
+     *
+     *  <ISSUE>
+     *  1. 파일 이동 시 ISSUE...
+     *     mMobileView의 position 인식 X..
+     *     스크롤링 시 App 비정상 종료
+     *  2. Permission 설정 시 ISSUE
+     *     맨 처음 앱 구동시 권한 체크 전에 작업이 수행되어 앱이 꺼짐
+     *     그 뒤 권한 체크를 하고 ALLOW 할 시, 앱이 정상실행..
+     *     권한 체크를 어디서 할지 << ?
+     * */
 
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        Dialog dlg = getDialog();
-        int width = getResources().getDimensionPixelSize(R.dimen.fileselect_dlalog_width);
-        int height = getResources().getDimensionPixelSize(R.dimen.fileselect_dlalog_height);
-        getDialog().getWindow().setLayout(width, height);
-        dlg.getWindow().setLayout(width, height);
-        WindowManager.LayoutParams params = dlg.getWindow().getAttributes();
-        dlg.getWindow().setAttributes(params);
-
-        getDialog().getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-
-
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_file_select, container);
-        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_file_manager, container, false);
 
         // View Initialize
-        selectBtn = (Button)view.findViewById(R.id.btn_select);
-        cancelBtn = (Button)view.findViewById(R.id.btn_cancel);
         fileGridView = (DynamicGridView)view.findViewById(R.id.fileGridView);
         currentPathView = (TextView)view.findViewById(R.id.currentPathView);
-        mAdapter = new FileGridAdpater(getActivity(), fileGridView.getNumColumns());
+        mAdapter = new FileGridAdpater(getActivity(), 3);
         fileGridView.setAdapter(mAdapter);
+
 
         // 시작은 최상위 root directory.
         rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -287,38 +297,9 @@ public class FileSelectDialog extends DialogFragment {
             }
         });
 
-        // 선택 버튼
-        selectBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 선택된 파일을 Parent Fragment로
-                if (selectedPos != -1) {
-                    String selectedFileName = ((FileItem)mAdapter.getItem(selectedPos)).fileName;
-                    String selectedFilePath = ((FileItem)mAdapter.getItem(selectedPos)).absolutePath;
-                    File selectedFile = new File(selectedFilePath);
-                    if (selectedFile.isDirectory()) {
-                        Toast.makeText(getContext(), "폴더는 선택할 수 없습니다.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        mDialogResult.finish(selectedFileName, selectedFilePath);
-                        FileSelectDialog.this.dismiss();
-                    }
-                } else {
-                    Toast.makeText(getContext(), "파일을 선택해 주세요", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        // 취소 버튼
-        cancelBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // dismiss
-                FileSelectDialog.this.dismiss();
-            }
-        });
-
         return view;
-
     }
+
 
 
     /** showFileList() ... 인자로 받은 path에 있는 파일들을 GridView에 띄우는 함수
@@ -364,22 +345,32 @@ public class FileSelectDialog extends DialogFragment {
         }
     }
 
-    @NonNull
+    // MainActivity의 OnBackPressedListener의 구현 함수 override
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new Dialog(getContext(), getTheme()) {
-            @Override
-            public void onBackPressed() {
-                if (currentPath.equals(rootPath)) {
-                    // 최상위 Path에서 BackKey가 눌린 경우
-                    super.onBackPressed();
-                } else {
-                    // 하위 Path에서 BackKey가 눌린 경우
-                    currentPath = new File(currentPath).getParent();        // 상위 경로로 이동
-                    showFileList(currentPath);                              // 경로명 변경
-                }
+    public void onBackPressed() {
+        if (currentPath.equals(rootPath)) {
+            // 최상위 Path에서 BackKey가 눌린 경우
+            if (!isBackPressed) {
+                isBackPressed = true;
+                Toast.makeText(getActivity(), "뒤로가기를 한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
+                mHandler.sendEmptyMessageDelayed(MESSAGE_BACKKEY_TIMEOUT, TIMEOUT_BACKKEY_DELAY);
+            } else {
+                // TIMEOUT_BACKKEY_DELAY 안에 또 눌린경우
+                mHandler.removeMessages(MESSAGE_BACKKEY_TIMEOUT);
+                getActivity().finish();
             }
-        };
+        } else {
+            // 하위 Path에서 BackKey가 눌린 경우
+            currentPath = new File(currentPath).getParent();        // 상위 경로로 이동
+            showFileList(currentPath);                              // 경로명 변경
+        }
     }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        ((MainActivity)context).setOnBackPressedListener(this);
+    }
+
 
 }

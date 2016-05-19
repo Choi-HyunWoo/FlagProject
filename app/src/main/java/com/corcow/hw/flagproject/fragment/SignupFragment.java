@@ -1,4 +1,4 @@
-package com.corcow.hw.flagproject.activity.login;
+package com.corcow.hw.flagproject.fragment;
 
 
 import android.os.Bundle;
@@ -13,7 +13,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
-import com.corcow.hw.flagproject.json.LoginResult;
+import com.corcow.hw.flagproject.activity.LoginActivity;
+import com.corcow.hw.flagproject.model.json.LoginResult;
 import com.corcow.hw.flagproject.manager.NetworkManager;
 
 /**

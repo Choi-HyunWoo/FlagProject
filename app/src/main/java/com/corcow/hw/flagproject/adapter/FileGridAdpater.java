@@ -1,4 +1,4 @@
-package com.corcow.hw.flagproject.activity.main;
+package com.corcow.hw.flagproject.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,12 +12,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.corcow.hw.flagproject.R;
+import com.corcow.hw.flagproject.model.FileItem;
 import com.corcow.hw.flagproject.util.Utilities;
 
 import org.askerov.dynamicgrid.BaseDynamicGridAdapter;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * Created by multimedia on 2016-04-29.
@@ -76,7 +76,7 @@ public class FileGridAdpater extends BaseDynamicGridAdapter {
         holder.build((FileItem) getItem(position));
 
         if (((FileItem)super.getItem(position)).isSelected){
-            convertView.setBackgroundColor(getContext().getResources().getColor(R.color.colorAccent));
+            convertView.setBackgroundColor(getContext().getResources().getColor(R.color.colorAccent_transparent));
         } else {
             convertView.setBackgroundColor(getContext().getResources().getColor(android.R.color.transparent));
         }
@@ -84,15 +84,15 @@ public class FileGridAdpater extends BaseDynamicGridAdapter {
         return convertView;
     }
 
-    private class ItemViewHolder {
-        private ImageView fileIconView;
-        private TextView fileNameView;
+    public class ItemViewHolder {
+        ImageView fileIconView;
+        TextView fileNameView;
 
-        private ItemViewHolder (View view) {
+        public ItemViewHolder (View view) {
             fileNameView = (TextView) view.findViewById(R.id.text_file_name);
             fileIconView = (ImageView) view.findViewById(R.id.image_file_icon);
         }
-        void build(FileItem item) {
+        public void build(FileItem item) {
             if (item.iconImgResource == FileItem.IS_IMAGE_FILE) {
                 File imgFile = new File(Utilities.getThumnailPath(getContext(), item.absolutePath));
                 if(imgFile.exists()){

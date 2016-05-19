@@ -1,8 +1,7 @@
-package com.corcow.hw.flagproject.activity.main;
+package com.corcow.hw.flagproject.fragment;
 
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +12,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
-import com.corcow.hw.flagproject.libpackage.PullToRefreshView;
+import com.corcow.hw.flagproject.adapter.SendViewAdapter;
+import com.corcow.hw.flagproject.view.libpackage.PullToRefreshView;
 
 /**
  * A simple {@link Fragment} subclass.

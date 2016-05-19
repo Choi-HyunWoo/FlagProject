@@ -5,13 +5,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.corcow.hw.flagproject.R;
-import com.corcow.hw.flagproject.activity.main.MainActivity;
-import com.corcow.hw.flagproject.manager.NetworkManager;
-import com.corcow.hw.flagproject.manager.PropertyManager;
-import com.corcow.hw.flagproject.manager.UserManager;
 
 public class SplashActivity extends AppCompatActivity {
 

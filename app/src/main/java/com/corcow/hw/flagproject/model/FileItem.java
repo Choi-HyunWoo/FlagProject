@@ -1,4 +1,4 @@
-package com.corcow.hw.flagproject.activity.main;
+package com.corcow.hw.flagproject.model;
 
 import com.corcow.hw.flagproject.util.Utilities;
 
@@ -10,17 +10,17 @@ public class FileItem {
     public static final int IS_IMAGE_FILE = -1111;
     public static final int IS_VIDEO_FILE = -2222;
 
-    String extension;           // 확장자명
+    public String extension;           // 확장자명
 
-    int iconImgResource;
-    String fileName;
-    String absolutePath;
+    public int iconImgResource;
+    public String fileName;
+    public String absolutePath;
 
-    FileItem () {
+    public FileItem () {
 
     }
 
-    FileItem (String fileName, String absolutePath) {
+    public FileItem (String fileName, String absolutePath) {
         extension = Utilities.getExtension(fileName);
         this.fileName = fileName;
         this.absolutePath = absolutePath;

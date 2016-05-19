@@ -1,4 +1,4 @@
-package com.corcow.hw.flagproject.json;
+package com.corcow.hw.flagproject.model.json;
 
 /**
  * Created by multimedia on 2016-05-17.

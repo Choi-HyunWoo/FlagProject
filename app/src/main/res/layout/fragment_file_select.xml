@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.corcow.hw.flagproject.activity.main.FileSelectDialog">
+    tools:context="com.corcow.hw.flagproject.fragment.FileSelectDialog">
 
     <TextView
         android:layout_width="match_parent"

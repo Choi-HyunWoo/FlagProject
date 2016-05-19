@@ -1,8 +1,11 @@
-package com.corcow.hw.flagproject.activity.userpage;
+package com.corcow.hw.flagproject.adapter;
 
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+
+import com.corcow.hw.flagproject.model.UserFileListItem;
+import com.corcow.hw.flagproject.view.UserFileListItemView;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.corcow.hw.flagproject.activity.main;
+package com.corcow.hw.flagproject.activity;
 
 import android.Manifest;
 import android.content.Intent;
@@ -12,8 +12,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TabHost;
 
+import com.corcow.hw.flagproject.fragment.FileManagerFragment;
+import com.corcow.hw.flagproject.fragment.FlagFragment;
 import com.corcow.hw.flagproject.R;
-import com.corcow.hw.flagproject.activity.userpage.UserPageActivity;
+import com.corcow.hw.flagproject.fragment.SettingsFragment;
+import com.corcow.hw.flagproject.adapter.TabsAdapter;
 
 
 public class MainActivity extends AppCompatActivity {

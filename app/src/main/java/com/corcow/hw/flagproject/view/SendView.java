@@ -1,4 +1,4 @@
-package com.corcow.hw.flagproject.activity.main;
+package com.corcow.hw.flagproject.view;
 
 import android.content.Context;
 import android.widget.EditText;

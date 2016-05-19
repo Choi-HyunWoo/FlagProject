@@ -2,8 +2,8 @@ package com.corcow.hw.flagproject.manager;
 
 import android.content.Context;
 
-import com.corcow.hw.flagproject.json.Login;
-import com.corcow.hw.flagproject.json.LoginResult;
+import com.corcow.hw.flagproject.model.json.Login;
+import com.corcow.hw.flagproject.model.json.LoginResult;
 import com.corcow.hw.flagproject.util.MyApplication;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -38,7 +38,7 @@ public class NetworkManager {
     Gson gson;
 
     private NetworkManager() {
-
+/*
         try {
             KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
             trustStore.load(null, null);
@@ -60,9 +60,10 @@ public class NetworkManager {
         } catch (UnrecoverableKeyException e) {
             e.printStackTrace();
         }
-
+*/
+        client = new AsyncHttpClient();
         gson = new Gson();
-        client.setCookieStore(new PersistentCookieStore(MyApplication.getContext()));
+//        client.setCookieStore(new PersistentCookieStore(MyApplication.getContext()));
 
     }
 

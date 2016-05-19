@@ -1,4 +1,4 @@
-package com.corcow.hw.flagproject.activity.main;
+package com.corcow.hw.flagproject.fragment;
 
 
 import android.content.Intent;
@@ -13,7 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
-import com.corcow.hw.flagproject.activity.login.LoginActivity;
+import com.corcow.hw.flagproject.activity.LoginActivity;
 import com.corcow.hw.flagproject.manager.NetworkManager;
 import com.corcow.hw.flagproject.manager.UserManager;
 
