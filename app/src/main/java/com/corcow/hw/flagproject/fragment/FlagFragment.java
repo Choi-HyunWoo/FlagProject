@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.adapter.SendViewAdapter;
+import com.corcow.hw.flagproject.manager.NetworkManager;
 import com.corcow.hw.flagproject.view.libpackage.PullToRefreshView;
 
 /**
@@ -87,6 +88,17 @@ public class FlagFragment extends Fragment {
         pullToRefreshView.setOnRefreshListener(new PullToRefreshView.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                NetworkManager.getInstance().fileUpload(getContext(), selectedFileName, selectedFilePath, "TESTTTTT", false, "test", new NetworkManager.OnResultListener<String>() {
+                    @Override
+                    public void onSuccess(String result) {
+                        Toast.makeText(getContext(), "SUCCESS", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFail(int code) {
+                        Toast.makeText(getContext(), "FAIL"+code, Toast.LENGTH_SHORT).show();
+                    }
+                });
                 pullToRefreshView.setRefreshing(false);
             }
         });

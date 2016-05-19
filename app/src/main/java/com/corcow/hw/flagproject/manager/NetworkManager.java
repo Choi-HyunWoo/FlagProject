@@ -12,6 +12,7 @@ import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -158,11 +159,17 @@ public class NetworkManager {
         });
     }
 
-    public void fileUpload(Context context, String fileName, String flagName, boolean filePrivate, String userID, final OnResultListener<String> listener) {
+    public void fileUpload(Context context, String fileName, String absolutePath, String flagName, boolean filePrivate, String userID, final OnResultListener<String> listener) {
         RequestParams params = new RequestParams();
         params.put(REQ_TYPE, TYPE_APP);
-        params.put("fileName", fileName);
+//        params.put("fileName", fileName);
         params.put("flagName", flagName);
+        File file = new File(absolutePath);
+        try {
+            params.put("flagFile", file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         params.put("filePrivate", filePrivate);
         params.put("userID", userID);
 
