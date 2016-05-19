@@ -144,13 +144,16 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                 if (preSelectedPos == -1) {
                     // 첫번째 클릭
                     mAdapter.setSelectedState(true, preSelectedPos, selectedPos);
+                    Log.d("FIRST TOUCH", "preSelectedPos:" + preSelectedPos + "  selectedPos:" + selectedPos);
                     preSelectedPos = selectedPos;
                 } else if (preSelectedPos != selectedPos) {
                     // 다른놈 클릭
                     mAdapter.setSelectedState(true, preSelectedPos, selectedPos);
+                    Log.d("OTHER TOUCH", "preSelectedPos:" + preSelectedPos + "  selectedPos:" + selectedPos);
                     preSelectedPos = selectedPos;
                 } else if (preSelectedPos == selectedPos) {
                     // 같은놈 클릭
+                    Log.d("SAME TOUCH", "preSelectedPos:"+preSelectedPos+"  selectedPos:"+selectedPos);
                     mAdapter.setSelectedState(false, preSelectedPos, selectedPos);
                     selectedPos = -1;
                     preSelectedPos = -1;
@@ -182,6 +185,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                  *
                  *
                  */
+
                 // 첫 클릭이라면,
                 if (!isFirstClicked) {
                     isFirstClicked = true;
@@ -192,7 +196,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                 else {
                     // 뭐가 눌렸는지 확인하자
                     // TIMEOUT_DOUBLE_TOUCH_DELAY 안에 같은 아이템이 또 눌린경우 (더블터치 된 경우)
-                    if(mFirstTouchedPosition == position) {
+                    if (mFirstTouchedPosition == position) {
 
                         // Handler 대기상태 및 CHECK 변수 초기화
                         mHandler.removeMessages(MESSAGE_DOUBLE_TOUCH_TIMEOUT);
@@ -211,7 +215,13 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                             Utilities.openFile(getActivity(), selectedFile);                             // 파일 실행
                         }
 
+                        // 다른 폴더 진입시 변수 초기화
+                        originalPosition = -1;
+                        draggingPosition = -1;
+                        selectedPos = -1;
+                        preSelectedPos = -1;
                     }
+
                     // TIMEOUT_DOUBLE_TOUCH_DELAY 안에 눌리긴 했지만 다른 아이템이 눌린경우
                     else {    // << mFirstTouchedPosition != position
                         // Handler 대기상태 삭제
@@ -228,10 +238,12 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 isScrolled = true;
-                Log.d("onScrollStateChanged", "scrollState:"+scrollState);
+                Log.d("onScrollStateChanged", "scrollState:" + scrollState);
             }
+
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
             }
         });
         fileGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -283,6 +295,8 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                     originalPosition = -1;
                     draggingPosition = -1;
                 }
+                selectedPos = -1;
+                preSelectedPos = -1;
             }
         });
 

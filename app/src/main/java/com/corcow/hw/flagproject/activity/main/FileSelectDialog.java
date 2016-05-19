@@ -1,10 +1,12 @@
 package com.corcow.hw.flagproject.activity.main;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -83,6 +85,7 @@ public class FileSelectDialog extends DialogFragment {
         mDialogResult = dialogResult;
     }
 
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -93,8 +96,6 @@ public class FileSelectDialog extends DialogFragment {
         dlg.getWindow().setLayout(width, height);
         WindowManager.LayoutParams params = dlg.getWindow().getAttributes();
         dlg.getWindow().setAttributes(params);
-
-        setCancelable(false);       // back key 제어
 
         getDialog().getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
 
@@ -130,13 +131,16 @@ public class FileSelectDialog extends DialogFragment {
                 if (preSelectedPos == -1) {
                     // 첫번째 클릭
                     mAdapter.setSelectedState(true, preSelectedPos, selectedPos);
+                    Log.d("FIRST TOUCH", "preSelectedPos:" + preSelectedPos + "  selectedPos:" + selectedPos);
                     preSelectedPos = selectedPos;
                 } else if (preSelectedPos != selectedPos) {
                     // 다른놈 클릭
                     mAdapter.setSelectedState(true, preSelectedPos, selectedPos);
+                    Log.d("OTHER TOUCH", "preSelectedPos:" + preSelectedPos + "  selectedPos:" + selectedPos);
                     preSelectedPos = selectedPos;
                 } else if (preSelectedPos == selectedPos) {
                     // 같은놈 클릭
+                    Log.d("SAME TOUCH", "preSelectedPos:"+preSelectedPos+"  selectedPos:"+selectedPos);
                     mAdapter.setSelectedState(false, preSelectedPos, selectedPos);
                     selectedPos = -1;
                     preSelectedPos = -1;
@@ -179,7 +183,7 @@ public class FileSelectDialog extends DialogFragment {
                 else {
                     // 뭐가 눌렸는지 확인하자
                     // TIMEOUT_DOUBLE_TOUCH_DELAY 안에 같은 아이템이 또 눌린경우 (더블터치 된 경우)
-                    if(mFirstTouchedPosition == position) {
+                    if (mFirstTouchedPosition == position) {
 
                         // Handler 대기상태 및 CHECK 변수 초기화
                         mHandler.removeMessages(MESSAGE_DOUBLE_TOUCH_TIMEOUT);
@@ -198,6 +202,11 @@ public class FileSelectDialog extends DialogFragment {
                             Utilities.openFile(getActivity(), selectedFile);                             // 파일 실행
                         }
 
+                        // 다른 폴더 진입시 변수 초기화
+                        originalPosition = -1;
+                        draggingPosition = -1;
+                        selectedPos = -1;
+                        preSelectedPos = -1;
                     }
 
                     // TIMEOUT_DOUBLE_TOUCH_DELAY 안에 눌리긴 했지만 다른 아이템이 눌린경우
@@ -273,6 +282,8 @@ public class FileSelectDialog extends DialogFragment {
                     originalPosition = -1;
                     draggingPosition = -1;
                 }
+                selectedPos = -1;
+                preSelectedPos = -1;
             }
         });
 
@@ -351,6 +362,24 @@ public class FileSelectDialog extends DialogFragment {
                 mAdapter.add(item);
             }
         }
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        return new Dialog(getContext(), getTheme()) {
+            @Override
+            public void onBackPressed() {
+                if (currentPath.equals(rootPath)) {
+                    // 최상위 Path에서 BackKey가 눌린 경우
+                    super.onBackPressed();
+                } else {
+                    // 하위 Path에서 BackKey가 눌린 경우
+                    currentPath = new File(currentPath).getParent();        // 상위 경로로 이동
+                    showFileList(currentPath);                              // 경로명 변경
+                }
+            }
+        };
     }
 
 }

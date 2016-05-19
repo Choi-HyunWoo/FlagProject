@@ -41,20 +41,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // PERMISSION CHECK
-        /** 1. 권한 확인 변수 설정 (내가 필요로 하는 permission이 이 액티비티에서 허가되었는지를 판단) **/
-        int permissionCheck1 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-        int permissionCheck2 = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        /** 2. 권한 요청 (PERMISSION_GRANTED = permission 인정;허가) **/
-        // 이 App에 대해 다음 permission들이 하나라도 허가되지 않았다면,
-        if (permissionCheck1 != PackageManager.PERMISSION_GRANTED || permissionCheck2 != PackageManager.PERMISSION_GRANTED) {
-            // 액티비티에서 permission들 요청
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_READWRITE_STOREAGE
-            );
-        }
+        checkPermissionInRuntime();
 
         /*
         // Fragment Build
@@ -111,7 +98,32 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    private void checkPermissionInRuntime() {
+        // PERMISSION CHECK
+        /** 1. 권한 확인 변수 설정 (내가 필요로 하는 permission이 이 액티비티에서 허가되었는지를 판단) **/
+        int permissionCheck1 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        int permissionCheck2 = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        /** 2. 권한 요청 (PERMISSION_GRANTED = permission 인정;허가) **/
+        // 이 App에 대해 다음 permission들이 하나라도 허가되지 않았다면,
+        if (permissionCheck1 != PackageManager.PERMISSION_GRANTED || permissionCheck2 != PackageManager.PERMISSION_GRANTED) {
 
+            //최초 인지, 재요청인지 확인
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ) {
+                // 임의로 취소 시킨 경우 권한 재요청
+                // 액티비티에서 permission들 요청
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READWRITE_STOREAGE);
+            } else {
+                //최초로 권한을 요청하는 경우
+                // 액티비티에서 permission들 요청
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READWRITE_STOREAGE);
+            }
+        }
+    }
 
     /** 3. Permission 요청에 대한 응답을 handling 하는 callback 함수 **/
     @Override
