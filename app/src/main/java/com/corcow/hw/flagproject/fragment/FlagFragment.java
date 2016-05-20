@@ -3,6 +3,7 @@ package com.corcow.hw.flagproject.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.adapter.SendViewAdapter;
 import com.corcow.hw.flagproject.manager.NetworkManager;
+import com.corcow.hw.flagproject.manager.UserManager;
 import com.corcow.hw.flagproject.view.libpackage.PullToRefreshView;
 
 /**
@@ -88,18 +90,24 @@ public class FlagFragment extends Fragment {
         pullToRefreshView.setOnRefreshListener(new PullToRefreshView.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                NetworkManager.getInstance().fileUpload(getContext(), selectedFileName, selectedFilePath, "TESTTTTT", false, "test", new NetworkManager.OnResultListener<String>() {
-                    @Override
-                    public void onSuccess(String result) {
-                        Toast.makeText(getContext(), "SUCCESS", Toast.LENGTH_SHORT).show();
-                    }
+                String userID = UserManager.getInstance().getUserID();
+                if (!TextUtils.isEmpty(userID)) {
+                    NetworkManager.getInstance().fileUpload(getContext(), selectedFileName, selectedFilePath, "TESTTTTT", false, userID, new NetworkManager.OnResultListener<String>() {
+                        @Override
+                        public void onSuccess(String result) {
+                            Toast.makeText(getContext(), "SUCCESS", Toast.LENGTH_SHORT).show();
+                        }
 
-                    @Override
-                    public void onFail(int code) {
-                        Toast.makeText(getContext(), "FAIL"+code, Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        @Override
+                        public void onFail(int code) {
+                            Toast.makeText(getContext(), "FAIL" + code, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Toast.makeText(getContext(), "로그인해주세요", Toast.LENGTH_SHORT).show();
+                }
                 pullToRefreshView.setRefreshing(false);
+
             }
         });
 
