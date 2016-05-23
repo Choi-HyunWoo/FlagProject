@@ -35,10 +35,6 @@ import java.io.File;
 public class FileSelectDialog extends DialogFragment {
 
     /*--- Click Event Handler ---*/
-    // BackKey 두번 누르면 종료
-    boolean isBackPressed = false;
-    private static final int MESSAGE_BACKKEY_TIMEOUT = 1;           // Handler message
-    private static final int TIMEOUT_BACKKEY_DELAY = 2000;          // timeout delay
     // 더블클릭 시 파일 실행
     boolean isFirstClicked = false;
     int mFirstTouchedPosition = -1;
@@ -49,9 +45,6 @@ public class FileSelectDialog extends DialogFragment {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case MESSAGE_BACKKEY_TIMEOUT :
-                    isBackPressed = false;              // 시간이 지나도 안눌리면 false로
-                    break;
                 case MESSAGE_DOUBLE_TOUCH_TIMEOUT :
                     isFirstClicked = false;
                     break;
@@ -247,6 +240,7 @@ public class FileSelectDialog extends DialogFragment {
             public void onDragStarted(int position) {
                 // Drag 시작 위치 저장
                 originalPosition = position;
+                isScrolled = false;
             }
 
             @Override

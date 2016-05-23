@@ -81,12 +81,12 @@ public class LoadingDialogFragment extends DialogFragment {
             @Override
             public void onSuccess(File result) {
                 // File
-                Log.d("SUCCESS", result.getName());
+                Log.d("SUCCESS", result.getAbsolutePath());
             }
 
             @Override
             public void onProgress(long bytesWritten, long totalSize) {
-                Log.d("PROGRESS", "bytesWritten" + bytesWritten + ", totalSize" + totalSize + " : " + (bytesWritten / totalSize) + "%");
+                Log.d("PROGRESS", "bytesWritten" + bytesWritten + ", totalSize" + totalSize + " : " + (bytesWritten / totalSize)*100 + "%");
             }
 
             @Override
