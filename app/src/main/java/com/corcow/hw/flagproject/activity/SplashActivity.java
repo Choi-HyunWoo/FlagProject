@@ -9,17 +9,23 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
+import com.corcow.hw.flagproject.manager.NetworkManager;
+import com.corcow.hw.flagproject.manager.PropertyManager;
+import com.corcow.hw.flagproject.manager.UserManager;
+import com.corcow.hw.flagproject.model.json.LoginResult;
 
 public class SplashActivity extends AppCompatActivity {
 
     // Permission request const
     public static final int MY_PERMISSIONS_REQUEST_READWRITE_STOREAGE = 1;
     Handler mHandler = new Handler(Looper.getMainLooper());
-    boolean isPreviewChecked;
-    boolean isPermissionChecked;
+
     boolean isAutoLoginMode;
+
+    boolean isPermissionChecked;
     boolean isAutoLoginSuccessed;
 
     @Override
@@ -29,60 +35,52 @@ public class SplashActivity extends AppCompatActivity {
 
         checkPermissionInRuntime();
 
-/*
-        // 자동 로그인 상태 확인
-        isAutoLoginMode = PropertyManager.getInstance().getAutoLoginMode();
+        if (isPermissionChecked) {
+            // 자동 로그인 상태 확인
+            isAutoLoginMode = PropertyManager.getInstance().getAutoLoginMode(SplashActivity.this);
 
-        // 자동로그인 ON
-        if (isAutoLoginMode) {
-            String id = PropertyManager.getInstance().getAutoLoginId();
-            String password = PropertyManager.getInstance().getAutoLoginPassword();
+            // 자동로그인 ON
+            if (isAutoLoginMode) {
 
-            NetworkManager.getInstance().login(this, id, password, new NetworkManager.OnResultResponseListener<Login>() {
-                @Override
-                public void onSuccess(Login result) {
-                    if (result.status.equals("ok")) {
-                        // 자동 로그인 성공 >> 유저 정보 저장
+                String userID = PropertyManager.getInstance().getAutoLoginId(SplashActivity.this);
+                String userPW = PropertyManager.getInstance().getAutoLoginPassword(SplashActivity.this);
+
+                NetworkManager.getInstance().signIn(SplashActivity.this, userID, userPW, new NetworkManager.OnResultListener<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult result) {
                         UserManager.getInstance().setLoginState(true);
-                        UserManager.getInstance().setUser_id(result.user._id);
-                        if (result.user.image_ids.size() != 0) {
-                            if (result.user.image_ids.get(0).equals("")) {
-                                UserManager.getInstance().setUserProfileImageURL("drawable://" + R.drawable.icon_profile_default);
-                            } else {
-                                UserManager.getInstance().setUserProfileImageURL(result.user.image_ids.get(0).uri);
-                            }
-                        }
+                        UserManager.getInstance().set_id(result.user._id);
+                        UserManager.getInstance().setUserID(result.user.userID);
+                        UserManager.getInstance().setUserPW(result.user.userPW);
                         UserManager.getInstance().setUserEmail(result.user.email);
-                        UserManager.getInstance().setUserPassword(result.user.password);
-                        UserManager.getInstance().setUserNickname(result.user.nick);
 
-                        choiceNextActivity();
-                    } else {
-                        // 자동 로그인 실패 >> 비회원으로 접속
-                        UserManager.getInstance().setLoginState(false);
-                        choiceNextActivity();
+                        goMain();
                     }
-                }
 
-                @Override
-                public void onFail(int code, String responseString) {
-                    // 서버와의 연결 실패 >> 로그 띄우고 비회원으로 접속
-                    UserManager.getInstance().setLoginState(false);
-                    Log.d("Network error/splash", "" + code);
-                    choiceNextActivity();
-                }
-            });
+                    @Override
+                    public void onFail(int code) {
+                        if (code == 500) {
+                            Toast.makeText(SplashActivity.this, "연결에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(SplashActivity.this, "로그인 실패. 아이디와 비밀번호를 확인하세요"+code, Toast.LENGTH_SHORT).show();
+                        }
+                        goMain();
+                    }
+                });
+            }
+            // 자동로그인 OFF
+            else {
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        goMain();
+                    }
+                }, 2000);
+            }
+        } else {
+            Toast.makeText(SplashActivity.this, "권한을 허용해 주세요", Toast.LENGTH_SHORT).show();
+            finish();
         }
-        // 자동로그인 OFF
-        else {
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    choiceNextActivity();
-                }
-            }, 2000);
-        }
-*/
     }
 
     public void checkPermissionInRuntime() {
@@ -111,13 +109,7 @@ public class SplashActivity extends AppCompatActivity {
             }
         } else {
             // 권한 허용됨
-            // 임시
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    goMain();
-                }
-            }, 2000);
+            isPermissionChecked = true;
         }
     }
 
@@ -130,14 +122,10 @@ public class SplashActivity extends AppCompatActivity {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the contacts-related task you need to do.
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            goMain();
-                        }
-                    }, 2000);
+                    isPermissionChecked = true;
                 } else {
                     // permission denied, boo! Disable the functionality that depends on this permission.
+                    Toast.makeText(SplashActivity.this, "권한을 허용해 주세요", Toast.LENGTH_SHORT).show();
                     SplashActivity.this.finish();
                 }
                 return;
@@ -145,26 +133,11 @@ public class SplashActivity extends AppCompatActivity {
         // other 'case' lines to check for other permissions this app might request
     }
 
-    private void choiceNextActivity() {
-        if (!isPreviewChecked) {
-            goPreview();
-        } else {
-            goMain();
-        }
-    }
-
-    private void goPreview() {
-/*
-        Intent intent = new Intent(SplashActivity.this, PreviewActivity.class);
-        intent.putExtra(PreviewActivity.START_MODE, PreviewActivity.MODE_FIRST);
-        startActivity(intent);
-        finish();
-*/
-    }
 
     private void goMain() {
         Intent intent = new Intent(SplashActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
     }
+
 }

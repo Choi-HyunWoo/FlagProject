@@ -4,28 +4,16 @@ import android.content.Context;
 
 import com.corcow.hw.flagproject.model.json.Login;
 import com.corcow.hw.flagproject.model.json.LoginResult;
-import com.corcow.hw.flagproject.util.MyApplication;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.BinaryHttpResponseHandler;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
-import com.loopj.android.http.MySSLSocketFactory;
-import com.loopj.android.http.PersistentCookieStore;
-import com.loopj.android.http.ResponseHandlerInterface;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import java.io.File;
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
 
 import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.HttpResponse;
 
 /**
  * Created by multimedia on 2016-04-28.

@@ -233,7 +233,10 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 // LongClick 시 편집 모드 시작 (Drag Start)
-                fileGridView.startEditMode(position);
+                boolean isParentDir = ((FileGridItem)mAdapter.getItem(position)).iconImgResource==R.drawable.icon_file_folder_parent;
+                if (!isParentDir) {
+                    fileGridView.startEditMode(position);
+                }
                 return true;
             }
         });

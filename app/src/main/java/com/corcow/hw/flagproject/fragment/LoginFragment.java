@@ -66,9 +66,9 @@ public class LoginFragment extends Fragment {
                     Toast.makeText(getContext(), "비밀번호를 입력해 주세요.", Toast.LENGTH_SHORT).show();
                 } else {
                     if (autoLoginCheckView.isChecked()) {
-                        PropertyManager.getInstance().setAutoLoginMode(true);
-                        PropertyManager.getInstance().setAutoLoginId(inputId);
-                        PropertyManager.getInstance().setAutoLoginPassword(inputPassword);
+                        PropertyManager.getInstance().setAutoLoginMode(getContext(), true);
+                        PropertyManager.getInstance().setAutoLoginId(getContext(), inputId);
+                        PropertyManager.getInstance().setAutoLoginPassword(getContext(), inputPassword);
                     }
 
                     NetworkManager.getInstance().signIn(getContext(), inputId, inputPassword, new NetworkManager.OnResultListener<LoginResult>() {
