@@ -19,7 +19,7 @@ import android.widget.Toast;
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.activity.MainActivity;
 import com.corcow.hw.flagproject.adapter.FileGridAdpater;
-import com.corcow.hw.flagproject.model.FileItem;
+import com.corcow.hw.flagproject.model.FileGridItem;
 import com.corcow.hw.flagproject.util.Utilities;
 
 import org.askerov.dynamicgrid.DynamicGridView;
@@ -201,7 +201,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                         mFirstTouchedPosition = -1;
 
                         // 작업 수행
-                        String selectedPath = ((FileItem) mAdapter.getItem(position)).absolutePath;
+                        String selectedPath = ((FileGridItem) mAdapter.getItem(position)).absolutePath;
                         File selectedFile = new File(selectedPath);
                         if (selectedFile.isDirectory()) {
                             // 선택된 item이 폴더인 경우
@@ -274,9 +274,9 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                     // Drop position의 아이템이 파일인지 폴더인지 판별.
                     // 폴더라면 해당 폴더로 파일이 이동된다.  /  파일이라면 아무일 안생김.
                     if (draggingPosition != -1 && draggingPosition != originalPosition) {
-                        File droppedFile = new File(((FileItem) mAdapter.getItem(draggingPosition)).absolutePath);
+                        File droppedFile = new File(((FileGridItem) mAdapter.getItem(draggingPosition)).absolutePath);
                         if (droppedFile.isDirectory()) {
-                            Utilities.moveFile(((FileItem) mAdapter.getItem(originalPosition)).absolutePath, droppedFile.getAbsolutePath());
+                            Utilities.moveFile(((FileGridItem) mAdapter.getItem(originalPosition)).absolutePath, droppedFile.getAbsolutePath());
                             mAdapter.delete(originalPosition);          // GridView 에서도 지워준다.
                         }
                     }
@@ -313,15 +313,15 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         // add items to adapter
         mAdapter.clear();
         for (File f : files) {
-            FileItem item = new FileItem(f.getName(), f.getAbsolutePath());
+            FileGridItem item = new FileGridItem(f.getName(), f.getAbsolutePath());
             if (f.isDirectory()) {
                 item.iconImgResource = R.drawable.icon_file_folder_small;
             } else if (item.extension.equalsIgnoreCase("jpg") || item.extension.equalsIgnoreCase("jpeg")
                     || item.extension.equalsIgnoreCase("png") || item.extension.equalsIgnoreCase("bmp")
                     || item.extension.equalsIgnoreCase("gif")) {
-                item.iconImgResource = FileItem.IS_IMAGE_FILE;
+                item.iconImgResource = FileGridItem.IS_IMAGE_FILE;
             } else if (item.extension.equalsIgnoreCase("avi") || item.extension.equalsIgnoreCase("mp4")) {
-                item.iconImgResource = FileItem.IS_VIDEO_FILE;
+                item.iconImgResource = FileGridItem.IS_VIDEO_FILE;
             } else if (item.extension.equalsIgnoreCase("mp3")) {
                 item.iconImgResource = R.drawable.icon_file_mp3_small;
             } else if (item.extension.equalsIgnoreCase("wmv")) {

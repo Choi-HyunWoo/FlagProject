@@ -17,7 +17,7 @@ public class UserManager {
 
 
     public void logoutClear() {
-        PropertyManager.getInstance().setAutoLogin(false);      // 자동 로그인 끄기
+        PropertyManager.getInstance().setAutoLoginMode(false);      // 자동 로그인 끄기
         this.setLoginState(false);
         this.set_id("");
         this.setUserID("");

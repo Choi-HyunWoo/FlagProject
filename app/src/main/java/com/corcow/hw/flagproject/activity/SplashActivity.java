@@ -18,20 +18,23 @@ public class SplashActivity extends AppCompatActivity {
     public static final int MY_PERMISSIONS_REQUEST_READWRITE_STOREAGE = 1;
     Handler mHandler = new Handler(Looper.getMainLooper());
     boolean isPreviewChecked;
+    boolean isPermissionChecked;
+    boolean isAutoLoginMode;
+    boolean isAutoLoginSuccessed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-
         checkPermissionInRuntime();
 
 /*
         // 자동 로그인 상태 확인
-        boolean autoLogin = PropertyManager.getInstance().getAutoLogin();
+        isAutoLoginMode = PropertyManager.getInstance().getAutoLoginMode();
+
         // 자동로그인 ON
-        if (autoLogin) {
+        if (isAutoLoginMode) {
             String id = PropertyManager.getInstance().getAutoLoginId();
             String password = PropertyManager.getInstance().getAutoLoginPassword();
 

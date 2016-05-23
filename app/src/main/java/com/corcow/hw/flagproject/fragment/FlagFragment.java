@@ -2,21 +2,23 @@ package com.corcow.hw.flagproject.fragment;
 
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
-import com.corcow.hw.flagproject.adapter.SendViewAdapter;
 import com.corcow.hw.flagproject.manager.NetworkManager;
 import com.corcow.hw.flagproject.manager.UserManager;
-import com.corcow.hw.flagproject.view.libpackage.PullToRefreshView;
+
+import is.arontibo.library.ElasticDownloadView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,16 +35,16 @@ public class FlagFragment extends Fragment {
      *
      */
 
+    private static final String UPLOAD_MODE_PRIVATE = "private";
+    private static final String UPLOAD_MODE_PUBLIC = "public";
+
     LinearLayout selectContainer;
     ImageView uploadView;
     FileSelectDialog dialog;
     String selectedFileName = "";
     String selectedFilePath = "";
 
-    private static final int REFRESH_DELAY = 1000;
-    PullToRefreshView pullToRefreshView;
-    ListView listView;
-    SendViewAdapter mAdpater;
+    String userID;
 
     public FlagFragment() {
         // Required empty public constructor
@@ -53,17 +55,11 @@ public class FlagFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_flag, container, false);
+        userID = UserManager.getInstance().getUserID();
 
         // View initialize
         selectContainer = (LinearLayout) view.findViewById(R.id.select_container);
         uploadView = (ImageView) view.findViewById(R.id.btn_file_upload);
-        pullToRefreshView = (PullToRefreshView) view.findViewById(R.id.pull_to_refresh);
-        listView = (ListView) view.findViewById(R.id.containerListView);
-        mAdpater = new SendViewAdapter();
-        listView.setAdapter(mAdpater);
-        mAdpater.setSendItem("", "");
-
-        pullToRefreshView.setVisibility(View.GONE);
 
         // 파일 선택 버튼
         uploadView.setOnClickListener(new View.OnClickListener() {
@@ -77,45 +73,76 @@ public class FlagFragment extends Fragment {
                         selectedFileName = name;
                         selectedFilePath = path;
                         Toast.makeText(getContext(), selectedFileName, Toast.LENGTH_SHORT).show();
-                        mAdpater.setSendItem(selectedFileName, selectedFilePath);
-                        selectContainer.setVisibility(View.GONE);
-                        pullToRefreshView.setVisibility(View.VISIBLE);
+                        uploadView.setAlpha(120);
                     }
                 });
                 dialog.show(getActivity().getSupportFragmentManager(), "");
             }
         });
 
+        Button testBtn = (Button)view.findViewById(R.id.button);
+        Button test2Btn = (Button)view.findViewById(R.id.button2);
+        elasticDownloadView = (ElasticDownloadView)view.findViewById(R.id.elastic_download_view);
 
-        pullToRefreshView.setOnRefreshListener(new PullToRefreshView.OnRefreshListener() {
+        testBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onRefresh() {
-                String userID = UserManager.getInstance().getUserID();
-                if (!TextUtils.isEmpty(userID)) {
-                    NetworkManager.getInstance().fileUpload(getContext(), selectedFileName, selectedFilePath, "TESTTTTT", false, userID, new NetworkManager.OnResultListener<String>() {
-                        @Override
-                        public void onSuccess(String result) {
-                            Toast.makeText(getContext(), "SUCCESS", Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onFail(int code) {
-                            Toast.makeText(getContext(), "FAIL" + code, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } else {
-                    Toast.makeText(getContext(), "로그인해주세요", Toast.LENGTH_SHORT).show();
-                }
-                pullToRefreshView.setRefreshing(false);
-
+            public void onClick(View v) {
+                count = 0;
+                elasticDownloadView.startIntro();
+                handler.post(runnable);
             }
         });
-
-
-
+        test2Btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LoadingDialogFragment dlg = new LoadingDialogFragment();
+                dlg.show(getActivity().getSupportFragmentManager(), "");
+            }
+        });
 
         return view;
     }
 
+    ElasticDownloadView elasticDownloadView;
+    int count = 0;
+    Handler handler = new Handler();
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            if (count == 100) {
+                elasticDownloadView.success();
+                handler.removeCallbacks(runnable);
+            } else {
+                count++;
+                Log.d("COUNT", "" + count);
+                elasticDownloadView.setProgress(count);
+                handler.postDelayed(this, 100);
+            }
+        }
+    };
+
+    private void setModeInput() {
+        // 파일 선택 후 정보 입력 모드
+
+    }
+    private void setModeIdle() {
+        // 평소 모드
+
+    }
+
+    private void fileUpload(String selectedFileName, String selectedFilePath, String flagName, String publicMode) {
+        // public/private를 String으로...
+        NetworkManager.getInstance().fileUpload(getContext(), selectedFileName, selectedFilePath, "TESTTTTT", UPLOAD_MODE_PRIVATE, userID, new NetworkManager.OnResultListener<String>() {
+            @Override
+            public void onSuccess(String result) {
+                Toast.makeText(getContext(), "SUCCESS", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFail(int code) {
+                Toast.makeText(getContext(), "FAIL" + code, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
 }

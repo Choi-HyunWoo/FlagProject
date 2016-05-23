@@ -33,11 +33,11 @@ public class PropertyManager {
 
 
     // 자동 로그인 설정
-    public void setAutoLogin(boolean isAutoLogin) {
+    public void setAutoLoginMode(boolean isAutoLogin) {
         mEditor.putBoolean(KEY_AUTO_LOGIN, isAutoLogin);
         mEditor.commit();
     }
-    public boolean getAutoLogin() {
+    public boolean getAutoLoginMode() {
         return mPrefs.getBoolean(KEY_AUTO_LOGIN, false);
     }
     public void setAutoLoginId(String id) {

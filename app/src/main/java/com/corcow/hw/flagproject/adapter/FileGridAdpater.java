@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.corcow.hw.flagproject.R;
-import com.corcow.hw.flagproject.model.FileItem;
+import com.corcow.hw.flagproject.model.FileGridItem;
 import com.corcow.hw.flagproject.util.Utilities;
 
 import org.askerov.dynamicgrid.BaseDynamicGridAdapter;
@@ -24,7 +24,7 @@ import java.io.File;
  */
 public class FileGridAdpater extends BaseDynamicGridAdapter {
 
-//    ArrayList<FileItem> items = new ArrayList<FileItem>();
+//    ArrayList<FileGridItem> items = new ArrayList<FileGridItem>();
 //
 //    int mSelectedPosition = -1;
 
@@ -50,10 +50,10 @@ public class FileGridAdpater extends BaseDynamicGridAdapter {
 
     public void setSelectedState(boolean selectedState, int preSelectedPos, int selectedPos) {
         if (preSelectedPos != -1) {
-            ((FileItem) super.getItem(preSelectedPos)).setSelectedState(false);
-            ((FileItem) super.getItem(selectedPos)).setSelectedState(selectedState);
+            ((FileGridItem) super.getItem(preSelectedPos)).setSelectedState(false);
+            ((FileGridItem) super.getItem(selectedPos)).setSelectedState(selectedState);
         } else {
-            ((FileItem) super.getItem(selectedPos)).setSelectedState(selectedState);
+            ((FileGridItem) super.getItem(selectedPos)).setSelectedState(selectedState);
         }
         notifyDataSetChanged();
     }
@@ -73,9 +73,9 @@ public class FileGridAdpater extends BaseDynamicGridAdapter {
         } else {
             holder = (ItemViewHolder)convertView.getTag();
         }
-        holder.build((FileItem) getItem(position));
+        holder.build((FileGridItem) getItem(position));
 
-        if (((FileItem)super.getItem(position)).isSelected){
+        if (((FileGridItem)super.getItem(position)).isSelected){
             convertView.setBackgroundColor(getContext().getResources().getColor(R.color.colorAccent_transparent));
         } else {
             convertView.setBackgroundColor(getContext().getResources().getColor(android.R.color.transparent));
@@ -92,14 +92,14 @@ public class FileGridAdpater extends BaseDynamicGridAdapter {
             fileNameView = (TextView) view.findViewById(R.id.text_file_name);
             fileIconView = (ImageView) view.findViewById(R.id.image_file_icon);
         }
-        public void build(FileItem item) {
-            if (item.iconImgResource == FileItem.IS_IMAGE_FILE) {
+        public void build(FileGridItem item) {
+            if (item.iconImgResource == FileGridItem.IS_IMAGE_FILE) {
                 File imgFile = new File(Utilities.getThumnailPath(getContext(), item.absolutePath));
                 if(imgFile.exists()){
                     Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
                     fileIconView.setImageBitmap(myBitmap);
                 }
-            } else if (item.iconImgResource == FileItem.IS_VIDEO_FILE) {
+            } else if (item.iconImgResource == FileGridItem.IS_VIDEO_FILE) {
                 Bitmap bmThumbnail = ThumbnailUtils.createVideoThumbnail(item.absolutePath, MediaStore.Video.Thumbnails.MICRO_KIND);
                 fileIconView.setImageBitmap(bmThumbnail);
             } else {

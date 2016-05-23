@@ -5,7 +5,7 @@ import com.corcow.hw.flagproject.util.Utilities;
 /**
  * Created by multimedia on 2016-04-29.
  */
-public class FileItem {
+public class FileGridItem {
 
     public static final int IS_IMAGE_FILE = -1111;
     public static final int IS_VIDEO_FILE = -2222;
@@ -16,11 +16,11 @@ public class FileItem {
     public String fileName;
     public String absolutePath;
 
-    public FileItem () {
+    public FileGridItem() {
 
     }
 
-    public FileItem (String fileName, String absolutePath) {
+    public FileGridItem(String fileName, String absolutePath) {
         extension = Utilities.getExtension(fileName);
         this.fileName = fileName;
         this.absolutePath = absolutePath;

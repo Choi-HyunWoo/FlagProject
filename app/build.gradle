@@ -28,4 +28,6 @@ dependencies {
     compile 'com.android.support:design:23.3.0'
     compile project(':dynamicgrid')
     compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.github.tibolte:elasticdownload:1.0.+'
+
 }

@@ -133,8 +133,9 @@ public class Utilities {
                 for (File childFile : originFiles) {                        // 순회
                     // 회심의 recursive !!
                     moveFile(childFile.getAbsolutePath(), newPath + "/" + originFile.getName());
-                    originFile.delete();                            // 기존 폴더 삭제
+                    childFile.delete();
                 }
+                originFile.delete();                            // 기존 폴더 삭제
             } else {
                 // 옮기려는 파일이 단일 파일인 경우
                 File newFile = new File (newPath);          // 생성할 파일

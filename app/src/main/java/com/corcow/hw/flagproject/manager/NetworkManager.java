@@ -7,8 +7,11 @@ import com.corcow.hw.flagproject.model.json.LoginResult;
 import com.corcow.hw.flagproject.util.MyApplication;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.BinaryHttpResponseHandler;
+import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.MySSLSocketFactory;
 import com.loopj.android.http.PersistentCookieStore;
+import com.loopj.android.http.ResponseHandlerInterface;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -22,6 +25,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.HttpResponse;
 
 /**
  * Created by multimedia on 2016-04-28.
@@ -70,6 +74,11 @@ public class NetworkManager {
 
     public interface OnResultListener<T> {
         public void onSuccess(T result);
+        public void onFail(int code);
+    }
+    public interface OnFileResultListener<T> {
+        public void onSuccess(T result);
+        public void onProgress(long bytesWritten, long totalSize);
         public void onFail(int code);
     }
 
@@ -159,10 +168,10 @@ public class NetworkManager {
         });
     }
 
-    public void fileUpload(Context context, String fileName, String absolutePath, String flagName, boolean filePrivate, String userID, final OnResultListener<String> listener) {
+    public void fileUpload(Context context, String fileName, String absolutePath, String flagName, String filePrivate, String userID, final OnResultListener<String> listener) {
         RequestParams params = new RequestParams();
         params.put(REQ_TYPE, TYPE_APP);
-//        params.put("fileName", fileName);
+        params.put("fileName", fileName);
         params.put("flagName", flagName);
         File file = new File(absolutePath);
         try {
@@ -186,75 +195,57 @@ public class NetworkManager {
         });
     }
 
-    public void fileDownload(Context context, String userID, String flagName, final OnResultListener<String> listener) {
+    // Handler 변경
+    public void fileDownload_BINARY(Context context, String userID, String flagName, final OnFileResultListener<byte[]> listener) {
+        RequestParams params = new RequestParams();
+        params.put(REQ_TYPE, TYPE_APP);
+        params.put("userID", userID);
+        params.put("flagName", flagName);
+        client.get(context, SERVER + "/" + userID + "/" + flagName, params, new BinaryHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] binaryData) {
+                listener.onSuccess(binaryData);
+            }
+
+            @Override
+            public void onProgress(long bytesWritten, long totalSize) {
+//                super.onProgress(bytesWritten, totalSize);
+                listener.onProgress(bytesWritten, totalSize);
+            }
+
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] binaryData, Throwable error) {
+                listener.onFail(statusCode);
+            }
+        });
+    }
+
+
+    // Handler 변경
+    public void fileDownload_FILE(Context context, String userID, String flagName, final OnFileResultListener<File> listener) {
         RequestParams params = new RequestParams();
         params.put(REQ_TYPE, TYPE_APP);
         params.put("userID", userID);
         params.put("flagName", flagName);
 
-        client.post(context, SERVER + "/" + userID + "/" + flagName, params, new TextHttpResponseHandler() {
+        client.get(context, SERVER + "/" + userID + "/" + flagName, params, new FileAsyncHttpResponseHandler(context) {
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, File responseFile) {
                 listener.onFail(statusCode);
             }
 
             @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                listener.onSuccess(responseString);
+            public void onProgress(long bytesWritten, long totalSize) {
+                listener.onProgress(bytesWritten, totalSize);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, File responseFile) {
+                listener.onSuccess(file);
             }
         });
+
     }
 
-    public void fileDownloadTEST(Context context, final OnResultListener<String> listener) {
-
-        client.get(context, SERVER + "/" + "test" + "/" + "testjpg", new TextHttpResponseHandler() {
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                listener.onFail(statusCode);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                listener.onSuccess(responseString);
-            }
-        });
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    public void fileDelete(Context context, String )
-
-
-
-    public void test365(Context context, String email, String password, String nickname, final OnResultListener<String> listener ) {
-        RequestParams params = new RequestParams();
-        params.put("email", email);
-        params.put("password", password);
-        params.put("nick", nickname);
-
-        client.post(context, "http://52.68.247.34:3000/users", params, new TextHttpResponseHandler() {
-            @Override
-            public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString, Throwable throwable) {
-                listener.onFail(statusCode);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-                listener.onSuccess(responseString);
-            }
-        });
-    }
 }

@@ -66,7 +66,7 @@ public class LoginFragment extends Fragment {
                     Toast.makeText(getContext(), "비밀번호를 입력해 주세요.", Toast.LENGTH_SHORT).show();
                 } else {
                     if (autoLoginCheckView.isChecked()) {
-                        PropertyManager.getInstance().setAutoLogin(true);
+                        PropertyManager.getInstance().setAutoLoginMode(true);
                         PropertyManager.getInstance().setAutoLoginId(inputId);
                         PropertyManager.getInstance().setAutoLoginPassword(inputPassword);
                     }
@@ -85,7 +85,11 @@ public class LoginFragment extends Fragment {
 
                         @Override
                         public void onFail(int code) {
-                            Toast.makeText(getActivity(), "로그인 실패. 아이디와 비밀번호를 확인하세요", Toast.LENGTH_SHORT).show();
+                            if (code == 500) {
+                                Toast.makeText(getContext(), "연결에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getActivity(), "로그인 실패. 아이디와 비밀번호를 확인하세요", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
                 }
