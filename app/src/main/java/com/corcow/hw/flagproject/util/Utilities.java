@@ -122,8 +122,8 @@ public class Utilities {
      * @param destPath : 목적지 파일/폴더 경로 (Absolute Path)
      */
     public static void moveFile(String originPath, String destPath) {
-        InputStream in = null;
-        OutputStream out = null;
+        InputStream fin = null;
+        OutputStream fout = null;
         try {
             //create output directory if it doesn't exist
             File originFile = new File(originPath);
@@ -153,24 +153,30 @@ public class Utilities {
                 Log.d("FILE", "파일");
                 if (!destFile.exists())                      // 디렉토리가없다면
                     destFile.mkdirs();                       // 디렉토리 만들기
-                in = new FileInputStream(originPath);
-                out = new FileOutputStream(destPath + "/" + originFile.getName());
+                File newFile = new File(destPath+ "/" +originFile.getName());
+                if (!originFile.renameTo(newFile)) {
 
-                byte[] buffer = new byte[1024];
-                int read;
-                while ((read = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, read);
+                    byte[] buffer = new byte[1024];
+                    fin = new FileInputStream(originPath);
+                    fout = new FileOutputStream(destPath + "/" + originFile.getName());
+
+                    int read;
+                    while ((read = fin.read(buffer)) != -1) {
+                        fout.write(buffer, 0, read);
+                    }
+
+                    fin.close();
+                    fin = null;
+
+                    // write the output file
+                    fout.flush();
+                    fout.close();
+                    fout = null;
+
+                    // 기존 위치의 파일 삭제
+                    originFile.delete();
+
                 }
-                in.close();
-                in = null;
-
-                // write the output file
-                out.flush();
-                out.close();
-                out = null;
-
-                // 기존 위치의 파일 삭제
-                originFile.delete();
             }
         }
 

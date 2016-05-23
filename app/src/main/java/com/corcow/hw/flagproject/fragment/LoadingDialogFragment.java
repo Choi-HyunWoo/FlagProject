@@ -2,6 +2,7 @@ package com.corcow.hw.flagproject.fragment;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -82,11 +83,12 @@ public class LoadingDialogFragment extends DialogFragment {
             public void onSuccess(File result) {
                 // File
                 Log.d("SUCCESS", result.getAbsolutePath());
+                result.renameTo(new File(rootPath+"/FLAGFILE.mp3"));
             }
 
             @Override
             public void onProgress(long bytesWritten, long totalSize) {
-                Log.d("PROGRESS", "bytesWritten" + bytesWritten + ", totalSize" + totalSize + " : " + (bytesWritten / totalSize)*100 + "%");
+                Log.d("PROGRESS", String.format("Progress %d from %d (%2.0f%%)", bytesWritten, totalSize, (totalSize > 0) ? (bytesWritten * 1.0 / totalSize) * 100 : -1));
             }
 
             @Override
@@ -97,5 +99,6 @@ public class LoadingDialogFragment extends DialogFragment {
 
         return view;
     }
+    String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
 }
 
