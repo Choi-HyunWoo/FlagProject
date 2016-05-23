@@ -323,6 +323,13 @@ public class FileSelectDialog extends DialogFragment {
         File currentDir = new File(currentPath);
         File[] files = currentDir.listFiles();       // 현재 경로의 File 리스트를 받아옴
 
+        mAdapter.clear();
+        if (!currentPath.equals(rootPath)) {
+            FileGridItem parentItem = new FileGridItem("이전 폴더로", currentDir.getParent());
+            parentItem.iconImgResource = R.drawable.icon_file_folder_parent;
+            mAdapter.add(parentItem);
+        }
+
         // add items to adapter
         mAdapter.clear();
         for (File f : files) {

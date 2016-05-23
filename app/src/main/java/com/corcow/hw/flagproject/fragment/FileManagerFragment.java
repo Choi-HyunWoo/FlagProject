@@ -92,7 +92,6 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
      *   - Delete
      *   - Modify..rename?
      *   - File Upload !!     << 제일중요!
-     * 2. 부모 폴더로의 파일 이동    <<<< ***** 중요!!!
      *
      *  <ISSUE>
      *  1. 파일 이동 시 ISSUE...
