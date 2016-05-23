@@ -85,31 +85,18 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         }
     };
 
-    /** TODO .160508
-     * 0. Adapter에 여러 종류의 파일들을 multi-type item들로 관리할 수 있도록 변경
-     *   폴더 / 이미지(thumbnail) / 문서(종류별로 아이콘..?) 등등 파일 구분 방법 찾기.
+    /** TODO .160524
      *
-     * 2. 로그인 및 회원가입 구현 , Auto login...
-     *
-     * 3. 파일 전송 및 내려받기 <<< 핵심
-     *
-     *  <추가>
-     *  1) 파일 단일 클릭 시 파일 선택.. (선택 시 Background 변경...)
-     *  2) 선택 상태에서 할 일 구현
-     *    - Copy & Paste
-     *    - Delete
-     *    - Modify..rename?
-     *    - File Upload !!     << 제일중요!
-     *  3) 부모 폴더로의 파일 이동은?    <<<< ***** 중요!!!
+     * 1. 선택 상태에서 할 일 구현 (툴바)
+     *   - Copy & Paste
+     *   - Delete
+     *   - Modify..rename?
+     *   - File Upload !!     << 제일중요!
+     * 2. 부모 폴더로의 파일 이동    <<<< ***** 중요!!!
      *
      *  <ISSUE>
      *  1. 파일 이동 시 ISSUE...
      *     mMobileView의 position 인식 X..
-     *     스크롤링 시 App 비정상 종료
-     *  2. Permission 설정 시 ISSUE
-     *     맨 처음 앱 구동시 권한 체크 전에 작업이 수행되어 앱이 꺼짐
-     *     그 뒤 권한 체크를 하고 ALLOW 할 시, 앱이 정상실행..
-     *     권한 체크를 어디서 할지 << ?
      * */
 
 
@@ -311,8 +298,14 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         File currentDir = new File(currentPath);
         File[] files = currentDir.listFiles();       // 현재 경로의 File 리스트를 받아옴
 
-        // add items to adapter
         mAdapter.clear();
+        if (!currentPath.equals(rootPath)) {
+            FileGridItem parentItem = new FileGridItem("이전 폴더로", currentDir.getParent());
+            parentItem.iconImgResource = R.drawable.icon_file_folder_parent;
+            mAdapter.add(parentItem);
+        }
+
+        // add items to adapter
         for (File f : files) {
             FileGridItem item = new FileGridItem(f.getName(), f.getAbsolutePath());
             if (f.isDirectory()) {

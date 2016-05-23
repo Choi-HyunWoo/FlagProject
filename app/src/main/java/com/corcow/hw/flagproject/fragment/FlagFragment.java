@@ -25,14 +25,9 @@ import is.arontibo.library.ElasticDownloadView;
  */
 public class FlagFragment extends Fragment {
 
-    /** TODO : 160511
-     *
-     *  툴바추가
+    /** TODO : 160524
      *  다운로드
      *  업로드 UI (Relative)
-     *
-     *
-     *
      */
 
     private static final String UPLOAD_MODE_PRIVATE = "private";
