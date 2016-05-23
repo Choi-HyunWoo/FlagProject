@@ -119,30 +119,42 @@ public class Utilities {
 
     /** moveFile()  ... 파일 이동
      * @param originPath : 이동 전 파일/폴더 경로 (Absolute Path)
-     * @param newPath : 이동 후 파일/폴더 경로 (Absolute Path)
+     * @param destPath : 목적지 파일/폴더 경로 (Absolute Path)
      */
-    public static void moveFile(String originPath, String newPath) {
+    public static void moveFile(String originPath, String destPath) {
         InputStream in = null;
         OutputStream out = null;
         try {
             //create output directory if it doesn't exist
             File originFile = new File(originPath);
-            if (originFile.isDirectory()) {
-                // 옮기려는 파일이 폴더인 경우
-                File[] originFiles = originFile.listFiles();        // 폴더 내의 파일들
-                for (File childFile : originFiles) {                        // 순회
+            File destFile = new File(destPath);
+
+            if (originFile.isDirectory() && originFile.listFiles().length != 0) {
+                // 옮기려는 파일이 파일을 포함한 폴더인 경우
+                Log.d("FOLDER_FULL", "파일포함폴더");
+                File[] originChildFiles = originFile.listFiles();        // 폴더 내의 파일들
+                for (File childFile : originChildFiles) {                        // 순회
                     // 회심의 recursive !!
-                    moveFile(childFile.getAbsolutePath(), newPath + "/" + originFile.getName());
+                    moveFile(childFile.getAbsolutePath() , destPath + "/" + originFile.getName());
                     childFile.delete();
                 }
                 originFile.delete();                            // 기존 폴더 삭제
-            } else {
+            }
+            else if (originFile.isDirectory() && originFile.listFiles().length == 0) {
+                // 빈 폴더인경우
+                Log.d("FOLDER_EMPTY", "빈폴더");
+                File newFile = new File(destPath +"/"+ originFile.getName());
+                if(!newFile.exists())
+                    newFile.mkdir();
+                originFile.delete();
+            }
+            else {
                 // 옮기려는 파일이 단일 파일인 경우
-                File newFile = new File (newPath);          // 생성할 파일
-                if (!newFile.exists())                      // 디렉토리가없다면
-                    newFile.mkdirs();                       // 디렉토리 만들기
+                Log.d("FILE", "파일");
+                if (!destFile.exists())                      // 디렉토리가없다면
+                    destFile.mkdirs();                       // 디렉토리 만들기
                 in = new FileInputStream(originPath);
-                out = new FileOutputStream(newPath + "/" + originFile.getName());
+                out = new FileOutputStream(destPath + "/" + originFile.getName());
 
                 byte[] buffer = new byte[1024];
                 int read;
@@ -158,12 +170,14 @@ public class Utilities {
                 out = null;
 
                 // 기존 위치의 파일 삭제
-                new File(originPath).delete();
+                originFile.delete();
             }
         }
+
         catch (FileNotFoundException fnfe1) {
             Log.e("tag", fnfe1.getMessage());
         }
+
         catch (Exception e) {
             Log.e("tag", e.getMessage());
         }

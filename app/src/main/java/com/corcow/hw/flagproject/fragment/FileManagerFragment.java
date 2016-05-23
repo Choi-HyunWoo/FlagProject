@@ -256,6 +256,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
             public void onDragStarted(int position) {
                 // Drag 시작 위치 저장
                 originalPosition = position;
+                isScrolled = false;
             }
 
             @Override
