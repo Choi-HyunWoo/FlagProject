@@ -6,10 +6,10 @@
     tools:context="com.corcow.hw.flagproject.fragment.FlagFragment">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
         android:id="@+id/select_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:gravity="center"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true">
@@ -28,13 +28,48 @@
             android:layout_marginTop="10dp"
             android:text="FLAG Cloud에 파일을 업로드하세요!" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Dialog TEST"
-            android:id="@+id/button2"
-            android:layout_gravity="center_horizontal" />
-
     </LinearLayout>
+<!--
+    <ImageView
+        android:id="@+id/selectedFileImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/icon_file_mp3_small"
+        android:layout_above="@+id/select_container"
+        android:layout_centerHorizontal="true" />
 
+    <LinearLayout
+        android:id="@+id/input_container"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/colorPrimary"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:layout_alignBottom="@+id/select_container"
+        android:layout_centerHorizontal="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <com.corcow.hw.flagproject.view.libpackage.MaterialTextField
+                android:layout_width="200dp"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content" />
+            </com.corcow.hw.flagproject.view.libpackage.MaterialTextField>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="X"
+                android:id="@+id/btn_x"
+                android:layout_gravity="right" />
+        </LinearLayout>
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+-->
 </RelativeLayout>

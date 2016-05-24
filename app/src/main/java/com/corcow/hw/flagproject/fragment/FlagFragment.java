@@ -67,6 +67,9 @@ public class FlagFragment extends Fragment {
         selectContainer = (LinearLayout) view.findViewById(R.id.select_container);
         uploadView = (ImageView) view.findViewById(R.id.btn_file_upload);
 
+        /** 파일 업로드
+         * 파일 선택  >>  FLAG/공개여부 입력  >>  파일 업로드
+         */
         // 파일 선택 버튼
         uploadView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,14 +82,16 @@ public class FlagFragment extends Fragment {
                         selectedFileName = name;
                         selectedFilePath = path;
                         Toast.makeText(getContext(), selectedFileName, Toast.LENGTH_SHORT).show();
-                        uploadView.setAlpha(120);
+                        uploadView.setAlpha(0.2f);
                     }
                 });
                 dialog.show(getActivity().getSupportFragmentManager(),"");
             }
         });
 
-        // 파일 다운로드
+        /** 파일 다운로드
+         * ID/FLAG 입력  >>  버튼 클릭  >>  파일 다운로드
+         */
         downloadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,20 +118,16 @@ public class FlagFragment extends Fragment {
             }
         });
 
-        Button test2Btn = (Button)view.findViewById(R.id.button2);
-
-        test2Btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LoadingDialogFragment dlg = new LoadingDialogFragment();
-                dlg.show(getActivity().getSupportFragmentManager(), "");
-            }
-        });
-
         return view;
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        selectedFileName = "";
+        selectedFilePath = "";
+        uploadView.setAlpha(1.0f);
+    }
 
     private void setModeInput() {
         // 파일 선택 후 정보 입력 모드

@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
@@ -30,6 +31,8 @@ public class LoadingDialogFragment extends DialogFragment {
     }
 
     ElasticDownloadView elasticDownloadView;
+    TextView textNoticeView;
+
     String userID;
     String flagName;
     String fileName;
@@ -60,8 +63,8 @@ public class LoadingDialogFragment extends DialogFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Dialog dlg = getDialog();
-        int width = getResources().getDimensionPixelSize(R.dimen.fileselect_dlalog_width);
-        int height = getResources().getDimensionPixelSize(R.dimen.fileselect_dlalog_height);
+        int width = getResources().getDimensionPixelSize(R.dimen.download_dlalog_width);
+        int height = getResources().getDimensionPixelSize(R.dimen.download_dlalog_height);
         getDialog().getWindow().setLayout(width, height);
         dlg.getWindow().setLayout(width, height);
         WindowManager.LayoutParams params = dlg.getWindow().getAttributes();
@@ -83,31 +86,41 @@ public class LoadingDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_loading_dialog, container, false);
 
         elasticDownloadView = (ElasticDownloadView) view.findViewById(R.id.elastic_download_view);
+        textNoticeView = (TextView)view.findViewById(R.id.text_download_notice);
 
         handler.post(downloadRunnable);
-        handler.post(progressRunnable);
+        handler.postDelayed(startProgressRunnable, 1000);
 
         return view;
     }
 
 
     Handler handler = new Handler();
+    Runnable startProgressRunnable = new Runnable() {
+        @Override
+        public void run() {
+            elasticDownloadView.startIntro();
+            handler.postDelayed(progressRunnable, 600);
+        }
+    };
     Runnable progressRunnable = new Runnable() {
         @Override
         public void run() {
-            if (progress >= 100) {
-                elasticDownloadView.success();
-                handler.removeCallbacks(progressRunnable);
-            } else {
+            if (progress < 100) {
                 elasticDownloadView.setProgress(progress);
                 handler.post(this);
+            } else {
+                elasticDownloadView.success();
+                elasticDownloadView.onEnterAnimationFinished();
+                textNoticeView.setText("다운로드 완료!");
+                handler.removeCallbacks(startProgressRunnable);
+                handler.removeCallbacks(progressRunnable);
             }
         }
     };
     Runnable downloadRunnable = new Runnable() {
         @Override
         public void run() {
-            elasticDownloadView.startIntro();
             NetworkManager.getInstance().fileDownload(getContext(), userID, flagName, new NetworkManager.OnFileResultListener<File>() {
                 @Override
                 public void onSuccess(File result) {

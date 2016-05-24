@@ -11,6 +11,9 @@
     <dimen name="fileselect_dlalog_width">360dp</dimen>
     <dimen name="fileselect_dlalog_height">500dp</dimen>
 
+    <dimen name="download_dlalog_width">360dp</dimen>
+    <dimen name="download_dlalog_height">360dp</dimen>
+
 
     <!-- MaterialTextField -->
     <dimen name="mtf_cardHeight_initial">4dp</dimen>
