@@ -2,25 +2,26 @@ package com.corcow.hw.flagproject.fragment;
 
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
-import com.corcow.hw.flagproject.activity.MainActivity;
 import com.corcow.hw.flagproject.manager.NetworkManager;
 import com.corcow.hw.flagproject.manager.UserManager;
+import com.corcow.hw.flagproject.model.json.FileInfo;
 
-import is.arontibo.library.ElasticDownloadView;
+import java.io.File;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,6 +42,9 @@ public class FlagFragment extends Fragment {
     String selectedFileName = "";
     String selectedFilePath = "";
 
+    EditText downloadInputView;
+    Button downloadBtn;
+
     String userID;
 
     public FlagFragment() {
@@ -51,15 +55,13 @@ public class FlagFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         View view = inflater.inflate(R.layout.fragment_flag, container, false);
         userID = UserManager.getInstance().getUserID();
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-/*
-        LinearLayout toolbarContainer = (LinearLayout) getActivity().findViewById(R.id.toolbar_container);
-        toolbarContainer.setVisibility(View.VISIBLE);
-        ((MainActivity)getActivity()).setSupportActionBar(toolbar);
-        toolbar.setTitle("");
-*/
+
+        downloadInputView = (EditText) getActivity().findViewById(R.id.toolbar_download_editText);
+        downloadBtn = (Button) getActivity().findViewById(R.id.toolbar_download_btn);
 
         // View initialize
         selectContainer = (LinearLayout) view.findViewById(R.id.select_container);
@@ -84,18 +86,35 @@ public class FlagFragment extends Fragment {
             }
         });
 
-        Button testBtn = (Button)view.findViewById(R.id.button);
-        Button test2Btn = (Button)view.findViewById(R.id.button2);
-        elasticDownloadView = (ElasticDownloadView)view.findViewById(R.id.elastic_download_view);
 
-        testBtn.setOnClickListener(new View.OnClickListener() {
+        downloadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                count = 0;
-                elasticDownloadView.startIntro();
-                handler.post(runnable);
+                String input = downloadInputView.getText().toString();
+                if (!TextUtils.isEmpty(input)) {
+                    String userID = input.split("[/]")[0];
+                    String flagName = input.split("[/]")[1];
+                    NetworkManager.getInstance().fileInfo(getContext(), userID, flagName, new NetworkManager.OnResultListener<FileInfo>() {
+                        @Override
+                        public void onSuccess(FileInfo result) {
+                            Toast.makeText(getContext(), "fileName"+result.fileName+",   fileSize"+result.fileSize, Toast.LENGTH_SHORT).show();
+//                            LoadingDialogFragment dlg = new LoadingDialogFragment();
+//                            dlg.show(getActivity().getSupportFragmentManager(), "");
+                        }
+
+                        @Override
+                        public void onFail(int code) {
+                            Toast.makeText(getContext(), "없는 사용자이거나 FLAG명이 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Toast.makeText(getContext(), "/ID/FLAG 를 입력하세요", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
+        Button test2Btn = (Button)view.findViewById(R.id.button2);
+
         test2Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,10 +123,21 @@ public class FlagFragment extends Fragment {
             }
         });
 
+/**
+        testBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                count = 0;
+                elasticDownloadView.startIntro();
+                handler.post(runnable);
+            }
+        });
+ */
+
         return view;
     }
 
-    ElasticDownloadView elasticDownloadView;
+    /**
     int count = 0;
     Handler handler = new Handler();
     Runnable runnable = new Runnable() {
@@ -124,6 +154,9 @@ public class FlagFragment extends Fragment {
             }
         }
     };
+    */
+
+
 
     private void setModeInput() {
         // 파일 선택 후 정보 입력 모드
@@ -136,10 +169,15 @@ public class FlagFragment extends Fragment {
 
     private void fileUpload(String selectedFileName, String selectedFilePath, String flagName, String publicMode) {
         // public/private를 String으로...
-        NetworkManager.getInstance().fileUpload(getContext(), selectedFileName, selectedFilePath, "TESTTTTT", UPLOAD_MODE_PRIVATE, userID, new NetworkManager.OnResultListener<String>() {
+        NetworkManager.getInstance().fileUpload(getContext(), selectedFileName, selectedFilePath, "TESTTTTT", UPLOAD_MODE_PRIVATE, userID, new NetworkManager.OnFileResultListener<String>() {
             @Override
             public void onSuccess(String result) {
                 Toast.makeText(getContext(), "SUCCESS", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onProgress(long bytesWritten, long totalSize) {
+                //
             }
 
             @Override

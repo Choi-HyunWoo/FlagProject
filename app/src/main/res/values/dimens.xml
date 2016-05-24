@@ -6,6 +6,14 @@
     <dimen name="fab_marginRight">16dp</dimen>
     <dimen name="fab_marginBottom">64dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+
+    <!-- Dialog width/height -->
     <dimen name="fileselect_dlalog_width">360dp</dimen>
     <dimen name="fileselect_dlalog_height">500dp</dimen>
+
+
+    <!-- MaterialTextField -->
+    <dimen name="mtf_cardHeight_initial">4dp</dimen>
+    <dimen name="mtf_cardHeight_final">55dp</dimen>
+    <dimen name="mtf_corner_radius">4dp</dimen>
 </resources>

@@ -2,6 +2,7 @@ package com.corcow.hw.flagproject.manager;
 
 import android.content.Context;
 
+import com.corcow.hw.flagproject.model.json.FileInfo;
 import com.corcow.hw.flagproject.model.json.Login;
 import com.corcow.hw.flagproject.model.json.LoginResult;
 import com.google.gson.Gson;
@@ -156,7 +157,7 @@ public class NetworkManager {
         });
     }
 
-    public void fileUpload(Context context, String fileName, String absolutePath, String flagName, String filePrivate, String userID, final OnResultListener<String> listener) {
+    public void fileUpload(Context context, String fileName, String absolutePath, String flagName, String filePrivate, String userID, final OnFileResultListener<String> listener) {
         RequestParams params = new RequestParams();
         params.put(REQ_TYPE, TYPE_APP);
         params.put("fileName", fileName);
@@ -177,41 +178,42 @@ public class NetworkManager {
             }
 
             @Override
+            public void onProgress(long bytesWritten, long totalSize) {
+                listener.onProgress(bytesWritten, totalSize);
+            }
+
+            @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 listener.onSuccess(responseString);
             }
         });
     }
 
-    // Handler 변경
-    public void fileDownload_BINARY(Context context, String userID, String flagName, final OnFileResultListener<byte[]> listener) {
+
+    // 파일 정보 받아오기
+    public void fileInfo(Context context, String userID, String flagName, final OnResultListener<FileInfo> listener) {
         RequestParams params = new RequestParams();
         params.put(REQ_TYPE, TYPE_APP);
         params.put("userID", userID);
         params.put("flagName", flagName);
-        client.get(context, SERVER + "/" + userID + "/" + flagName, params, new BinaryHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] binaryData) {
-                listener.onSuccess(binaryData);
-            }
 
+        client.get(context, SERVER + "/fileInfo", params, new TextHttpResponseHandler() {
             @Override
-            public void onProgress(long bytesWritten, long totalSize) {
-//                super.onProgress(bytesWritten, totalSize);
-                listener.onProgress(bytesWritten, totalSize);
-            }
-
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] binaryData, Throwable error) {
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 listener.onFail(statusCode);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                FileInfo result = gson.fromJson(responseString, FileInfo.class);
+                listener.onSuccess(result);
             }
         });
     }
 
 
     // Handler 변경
-    public void fileDownload_FILE(Context context, String userID, String flagName, final OnFileResultListener<File> listener) {
+    public void fileDownload(Context context, String userID, String flagName, final OnFileResultListener<File> listener) {
         RequestParams params = new RequestParams();
         params.put(REQ_TYPE, TYPE_APP);
         params.put("userID", userID);

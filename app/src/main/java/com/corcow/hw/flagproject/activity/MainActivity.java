@@ -9,7 +9,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
@@ -20,6 +22,7 @@ import com.corcow.hw.flagproject.fragment.FlagFragment;
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.fragment.SettingsFragment;
 import com.corcow.hw.flagproject.adapter.TabsAdapter;
+import com.corcow.hw.flagproject.view.libpackage.MaterialTextField;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -37,7 +40,9 @@ public class MainActivity extends AppCompatActivity {
     // Toolbar
     ImageView toolbarLogo;
     TextView toolbarTitle;
+    EditText flagInputField;
     LinearLayout toolbarFlagContainer;
+    LinearLayout toolbarNonFlagContainer;
 
     // FAB
     FloatingActionButton fab;
@@ -63,10 +68,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Toolbar setting
         toolbarLogo = (ImageView)findViewById(R.id.toolbar_logo);
-        // 최초 Tab 설정 기능 구현 시 바꿀것!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        toolbarLogo.setImageResource(R.drawable.icon_tap_flag);
+
+        toolbarFlagContainer = (LinearLayout)findViewById(R.id.toolbar_container_flag);
+
+        flagInputField = (EditText)findViewById(R.id.toolbar_download_editText);
+        toolbarLogo.setImageResource(R.drawable.icon_cloud);
         toolbarTitle = (TextView)findViewById(R.id.toolbar_title);
-        toolbarFlagContainer = (LinearLayout)findViewById(R.id.toolbar_flag_container);
+
 
 
         // fab button
@@ -86,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         pager = (ViewPager)findViewById(R.id.pager);
         mAdapter = new TabsAdapter(this, getSupportFragmentManager(), tabHost, pager);
 
-        mAdapter.addTab(tabHost.newTabSpec(TAB_ID_FLAG).setIndicator("",getResources().getDrawable(R.drawable.icon_tap_flag)), FlagFragment.class, null);
+        mAdapter.addTab(tabHost.newTabSpec(TAB_ID_FLAG).setIndicator("",getResources().getDrawable(R.drawable.icon_cloud)), FlagFragment.class, null);
         mAdapter.addTab(tabHost.newTabSpec(TAB_ID_FILEMNG).setIndicator("",getResources().getDrawable(R.drawable.icon_tap_fm)), FileManagerFragment.class, null);
         mAdapter.addTab(tabHost.newTabSpec(TAB_ID_SETTINGS).setIndicator("", getResources().getDrawable(R.drawable.icon_tap_options)), SettingsFragment.class, null);
         setTabColor(tabHost);
@@ -96,17 +104,19 @@ public class MainActivity extends AppCompatActivity {
             public void onTabChanged(String tabId) {
                 setTabColor(tabHost);
                 if (tabId.equals(TAB_ID_FLAG)) {
-                    toolbarLogo.setImageResource(R.drawable.icon_tap_flag);
-                    toolbarTitle.setText("http://flag.to/");
+                    toolbarLogo.setImageResource(R.drawable.icon_cloud);
                     toolbarFlagContainer.setVisibility(View.VISIBLE);
+                    toolbarTitle.setVisibility(View.GONE);
                 } else if (tabId.equals(TAB_ID_FILEMNG)) {
                     toolbarLogo.setImageResource(R.drawable.icon_toolbar_logo_sdcard);
                     toolbarTitle.setText("내 파일");
                     toolbarFlagContainer.setVisibility(View.GONE);
+                    toolbarTitle.setVisibility(View.VISIBLE);
                 } else {
                     toolbarLogo.setImageResource(R.drawable.icon_tap_options);
                     toolbarTitle.setText("설정");
                     toolbarFlagContainer.setVisibility(View.GONE);
+                    toolbarTitle.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -140,4 +150,5 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+
 }

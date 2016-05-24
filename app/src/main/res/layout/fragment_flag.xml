@@ -31,22 +31,10 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TEST"
-            android:id="@+id/button"
-            android:layout_gravity="center_horizontal" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="Dialog TEST"
             android:id="@+id/button2"
             android:layout_gravity="center_horizontal" />
 
-        <is.arontibo.library.ElasticDownloadView
-            android:id="@+id/elastic_download_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"/>
     </LinearLayout>
 
 </RelativeLayout>

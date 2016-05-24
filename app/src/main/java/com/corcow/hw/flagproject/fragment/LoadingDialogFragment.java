@@ -59,39 +59,17 @@ public class LoadingDialogFragment extends DialogFragment {
 
         elasticDownloadView.startIntro();
 
-/*
-        NetworkManager.getInstance().fileDownload_BINARY(getContext(), "test", "TESTTTTT", new NetworkManager.OnFileResultListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] result) {
-                // File
-                Log.d("SUCCESS", ""+result.length);
-            }
-
-            @Override
-            public void onProgress(long bytesWritten, long totalSize) {
-                Log.d("PROGRESS", "bytesWritten" + bytesWritten + ", totalSize" + totalSize + " : " + (bytesWritten / totalSize) + "%");
-            }
-
-            @Override
-            public void onFail(int code) {
-                Log.d("FAIL", "" + code);
-            }
-        });
-*/
-
-        NetworkManager.getInstance().fileDownload_FILE(getContext(), "test", "TESTTTTT", new NetworkManager.OnFileResultListener<File>() {
+        NetworkManager.getInstance().fileDownload(getContext(), "test", "TESTTTTT", new NetworkManager.OnFileResultListener<File>() {
             @Override
             public void onSuccess(File result) {
                 // File
                 Log.d("SUCCESS", result.getAbsolutePath());
                 Utilities.moveDownloadFile(result.getAbsolutePath(), FILE_DOWNLOAD_PATH, "fuck.mp3");
             }
-
             @Override
             public void onProgress(long bytesWritten, long totalSize) {
                 Log.d("PROGRESS", String.format("Progress %d from %d (%2.0f%%)", bytesWritten, totalSize, (totalSize > 0) ? (bytesWritten * 1.0 / totalSize) * 100 : -1));
             }
-
             @Override
             public void onFail(int code) {
                 Log.d("FAIL", "" + code);

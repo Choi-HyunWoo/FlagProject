@@ -29,5 +29,4 @@ dependencies {
     compile project(':dynamicgrid')
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'com.github.tibolte:elasticdownload:1.0.+'
-
 }

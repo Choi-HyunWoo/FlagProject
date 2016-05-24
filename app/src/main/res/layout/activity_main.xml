@@ -25,6 +25,33 @@
                 android:layout_marginRight="5dp"
                 android:id="@+id/toolbar_logo" />
 
+            <LinearLayout
+                android:id="@+id/toolbar_container_flag"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorWhite"
+                    android:text="http://flag.to/"/>
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/toolbar_download_editText"
+                    android:singleLine="true"
+                    android:hint="ID입력/flag입력/" />
+                <Button
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/toolbar_download_btn"
+                    android:background="@drawable/icon_download"
+                    android:textColor="@color/colorWhite"/>
+            </LinearLayout>
+
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -33,25 +60,7 @@
                 android:textSize="20sp"
                 android:text="http://flag.to/"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/toolbar_flag_container"
-                android:orientation="horizontal">
-                <EditText
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textColor="@color/colorWhite"
-                    android:textSize="20sp"
-                    android:singleLine="true"
-                    android:hint=" id/flag/"
-                    android:id="@+id/toolbar_flag_editText"/>
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/toolbar_flag_btn"/>
-            </LinearLayout>
+
 
          </android.support.v7.widget.Toolbar>
 
