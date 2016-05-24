@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.manager.NetworkManager;
+import com.corcow.hw.flagproject.util.Utilities;
 
 import java.io.File;
 
@@ -28,7 +29,7 @@ public class LoadingDialogFragment extends DialogFragment {
     ElasticDownloadView elasticDownloadView;
     String userName;
     String flagName;
-    private static final String FILE_DOWNLOAD_PATH = "";
+    private static final String FILE_DOWNLOAD_PATH = Environment.getExternalStorageDirectory().getAbsolutePath()+"/FLAG";
 
 
     // Dialog width, height setting
@@ -83,7 +84,7 @@ public class LoadingDialogFragment extends DialogFragment {
             public void onSuccess(File result) {
                 // File
                 Log.d("SUCCESS", result.getAbsolutePath());
-                result.renameTo(new File(rootPath+"/FLAGFILE.mp3"));
+                Utilities.moveDownloadFile(result.getAbsolutePath(), FILE_DOWNLOAD_PATH, "fuck.mp3");
             }
 
             @Override
@@ -99,6 +100,5 @@ public class LoadingDialogFragment extends DialogFragment {
 
         return view;
     }
-    String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
 }
 

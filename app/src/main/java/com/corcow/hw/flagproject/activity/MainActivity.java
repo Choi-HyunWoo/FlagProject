@@ -10,7 +10,10 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TabHost;
+import android.widget.TextView;
 
 import com.corcow.hw.flagproject.fragment.FileManagerFragment;
 import com.corcow.hw.flagproject.fragment.FlagFragment;
@@ -31,11 +34,19 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_KEY_WHOS_PAGE = "whosPage";
     public static final String EXTRA_VALUE_MYPAGE = "myPage";
 
+    // Toolbar
+    ImageView toolbarLogo;
+    TextView toolbarTitle;
+    LinearLayout toolbarFlagContainer;
+
+    // FAB
+    FloatingActionButton fab;
+
+    // Tab Pager
     TabHost tabHost;
     ViewPager pager;
     TabsAdapter mAdapter;
 
-    FloatingActionButton fab;
 
 
     @Override
@@ -49,6 +60,14 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().add(R.id.container, new FileManagerFragment()).commit();
         }
         */
+
+        // Toolbar setting
+        toolbarLogo = (ImageView)findViewById(R.id.toolbar_logo);
+        // 최초 Tab 설정 기능 구현 시 바꿀것!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        toolbarLogo.setImageResource(R.drawable.icon_tap_flag);
+        toolbarTitle = (TextView)findViewById(R.id.toolbar_title);
+        toolbarFlagContainer = (LinearLayout)findViewById(R.id.toolbar_flag_container);
+
 
         // fab button
         fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -77,11 +96,17 @@ public class MainActivity extends AppCompatActivity {
             public void onTabChanged(String tabId) {
                 setTabColor(tabHost);
                 if (tabId.equals(TAB_ID_FLAG)) {
-                    //
+                    toolbarLogo.setImageResource(R.drawable.icon_tap_flag);
+                    toolbarTitle.setText("http://flag.to/");
+                    toolbarFlagContainer.setVisibility(View.VISIBLE);
                 } else if (tabId.equals(TAB_ID_FILEMNG)) {
-                    // actionBar.setTitle("FileManager에 맞는 Actionbar로");
+                    toolbarLogo.setImageResource(R.drawable.icon_toolbar_logo_sdcard);
+                    toolbarTitle.setText("내 파일");
+                    toolbarFlagContainer.setVisibility(View.GONE);
                 } else {
-                    // actionBar.setTitle("설정");
+                    toolbarLogo.setImageResource(R.drawable.icon_tap_options);
+                    toolbarTitle.setText("설정");
+                    toolbarFlagContainer.setVisibility(View.GONE);
                 }
             }
         });

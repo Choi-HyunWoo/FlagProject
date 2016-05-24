@@ -4,6 +4,7 @@ package com.corcow.hw.flagproject.fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
+import com.corcow.hw.flagproject.activity.MainActivity;
 import com.corcow.hw.flagproject.manager.NetworkManager;
 import com.corcow.hw.flagproject.manager.UserManager;
 
@@ -51,6 +53,13 @@ public class FlagFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_flag, container, false);
         userID = UserManager.getInstance().getUserID();
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+/*
+        LinearLayout toolbarContainer = (LinearLayout) getActivity().findViewById(R.id.toolbar_container);
+        toolbarContainer.setVisibility(View.VISIBLE);
+        ((MainActivity)getActivity()).setSupportActionBar(toolbar);
+        toolbar.setTitle("");
+*/
 
         // View initialize
         selectContainer = (LinearLayout) view.findViewById(R.id.select_container);

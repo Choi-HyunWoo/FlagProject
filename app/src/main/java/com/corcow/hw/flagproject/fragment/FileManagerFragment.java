@@ -7,12 +7,17 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -104,7 +109,14 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_file_manager, container, false);
-
+        setHasOptionsMenu(true);        // has own toolbar
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+/*
+        LinearLayout toolbarContainer = (LinearLayout) getActivity().findViewById(R.id.toolbar_container);
+        toolbarContainer.setVisibility(View.GONE);
+        ((MainActivity) getActivity()).setSupportActionBar(toolbar);
+        toolbar.setTitle("내 파일");
+*/
         // View Initialize
         fileGridView = (DynamicGridView)view.findViewById(R.id.fileGridView);
         currentPathView = (TextView)view.findViewById(R.id.currentPathView);
@@ -339,6 +351,17 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                 mAdapter.add(item);
             }
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_toolbar_fm, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
     }
 
     // MainActivity의 OnBackPressedListener의 구현 함수 override

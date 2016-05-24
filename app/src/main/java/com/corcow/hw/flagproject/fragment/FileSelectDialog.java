@@ -334,7 +334,6 @@ public class FileSelectDialog extends DialogFragment {
         }
 
         // add items to adapter
-        mAdapter.clear();
         for (File f : files) {
             FileGridItem item = new FileGridItem(f.getName(), f.getAbsolutePath());
             if (f.isDirectory()) {

@@ -190,6 +190,51 @@ public class Utilities {
     }
 
 
+    public static void moveDownloadFile(String originPath, String destPath, String fileName) {
+        InputStream fin = null;
+        OutputStream fout = null;
+        try {
+            //create output directory if it doesn't exist
+            File originFile = new File(originPath);
+            File destFile = new File(destPath);
+
+            // 옮기려는 파일이 단일 파일인 경우
+            Log.d("FILE", "파일 다운로드 완료. 파일을 이동합니다.");
+            if (!destFile.exists())                      // 디렉토리가없다면
+                destFile.mkdirs();                       // 디렉토리 만들기
+            File newFile = new File(destPath+ "/" + fileName);
+            if (!originFile.renameTo(newFile)) {
+
+                byte[] buffer = new byte[1024];
+                fin = new FileInputStream(originPath);
+                fout = new FileOutputStream(destPath + "/" + fileName);
+
+                int read;
+                while ((read = fin.read(buffer)) != -1) {
+                    fout.write(buffer, 0, read);
+                }
+
+                fin.close();
+                fin = null;
+
+                // write the output file
+                fout.flush();
+                fout.close();
+                fout = null;
+
+                // 기존 위치의 파일 삭제
+                originFile.delete();
+
+            }
+        }
+        catch (FileNotFoundException fnfe1) {
+            Log.e("tag", fnfe1.getMessage());
+        }
+        catch (Exception e) {
+            Log.e("tag", e.getMessage());
+        }
+    }
+
     public static void DeleteDir (String path)
     {
         File file = new File(path);
