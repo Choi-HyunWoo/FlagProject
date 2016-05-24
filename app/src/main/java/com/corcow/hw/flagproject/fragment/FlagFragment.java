@@ -82,24 +82,24 @@ public class FlagFragment extends Fragment {
                         uploadView.setAlpha(120);
                     }
                 });
-                dialog.show(getActivity().getSupportFragmentManager(), "");
+                dialog.show(getActivity().getSupportFragmentManager(),"");
             }
         });
 
-
+        // 파일 다운로드
         downloadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String input = downloadInputView.getText().toString();
                 if (!TextUtils.isEmpty(input)) {
-                    String userID = input.split("[/]")[0];
-                    String flagName = input.split("[/]")[1];
+                    final String userID = input.split("[/]")[0];
+                    final String flagName = input.split("[/]")[1];
                     NetworkManager.getInstance().fileInfo(getContext(), userID, flagName, new NetworkManager.OnResultListener<FileInfo>() {
                         @Override
                         public void onSuccess(FileInfo result) {
-                            Toast.makeText(getContext(), "fileName"+result.fileName+",   fileSize"+result.fileSize, Toast.LENGTH_SHORT).show();
-//                            LoadingDialogFragment dlg = new LoadingDialogFragment();
-//                            dlg.show(getActivity().getSupportFragmentManager(), "");
+//                            Toast.makeText(getContext(), "fileName"+result.fileName+",   fileSize"+result.fileSize, Toast.LENGTH_SHORT).show();
+                            LoadingDialogFragment dlg = LoadingDialogFragment.newInstance(userID, flagName, result.fileName, result.fileSize);
+                            dlg.show(getActivity().getSupportFragmentManager(), "");
                         }
 
                         @Override
@@ -123,38 +123,8 @@ public class FlagFragment extends Fragment {
             }
         });
 
-/**
-        testBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                count = 0;
-                elasticDownloadView.startIntro();
-                handler.post(runnable);
-            }
-        });
- */
-
         return view;
     }
-
-    /**
-    int count = 0;
-    Handler handler = new Handler();
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            if (count == 100) {
-                elasticDownloadView.success();
-                handler.removeCallbacks(runnable);
-            } else {
-                count++;
-                Log.d("COUNT", "" + count);
-                elasticDownloadView.setProgress(count);
-                handler.postDelayed(this, 100);
-            }
-        }
-    };
-    */
 
 
 
@@ -188,3 +158,4 @@ public class FlagFragment extends Fragment {
     }
 
 }
+

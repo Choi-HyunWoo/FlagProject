@@ -1,15 +1,10 @@
 package com.corcow.hw.flagproject.activity;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,7 +17,6 @@ import com.corcow.hw.flagproject.fragment.FlagFragment;
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.fragment.SettingsFragment;
 import com.corcow.hw.flagproject.adapter.TabsAdapter;
-import com.corcow.hw.flagproject.view.libpackage.MaterialTextField;
 
 
 public class MainActivity extends AppCompatActivity {
