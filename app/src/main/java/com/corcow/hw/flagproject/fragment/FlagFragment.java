@@ -1,6 +1,8 @@
 package com.corcow.hw.flagproject.fragment;
 
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
@@ -9,7 +11,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +24,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
+import com.corcow.hw.flagproject.activity.LoginActivity;
 import com.corcow.hw.flagproject.manager.NetworkManager;
 import com.corcow.hw.flagproject.manager.UserManager;
 import com.corcow.hw.flagproject.model.json.FileInfo;
@@ -55,7 +61,7 @@ public class FlagFragment extends Fragment {
     LinearLayout selectedInputContainer;
     EditText selectedInputFlagView;
     Button selectedCancelBtn;
-    RadioGroup selectedIsPublicView;
+    RadioGroup selectedIsPublicRadio;
     Button uploadStartBtn;
     // File icon views
     LinearLayout fileIconContainer;
@@ -65,7 +71,9 @@ public class FlagFragment extends Fragment {
     // selected file info
     String selectedFileName = "";
     String selectedFilePath = "";
-
+    String inputFlagName = "";
+    String inputisPublic = "";
+    long selectedFileSize = 0L;
 
     // Download views in Toolbar
     EditText downloadInputView;
@@ -101,7 +109,7 @@ public class FlagFragment extends Fragment {
         // selected mode
         selectedInputContainer = (LinearLayout) view.findViewById(R.id.selected_input_container);
         selectedInputFlagView = (EditText) view.findViewById(R.id.selected_flagInputView);
-        selectedIsPublicView = (RadioGroup) view.findViewById(R.id.selected_isPublicView);
+        selectedIsPublicRadio = (RadioGroup) view.findViewById(R.id.selected_isPublicRadio);
         selectedCancelBtn = (Button) view.findViewById(R.id.selected_cancelBtn);
         uploadStartBtn = (Button) view.findViewById(R.id.upload_startBtn);
 
@@ -129,7 +137,7 @@ public class FlagFragment extends Fragment {
                         selectedFileName = name;
                         selectedFilePath = path;
                         setFileIcon();
-                        setModeSelected();
+                        setSelectedAnimation();
                     }
                 });
                 dialog.show(getActivity().getSupportFragmentManager(), "");
@@ -143,15 +151,53 @@ public class FlagFragment extends Fragment {
         selectedCancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setModeIdle();
+                setIdleAnimation();
             }
         });
         // 업로드 버튼 클릭
         uploadStartBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Animation animationUploadAway = AnimationUtils.loadAnimation(getContext(), R.anim.upload_go_away);
-                fileIconContainer.setAnimation(animationUploadAway);
+                inputFlagName = selectedInputFlagView.getText().toString();
+                if (!TextUtils.isEmpty(inputFlagName)) {
+                    setUpload();
+                } else if (TextUtils.isEmpty(userID)) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setIcon(R.drawable.app_logo);
+                    builder.setTitle("로그인");
+                    builder.setMessage("파일 업로드는 회원만 가능합니다\n로그인 페이지로 이동하시겠습니까?");
+                    builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(getActivity(), LoginActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+                    builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    AlertDialog dlg = builder.create();
+                    dlg.show();
+                } else {
+                    Toast.makeText(getContext(), "파일 별명을 지어주세요!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        selectedIsPublicRadio.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.radio_btn_public:
+                        inputisPublic = UPLOAD_MODE_PUBLIC;
+                        break;
+                    case R.id.radio_btn_private:
+                        inputisPublic= UPLOAD_MODE_PRIVATE;
+                        break;
+                    default:
+                        break;
+                }
             }
         });
 
@@ -189,14 +235,13 @@ public class FlagFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        selectedFileName = "";
-        selectedFilePath = "";
         idleContainer.setVisibility(View.VISIBLE);
         selectedInputContainer.setVisibility(View.GONE);
         fileIconContainer.setVisibility(View.GONE);
+        resetVariables();
     }
 
-    private void setModeSelected() {
+    private void setSelectedAnimation() {
         // 파일 선택 후 정보 입력 모드
         idleContainer.setVisibility(View.GONE);
         selectedInputContainer.setVisibility(View.VISIBLE);
@@ -205,32 +250,74 @@ public class FlagFragment extends Fragment {
         Animation animAlphaAppear = AnimationUtils.loadAnimation(getContext(), R.anim.alpha_appear);
         selectedInputContainer.setAnimation(animLeftToCenter);
         fileIconContainer.setAnimation(animAlphaAppear);
+        selectedInputFlagView.setText("");
     }
 
-    private void setModeIdle() {
+    private void setIdleAnimation() {
         // 평소 모드
         Animation animAlphaAppear = AnimationUtils.loadAnimation(getContext(), R.anim.alpha_appear);
         idleContainer.setAnimation(animAlphaAppear);
         idleContainer.setVisibility(View.VISIBLE);
-        selectedInputFlagView.setFocusable(false);
+        setEditTextFocus(false);
         Animation animCenterToRight = AnimationUtils.loadAnimation(getContext(), R.anim.slide_center_to_right);
         selectedInputContainer.setAnimation(animCenterToRight);
         Animation animAlphaDisappear = AnimationUtils.loadAnimation(getContext(), R.anim.alpha_disappear);
         fileIconContainer.setAnimation(animAlphaDisappear);
-        mHandler.postDelayed(animWaitRunnable, 500);
+        mHandler.postDelayed(inputCloseRunnable , 500);
+        resetVariables();
     }
-
     Handler mHandler = new Handler();
-    Runnable animWaitRunnable = new Runnable() {
+    Runnable inputCloseRunnable = new Runnable() {
         @Override
         public void run() {
             selectedInputContainer.setVisibility(View.GONE);
             fileIconContainer.setVisibility(View.GONE);
-            selectedInputFlagView.setFocusable(true);
+            setEditTextFocus(true);
             selectedInputFlagView.setText("");
             mHandler.removeCallbacks(this);
         }
     };
+    /** 실제 파일 전송
+     *
+     */
+    Runnable uploadRunnable = new Runnable() {
+        @Override
+        public void run() {
+            fileIconContainer.setVisibility(View.GONE);
+            NetworkManager.getInstance().fileUpload(getContext(), selectedFileName, selectedFilePath, inputFlagName, inputisPublic, userID, new NetworkManager.OnFileResultListener<String>() {
+                @Override
+                public void onSuccess(String result) {
+                    Toast.makeText(getContext(), "전송이 완료되었습니다.", Toast.LENGTH_SHORT).show();
+                    Animation animAlphaAppear = AnimationUtils.loadAnimation(getContext(), R.anim.alpha_appear);
+                    idleContainer.setAnimation(animAlphaAppear);
+                    idleContainer.setVisibility(View.VISIBLE);
+                    selectedInputContainer.setVisibility(View.GONE);
+                    fileIconContainer.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onProgress(long bytesWritten, long totalSize) {
+                    Log.d("PROGRESS", String.format("Progress %d from %d (%2.0f%%)", bytesWritten, selectedFileSize, (selectedFileSize > 0) ? (bytesWritten * 1.0 / selectedFileSize) * 100 : -1));
+                }
+
+                @Override
+                public void onFail(int code) {
+                    // setFailAnimation()
+                }
+            });
+            mHandler.removeCallbacks(this);
+        }
+    };
+
+    private void setUpload() {
+        selectedInputContainer.setVisibility(View.GONE);
+        File f = new File(selectedFilePath);
+        selectedFileSize = f.length();
+        // 반드시 업로드 실패시 VISIBLE, 성공시 IDLE_MODE 로 전환할 것
+        Animation animationUploadAway = AnimationUtils.loadAnimation(getContext(), R.anim.upload_go_away);
+        fileIconContainer.setAnimation(animationUploadAway);
+        mHandler.postDelayed(uploadRunnable, 500);
+    }
 
     private void setFileIcon() {
         if (!TextUtils.isEmpty(selectedFileName)) {
@@ -270,30 +357,23 @@ public class FlagFragment extends Fragment {
             Toast.makeText(getContext(), "파일을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
             selectedFileIconView.setImageResource(R.mipmap.ic_launcher);
             selectedFileNameView.setText("");
-            setModeIdle();
+            setSelectedAnimation();
         }
     }
 
-
-    private void fileUpload(String selectedFileName, String selectedFilePath, String flagName, String publicMode) {
-        // public/private를 String으로...
-        NetworkManager.getInstance().fileUpload(getContext(), selectedFileName, selectedFilePath, "TESTTTTT", UPLOAD_MODE_PRIVATE, userID, new NetworkManager.OnFileResultListener<String>() {
-            @Override
-            public void onSuccess(String result) {
-                Toast.makeText(getContext(), "SUCCESS", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onProgress(long bytesWritten, long totalSize) {
-                //
-            }
-
-            @Override
-            public void onFail(int code) {
-                Toast.makeText(getContext(), "FAIL" + code, Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void resetVariables() {
+        selectedFileName = "";
+        selectedFilePath = "";
+        inputFlagName = "";
+        inputisPublic = "";
+        selectedFileSize = 0L;
     }
+
+    private void setEditTextFocus(boolean isFocusable) {
+        downloadInputView.setFocusable( isFocusable );
+        selectedInputFlagView.setFocusable(isFocusable );
+    }
+
 
 }
 

@@ -305,7 +305,7 @@ public class FileSelectDialog extends DialogFragment {
                 }
             }
         });
-        // 취소 버튼
+        // 파일 선택 취소 버튼
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

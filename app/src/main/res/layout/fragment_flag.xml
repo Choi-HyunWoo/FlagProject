@@ -77,19 +77,21 @@
                 android:textColorHint="@color/colorAAAAAA"
                 android:hint="파일에 별명을 붙여주세요!"/>
             <RadioGroup
-                android:id="@+id/selected_isPublicView"
+                android:id="@+id/selected_isPublicRadio"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="horizontal">
                 <RadioButton
+                    android:id="@+id/radio_btn_public"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="20dp"
                     android:textColor="@color/colorWhite"
                     android:text="공개"/>
                 <RadioButton
+                    android:id="@+id/radio_btn_private"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorWhite"
@@ -114,8 +116,8 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:layout_above="@+id/selected_input_container"
+        android:layout_marginTop="100dp"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true">
         <ImageView
             android:id="@+id/selected_fileIconView"
