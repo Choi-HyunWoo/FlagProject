@@ -159,9 +159,7 @@ public class FlagFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 inputFlagName = selectedInputFlagView.getText().toString();
-                if (!TextUtils.isEmpty(inputFlagName)) {
-                    setUpload();
-                } else if (TextUtils.isEmpty(userID)) {
+                if (TextUtils.isEmpty(userID)) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setIcon(R.drawable.app_logo);
                     builder.setTitle("로그인");
@@ -181,7 +179,11 @@ public class FlagFragment extends Fragment {
                     AlertDialog dlg = builder.create();
                     dlg.show();
                 } else {
-                    Toast.makeText(getContext(), "파일 별명을 지어주세요!", Toast.LENGTH_SHORT).show();
+                    if (!TextUtils.isEmpty(inputFlagName)) {
+                        startUpload();
+                    } else {
+                        Toast.makeText(getContext(), "파일 별명을 지어주세요!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -235,6 +237,7 @@ public class FlagFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        userID = UserManager.getInstance().getUserID();
         idleContainer.setVisibility(View.VISIBLE);
         selectedInputContainer.setVisibility(View.GONE);
         fileIconContainer.setVisibility(View.GONE);
@@ -270,9 +273,9 @@ public class FlagFragment extends Fragment {
     Runnable inputCloseRunnable = new Runnable() {
         @Override
         public void run() {
+            setEditTextFocus(true);
             selectedInputContainer.setVisibility(View.GONE);
             fileIconContainer.setVisibility(View.GONE);
-            setEditTextFocus(true);
             selectedInputFlagView.setText("");
             mHandler.removeCallbacks(this);
         }
@@ -280,6 +283,15 @@ public class FlagFragment extends Fragment {
     /** 실제 파일 전송
      *
      */
+    private void startUpload() {
+        selectedInputContainer.setVisibility(View.GONE);
+        File f = new File(selectedFilePath);
+        selectedFileSize = f.length();
+        // 반드시 업로드 실패시 VISIBLE, 성공시 IDLE_MODE 로 전환할 것
+        Animation animationUploadAway = AnimationUtils.loadAnimation(getContext(), R.anim.upload_go_away);
+        fileIconContainer.setAnimation(animationUploadAway);
+        mHandler.postDelayed(uploadRunnable, 500);
+    }
     Runnable uploadRunnable = new Runnable() {
         @Override
         public void run() {
@@ -309,15 +321,6 @@ public class FlagFragment extends Fragment {
         }
     };
 
-    private void setUpload() {
-        selectedInputContainer.setVisibility(View.GONE);
-        File f = new File(selectedFilePath);
-        selectedFileSize = f.length();
-        // 반드시 업로드 실패시 VISIBLE, 성공시 IDLE_MODE 로 전환할 것
-        Animation animationUploadAway = AnimationUtils.loadAnimation(getContext(), R.anim.upload_go_away);
-        fileIconContainer.setAnimation(animationUploadAway);
-        mHandler.postDelayed(uploadRunnable, 500);
-    }
 
     private void setFileIcon() {
         if (!TextUtils.isEmpty(selectedFileName)) {
