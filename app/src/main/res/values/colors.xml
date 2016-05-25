@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#22313F</color>
+    <color name="colorPrimary_transparent">#AA22313F</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#26A65B</color>
     <color name="colorAccent_transparent">#8826A65B</color>
@@ -8,5 +9,6 @@
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorDDDDDD">#DDDDDD</color>
+    <color name="colorAAAAAA">#AAAAAA</color>
     <color name="sky_background">#228FC1</color>
 </resources>

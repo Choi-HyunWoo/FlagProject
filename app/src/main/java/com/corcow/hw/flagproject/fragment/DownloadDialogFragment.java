@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.manager.NetworkManager;
@@ -24,9 +23,9 @@ import is.arontibo.library.ElasticDownloadView;
 /**
  * Created by multimedia on 2016-05-23.
  */
-public class LoadingDialogFragment extends DialogFragment {
+public class DownloadDialogFragment extends DialogFragment {
 
-    public LoadingDialogFragment() {
+    public DownloadDialogFragment() {
 
     }
 
@@ -46,8 +45,8 @@ public class LoadingDialogFragment extends DialogFragment {
     private static final String PARAM_KEY_FILENAME = "fileName";
     private static final String PARAM_KEY_FILESIZE = "fileSize";
 
-    public static LoadingDialogFragment newInstance(String userID, String flagName, String fileName, long fileSize) {
-        LoadingDialogFragment f = new LoadingDialogFragment();
+    public static DownloadDialogFragment newInstance(String userID, String flagName, String fileName, long fileSize) {
+        DownloadDialogFragment f = new DownloadDialogFragment();
         // Supply num input as an argument.
         Bundle args = new Bundle();
         args.putString(PARAM_KEY_USERID, userID);

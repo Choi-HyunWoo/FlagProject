@@ -353,7 +353,7 @@ public class FileSelectDialog extends DialogFragment {
             } else if (item.extension.equalsIgnoreCase("ppt") || (item.extension.equalsIgnoreCase("pptx"))) {
                 item.iconImgResource = R.drawable.icon_file_ppt_small;
             } else if (item.extension.equalsIgnoreCase("xls") || item.extension.equalsIgnoreCase("xlsx")
-                    || item.extension.equalsIgnoreCase("xlsm")) {
+                    || item.extension.equalsIgnoreCase("xlsm") || item.extension.equalsIgnoreCase("csv")) {
                 item.iconImgResource = R.drawable.icon_file_xls_small;
             } else if (item.extension.equalsIgnoreCase("pdf")) {
                 item.iconImgResource = R.drawable.icon_file_pdf_small;

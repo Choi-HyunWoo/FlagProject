@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="anim_duration_flag_input_appear">500</integer>
+    <integer name="anim_duration_file_select_dialog_appear">300</integer>
+
+
+</resources>

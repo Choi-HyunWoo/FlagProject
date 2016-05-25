@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <translate
+        android:fromYDelta="10%"
+        android:toYDelta="0%"
+        android:duration="1000"
+        android:startOffset="@integer/anim_duration_flag_input_appear">
+    </translate>
+    <alpha
+        android:fromAlpha="0"
+        android:toAlpha="255"
+        android:duration="1000"
+        android:startOffset="500">
+    </alpha>
+
+</set>
