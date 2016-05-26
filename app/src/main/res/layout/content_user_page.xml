@@ -4,18 +4,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_blank_sample"
     tools:context="com.corcow.hw.flagproject.activity.UserPageActivity">
 
-    <ExpandableListView
+    <com.corcow.hw.flagproject.view.libpackage.PullToRefreshView
+        android:id="@+id/pull_to_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </ExpandableListView>
+        <ExpandableListView
+            android:id="@+id/fileListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </com.corcow.hw.flagproject.view.libpackage.PullToRefreshView>
 
 </RelativeLayout>

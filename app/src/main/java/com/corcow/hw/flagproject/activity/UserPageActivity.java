@@ -6,20 +6,31 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import com.corcow.hw.flagproject.R;
+import com.corcow.hw.flagproject.adapter.UserFileListAdapter;
+import com.corcow.hw.flagproject.manager.NetworkManager;
+import com.corcow.hw.flagproject.manager.UserManager;
+import com.corcow.hw.flagproject.model.json.UserFile;
+import com.corcow.hw.flagproject.model.json.UserPage;
+import com.corcow.hw.flagproject.view.libpackage.PullToRefreshView;
 
 public class UserPageActivity extends AppCompatActivity {
 
     TextView ownerNameView;
     String pageOwner;
 
-    ListView listView;
+    PullToRefreshView pullToRefreshView;
+    ExpandableListView listView;
+    UserFileListAdapter mAdapter;
 
+    private static final int REFRESH_DELAY = 1000;
 
     /** TODO 160517
      *
@@ -27,6 +38,9 @@ public class UserPageActivity extends AppCompatActivity {
      * 2. Expand child item에 copy 버튼 및 public/private 설정 가능하도록...
      *
      */
+
+    String currentUserID;
+    String queryUserID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +51,10 @@ public class UserPageActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        currentUserID = UserManager.getInstance().getUserID();
+        if (!TextUtils.isEmpty(currentUserID)) {
+            queryUserID = currentUserID;
+        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -55,6 +73,50 @@ public class UserPageActivity extends AppCompatActivity {
         } else {
             ownerNameView.setText(pageOwner + " 님이 업로드한 파일");
         }
+
+        listView = (ExpandableListView)findViewById(R.id.fileListView);
+        mAdapter = new UserFileListAdapter();
+        listView.setAdapter(mAdapter);
+        pullToRefreshView = (PullToRefreshView)findViewById(R.id.pull_to_refresh);
+        pullToRefreshView.setOnRefreshListener(new PullToRefreshView.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                pullToRefreshView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        pullToRefreshView.setRefreshing(false);
+                    }
+                }, REFRESH_DELAY);
+            }
+        });
+
+
+        NetworkManager.getInstance().userFileList(this, queryUserID, new NetworkManager.OnResultListener<UserPage>() {
+            @Override
+            public void onSuccess(UserPage result) {
+                for (UserFile userFile : result.result.file) {
+                    mAdapter.add(userFile, userFile.filePrivate);
+                }
+/*
+                for (NoticeDocs d : result.docsList) {
+                    String createdDate = d.created.substring(0, d.created.indexOf("T"));
+                    if (d.image_ids.size() != 0) {
+                        // mAdapter.add(String createdDate, String title, String content, String imageUrl);
+                        mAdapter.add(createdDate, d.title, d.content, d.image_ids.get(0).uri);
+                    } else {
+                        mAdapter.add(createdDate, d.title, d.content, "");
+                    }
+                }
+*/
+            }
+
+            @Override
+            public void onFail(int code) {
+                Log.d("UserPageActivity ", "network error/" + code);
+            }
+        });
+
+
 
     }
 

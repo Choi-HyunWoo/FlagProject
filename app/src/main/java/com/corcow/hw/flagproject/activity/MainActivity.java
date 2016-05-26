@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.corcow.hw.flagproject.fragment.FileManagerFragment;
 import com.corcow.hw.flagproject.fragment.FlagFragment;
@@ -46,8 +47,6 @@ public class MainActivity extends AppCompatActivity {
     ViewPager pager;
     TabsAdapter mAdapter;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         /*
         // Fragment Build
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.container, new FileManagerFragment()).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.tabContainer, new FileManagerFragment()).commit();
         }
         */
 

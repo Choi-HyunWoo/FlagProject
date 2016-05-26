@@ -1,6 +1,7 @@
 package com.corcow.hw.flagproject.fragment;
 
 
+import android.animation.AnimatorInflater;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
@@ -27,6 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,6 +66,7 @@ public class FlagFragment extends Fragment {
     EditText selectedInputFlagView;
     Button selectedCancelBtn;
     RadioGroup selectedIsPublicRadio;
+    RadioButton publicBtn;
     Button uploadStartBtn;
     // File icon views
     LinearLayout fileIconContainer;
@@ -79,7 +82,7 @@ public class FlagFragment extends Fragment {
 
     // Download views in Toolbar
     EditText downloadInputView;
-    Button downloadBtn;
+    ImageView downloadBtn;
 
 
     // Current user ID (signed in)
@@ -101,7 +104,9 @@ public class FlagFragment extends Fragment {
 
         // Download views in Toolbar initialize
         downloadInputView = (EditText) getActivity().findViewById(R.id.toolbar_download_editText);
-        downloadBtn = (Button) getActivity().findViewById(R.id.toolbar_download_btn);
+        downloadBtn = (ImageView) getActivity().findViewById(R.id.toolbar_download_btn);
+//        startBtnBlingAnimation();
+        downloadBtn.setBackgroundResource(R.drawable.background_round_corner);
 
         // Upload views initialize
         // idle mode
@@ -114,6 +119,9 @@ public class FlagFragment extends Fragment {
         selectedIsPublicRadio = (RadioGroup) view.findViewById(R.id.selected_isPublicRadio);
         selectedCancelBtn = (Button) view.findViewById(R.id.selected_cancelBtn);
         uploadStartBtn = (Button) view.findViewById(R.id.upload_startBtn);
+        publicBtn = (RadioButton) view.findViewById(R.id.radio_btn_public);
+        publicBtn.setChecked(true);
+        inputisPublic = UPLOAD_MODE_PUBLIC;
 
         // selected file icon
         selectedFileIconView = (ImageView) view.findViewById(R.id.selected_fileIconView);
@@ -379,11 +387,22 @@ public class FlagFragment extends Fragment {
         selectedFileName = "";
         selectedFilePath = "";
         inputFlagName = "";
-        inputisPublic = "";
+        inputisPublic = UPLOAD_MODE_PUBLIC;
         selectedFileSize = 0L;
     }
 
-
+    ValueAnimator animator;
+    private void startBtnBlingAnimation() {
+        animator = (ValueAnimator) AnimatorInflater.loadAnimator(getContext(), R.animator.text_color_greentowhite);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int color = (Integer)animation.getAnimatedValue();
+                downloadBtn.setBackgroundColor(color);
+            }
+        });
+        animator.start();
+    }
 
 
     ObjectAnimator wobbleAnimator;

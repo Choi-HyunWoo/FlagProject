@@ -44,11 +44,12 @@
                     android:id="@+id/toolbar_download_editText"
                     android:singleLine="true"
                     android:hint=" ID입력/flag입력/" />
-                <Button
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:id="@+id/toolbar_download_btn"
-                    android:background="@drawable/icon_download"
+                    android:src="@drawable/icon_download_underline"
+                    android:background="@color/colorAccent"
                     android:textColor="@color/colorWhite"/>
             </LinearLayout>
 

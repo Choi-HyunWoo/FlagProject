@@ -2,10 +2,11 @@ package com.corcow.hw.flagproject.adapter;
 
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.BaseExpandableListAdapter;
 
-import com.corcow.hw.flagproject.model.UserFileListItem;
-import com.corcow.hw.flagproject.view.UserFileListItemView;
+import com.corcow.hw.flagproject.model.UserFileChild;
+import com.corcow.hw.flagproject.model.UserFileParent;
+import com.corcow.hw.flagproject.model.json.UserFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,36 +14,73 @@ import java.util.List;
 /**
  * Created by multimedia on 2016-05-17.
  */
-public class UserFileListAdapter extends BaseAdapter {
+public class UserFileListAdapter extends BaseExpandableListAdapter {
 
-    List<UserFileListItem> items = new ArrayList<UserFileListItem>();
+    List<UserFileParent> items = new ArrayList<UserFileParent>();
+
+    public void add(UserFile item, String isPublic) {
+        UserFileParent parent = new UserFileParent();
+        parent._id = item._id;
+        parent.fileName = item.fileName;
+        parent.flagName = item.flagName;
+
+        UserFileChild child = new UserFileChild();
+        child.isPublic = isPublic;
+        parent.child = child;
+
+        notifyDataSetChanged();
+    }
 
     @Override
-    public int getCount() {
+    public int getGroupCount() {
         return items.size();
     }
 
     @Override
-    public Object getItem(int position) {
-        return items.get(position);
+    public int getChildrenCount(int groupPosition) {
+        return 1;
     }
 
     @Override
-    public long getItemId(int position) {
-        return position;
+    public Object getGroup(int groupPosition) {
+        return items.get(groupPosition);
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        UserFileListItemView view = null;
-        if (convertView == null) {
-            view = new UserFileListItemView(parent.getContext());
-        }
-        else {
-            view = (UserFileListItemView) convertView;
-        }
-        view.setViewItem(items.get(position));
-
-        return view;
+    public Object getChild(int groupPosition, int childPosition) {
+        return items.get(groupPosition).child;
     }
+
+    @Override
+    public long getGroupId(int groupPosition) {
+        return (long)groupPosition << 32 | 0xFFFFFFFF;
+    }
+
+    @Override
+    public long getChildId(int groupPosition, int childPosition) {
+        return (long)groupPosition << 32 | childPosition;
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return true;
+    }
+
+    @Override
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+
+
+        return null;
+    }
+
+    @Override
+    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        return null;
+    }
+
+    @Override
+    public boolean isChildSelectable(int groupPosition, int childPosition) {
+        return false;
+    }
+
 }

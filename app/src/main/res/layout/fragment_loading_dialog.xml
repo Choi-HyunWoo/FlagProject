@@ -12,8 +12,8 @@
         android:layout_height="wrap_content"
         android:text="다운로드 중... 잠시만 기다려 주세요"
         android:textColor="@color/colorWhite"
-        android:textSize="15sp"
-        android:layout_marginTop="150dp"
+        android:textSize="20sp"
+        android:layout_marginTop="100dp"
         android:layout_alignTop="@+id/elastic_download_view"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>

@@ -89,12 +89,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="20dp"
+                    android:textSize="16sp"
                     android:textColor="@color/colorWhite"
                     android:text="공개"/>
                 <RadioButton
                     android:id="@+id/radio_btn_private"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="16sp"
                     android:textColor="@color/colorWhite"
                     android:text="비공개"/>
             </RadioGroup>
@@ -104,6 +106,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
+            android:textSize="16sp"
             android:background="@color/colorAccent"
             android:textColor="@color/colorWhite"
             android:text="업로드"/>
@@ -113,17 +116,17 @@
     <!-- SELECTED MODE File Icon container -->
     <LinearLayout
         android:id="@+id/file_icon_container"
-        android:layout_width="wrap_content"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:layout_marginTop="100dp"
-        android:layout_alignParentTop="true"
+        android:layout_marginBottom="50dp"
+        android:layout_above="@+id/selected_input_container"
         android:layout_centerHorizontal="true">
         <ImageView
             android:id="@+id/selected_fileIconView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:src="@drawable/icon_file_unknown_small" />
         <TextView
             android:id="@+id/selected_fileNameView"
@@ -131,8 +134,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:textColor="@color/colorDark"
-            android:textSize="12sp"
-            android:text="파일이름 : " />
+            android:textSize="16sp" />
     </LinearLayout>
 
 </RelativeLayout>

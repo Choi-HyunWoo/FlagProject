@@ -5,6 +5,7 @@ import android.content.Context;
 import com.corcow.hw.flagproject.model.json.FileInfo;
 import com.corcow.hw.flagproject.model.json.Login;
 import com.corcow.hw.flagproject.model.json.LoginResult;
+import com.corcow.hw.flagproject.model.json.UserPage;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.BinaryHttpResponseHandler;
@@ -235,7 +236,26 @@ public class NetworkManager {
                 listener.onSuccess(file);
             }
         });
-
     }
+
+    // UserPage
+    public void userFileList(Context context, String userID, final OnResultListener<UserPage> listener) {
+        RequestParams params = new RequestParams();
+        params.put(REQ_TYPE, TYPE_APP);
+
+        client.get(context, SERVER + "/" + userID, params, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                listener.onFail(statusCode);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                UserPage result = gson.fromJson(responseString, UserPage.class);
+                listener.onSuccess(result);
+            }
+        });
+    }
+
 
 }
