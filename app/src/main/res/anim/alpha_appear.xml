@@ -8,7 +8,7 @@
     </translate>
     <alpha
         android:fromAlpha="0"
-        android:toAlpha="255"
+        android:toAlpha="1"
         android:duration="1000"
         android:startOffset="500">
     </alpha>

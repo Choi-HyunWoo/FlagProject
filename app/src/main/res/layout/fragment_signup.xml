@@ -61,7 +61,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:singleLine="true"
-        android:inputType="textPassword"
         android:id="@+id/edit_emailView" />
 
     <LinearLayout

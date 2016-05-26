@@ -1,6 +1,8 @@
 package com.corcow.hw.flagproject.activity;
 
 import android.Manifest;
+import android.animation.AnimatorInflater;
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Handler;
@@ -9,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
@@ -26,14 +29,18 @@ public class SplashActivity extends AppCompatActivity {
     boolean isAutoLoginMode;
 
     boolean isPermissionChecked;
-    boolean isAutoLoginSuccessed;
+
+    TextView shareTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        shareTextView = (TextView)findViewById(R.id.shareText);
+
         checkPermissionInRuntime();
+        shareTextBlingAnimation();
 
         if (isPermissionChecked) {
             // 자동 로그인 상태 확인
@@ -64,6 +71,7 @@ public class SplashActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(SplashActivity.this, "로그인 실패. 아이디와 비밀번호를 확인하세요"+code, Toast.LENGTH_SHORT).show();
                         }
+                        // 메인으로
                         goMain();
                     }
                 });
@@ -73,6 +81,7 @@ public class SplashActivity extends AppCompatActivity {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        // 메인으로
                         goMain();
                     }
                 }, 2000);
@@ -137,7 +146,22 @@ public class SplashActivity extends AppCompatActivity {
     private void goMain() {
         Intent intent = new Intent(SplashActivity.this, MainActivity.class);
         startActivity(intent);
+        animator.cancel();
         finish();
+    }
+
+    // Share text Animation
+    ValueAnimator animator;
+    private void shareTextBlingAnimation() {
+        animator = (ValueAnimator) AnimatorInflater.loadAnimator(SplashActivity.this, R.animator.text_color_blingbling);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int color = (Integer)animation.getAnimatedValue();
+                shareTextView.setBackgroundColor(color);
+            }
+        });
+        animator.start();
     }
 
 }

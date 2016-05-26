@@ -1,14 +1,17 @@
 package com.corcow.hw.flagproject.fragment;
 
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -24,7 +27,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -121,8 +123,8 @@ public class FlagFragment extends Fragment {
 
         // when onCreateView, set Idle mode
         idleContainer.setVisibility(View.VISIBLE);
-        selectedInputContainer.setVisibility(View.GONE);
-        fileIconContainer.setVisibility(View.GONE);
+        selectedInputContainer.setVisibility(View.INVISIBLE);
+        fileIconContainer.setVisibility(View.INVISIBLE);
 
         /** 파일 선택 */
         // 파일 선택 버튼
@@ -239,16 +241,17 @@ public class FlagFragment extends Fragment {
         super.onResume();
         userID = UserManager.getInstance().getUserID();
         idleContainer.setVisibility(View.VISIBLE);
-        selectedInputContainer.setVisibility(View.GONE);
-        fileIconContainer.setVisibility(View.GONE);
+        selectedInputContainer.setVisibility(View.INVISIBLE);
+        fileIconContainer.setVisibility(View.INVISIBLE);
         resetVariables();
     }
 
     private void setSelectedAnimation() {
         // 파일 선택 후 정보 입력 모드
-        idleContainer.setVisibility(View.GONE);
+        idleContainer.setVisibility(View.INVISIBLE);
         selectedInputContainer.setVisibility(View.VISIBLE);
         fileIconContainer.setVisibility(View.VISIBLE);
+        animateWobble(selectedFileIconView);
         Animation animLeftToCenter = AnimationUtils.loadAnimation(getContext(), R.anim.slide_left_to_center);
         Animation animAlphaAppear = AnimationUtils.loadAnimation(getContext(), R.anim.alpha_appear);
         selectedInputContainer.setAnimation(animLeftToCenter);
@@ -258,24 +261,23 @@ public class FlagFragment extends Fragment {
 
     private void setIdleAnimation() {
         // 평소 모드
+        stopWobble();
         Animation animAlphaAppear = AnimationUtils.loadAnimation(getContext(), R.anim.alpha_appear);
         idleContainer.setAnimation(animAlphaAppear);
         idleContainer.setVisibility(View.VISIBLE);
-        setEditTextFocus(false);
         Animation animCenterToRight = AnimationUtils.loadAnimation(getContext(), R.anim.slide_center_to_right);
         selectedInputContainer.setAnimation(animCenterToRight);
         Animation animAlphaDisappear = AnimationUtils.loadAnimation(getContext(), R.anim.alpha_disappear);
         fileIconContainer.setAnimation(animAlphaDisappear);
-        mHandler.postDelayed(inputCloseRunnable , 500);
+        mHandler.postDelayed(inputCloseRunnable, 500);
         resetVariables();
     }
     Handler mHandler = new Handler();
     Runnable inputCloseRunnable = new Runnable() {
         @Override
         public void run() {
-            setEditTextFocus(true);
-            selectedInputContainer.setVisibility(View.GONE);
-            fileIconContainer.setVisibility(View.GONE);
+            selectedInputContainer.setVisibility(View.INVISIBLE);
+            fileIconContainer.setVisibility(View.INVISIBLE);
             selectedInputFlagView.setText("");
             mHandler.removeCallbacks(this);
         }
@@ -284,7 +286,7 @@ public class FlagFragment extends Fragment {
      *
      */
     private void startUpload() {
-        selectedInputContainer.setVisibility(View.GONE);
+        selectedInputContainer.setVisibility(View.INVISIBLE);
         File f = new File(selectedFilePath);
         selectedFileSize = f.length();
         // 반드시 업로드 실패시 VISIBLE, 성공시 IDLE_MODE 로 전환할 것
@@ -295,16 +297,18 @@ public class FlagFragment extends Fragment {
     Runnable uploadRunnable = new Runnable() {
         @Override
         public void run() {
-            fileIconContainer.setVisibility(View.GONE);
+            fileIconContainer.setVisibility(View.INVISIBLE);
             NetworkManager.getInstance().fileUpload(getContext(), selectedFileName, selectedFilePath, inputFlagName, inputisPublic, userID, new NetworkManager.OnFileResultListener<String>() {
                 @Override
                 public void onSuccess(String result) {
                     Toast.makeText(getContext(), "전송이 완료되었습니다.", Toast.LENGTH_SHORT).show();
                     Animation animAlphaAppear = AnimationUtils.loadAnimation(getContext(), R.anim.alpha_appear);
                     idleContainer.setAnimation(animAlphaAppear);
+                    stopWobble();
                     idleContainer.setVisibility(View.VISIBLE);
-                    selectedInputContainer.setVisibility(View.GONE);
-                    fileIconContainer.setVisibility(View.GONE);
+                    selectedInputContainer.setVisibility(View.INVISIBLE);
+                    fileIconContainer.setVisibility(View.INVISIBLE);
+                    mHandler.removeCallbacks(uploadRunnable);
                 }
 
                 @Override
@@ -315,9 +319,16 @@ public class FlagFragment extends Fragment {
                 @Override
                 public void onFail(int code) {
                     // setFailAnimation()
+                    Toast.makeText(getContext(), "전송에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                    fileIconContainer.setVisibility(View.VISIBLE);
+                    selectedInputContainer.setVisibility(View.VISIBLE);
+                    Animation animationUploadFailDrop = AnimationUtils.loadAnimation(getContext(), R.anim.upload_fail_drop);
+                    Animation animAlphaAppear = AnimationUtils.loadAnimation(getContext(), R.anim.alpha_appear);
+                    fileIconContainer.setAnimation(animationUploadFailDrop);
+                    selectedInputContainer.setAnimation(animAlphaAppear);
+                    mHandler.removeCallbacks(uploadRunnable);
                 }
             });
-            mHandler.removeCallbacks(this);
         }
     };
 
@@ -372,11 +383,30 @@ public class FlagFragment extends Fragment {
         selectedFileSize = 0L;
     }
 
-    private void setEditTextFocus(boolean isFocusable) {
-        downloadInputView.setFocusable( isFocusable );
-        selectedInputFlagView.setFocusable(isFocusable );
+
+
+
+    ObjectAnimator wobbleAnimator;
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void animateWobble(View v) {
+        wobbleAnimator = createBaseWobble(v);
+        wobbleAnimator.setFloatValues(-2, 2);
+        wobbleAnimator.start();
     }
 
-
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void stopWobble() {
+        wobbleAnimator.cancel();
+    }
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private ObjectAnimator createBaseWobble(final View v) {
+        ObjectAnimator animator = new ObjectAnimator();
+        animator.setDuration(180);
+        animator.setRepeatMode(ValueAnimator.REVERSE);
+        animator.setRepeatCount(ValueAnimator.INFINITE);
+        animator.setPropertyName("rotation");
+        animator.setTarget(v);
+        return animator;
+    }
 }
 

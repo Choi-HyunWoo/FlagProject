@@ -6,7 +6,7 @@
         android:duration="@integer/anim_duration_flag_input_appear">
     </translate>
     <alpha
-        android:fromAlpha="255"
+        android:fromAlpha="1"
         android:toAlpha="0"
         android:duration="@integer/anim_duration_flag_input_appear" >
     </alpha>

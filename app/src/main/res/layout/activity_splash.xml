@@ -11,7 +11,7 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_centerVertical="true"
@@ -23,13 +23,32 @@
             android:src="@drawable/icon_logo"
             android:id="@+id/imageView"/>
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="How to share files easily"
-            android:id="@+id/desc"
-            android:textColor="@color/colorWhite"
-            android:textSize="20sp" />
+            android:orientation="horizontal"
+            android:gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="How to "
+                android:textColor="@color/colorWhite"
+                android:textSize="20sp" />
+            <TextView
+                android:id="@+id/shareText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_round_corner"
+                android:text=" share "
+                android:textColor="@color/colorWhite"
+                android:textSize="24sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" files easily"
+                android:textColor="@color/colorWhite"
+                android:textSize="20sp" />
+        </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>
