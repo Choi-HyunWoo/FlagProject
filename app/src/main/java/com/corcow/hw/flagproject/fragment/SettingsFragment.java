@@ -26,6 +26,7 @@ public class SettingsFragment extends Fragment {
     Button loginBtn;
     ImageView userImageView;
     TextView userIdView;
+    String loggedInID;
 
     // login state
     boolean isLogined;
@@ -85,6 +86,7 @@ public class SettingsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         isLogined = UserManager.getInstance().getLoginState();
+        loggedInID = UserManager.getInstance().getUserID();
         setViewLogined();
     }
 

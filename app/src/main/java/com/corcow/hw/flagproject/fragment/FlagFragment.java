@@ -86,7 +86,7 @@ public class FlagFragment extends Fragment {
 
 
     // Current user ID (signed in)
-    String userID;
+    String loggedInID;
 
     public FlagFragment() {
         // Required empty public constructor
@@ -100,7 +100,7 @@ public class FlagFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_flag, container, false);
 
         // Current user ID
-        userID = UserManager.getInstance().getUserID();
+        loggedInID = UserManager.getInstance().getUserID();
 
         // Download views in Toolbar initialize
         downloadInputView = (EditText) getActivity().findViewById(R.id.toolbar_download_editText);
@@ -169,7 +169,7 @@ public class FlagFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 inputFlagName = selectedInputFlagView.getText().toString();
-                if (TextUtils.isEmpty(userID)) {
+                if (TextUtils.isEmpty(loggedInID)) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setIcon(R.drawable.app_logo);
                     builder.setTitle("로그인");
@@ -247,7 +247,7 @@ public class FlagFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        userID = UserManager.getInstance().getUserID();
+        loggedInID = UserManager.getInstance().getUserID();
         idleContainer.setVisibility(View.VISIBLE);
         selectedInputContainer.setVisibility(View.INVISIBLE);
         fileIconContainer.setVisibility(View.INVISIBLE);
@@ -306,7 +306,7 @@ public class FlagFragment extends Fragment {
         @Override
         public void run() {
             fileIconContainer.setVisibility(View.INVISIBLE);
-            NetworkManager.getInstance().fileUpload(getContext(), selectedFileName, selectedFilePath, inputFlagName, inputisPublic, userID, new NetworkManager.OnFileResultListener<String>() {
+            NetworkManager.getInstance().fileUpload(getContext(), selectedFileName, selectedFilePath, inputFlagName, inputisPublic, loggedInID, new NetworkManager.OnFileResultListener<String>() {
                 @Override
                 public void onSuccess(String result) {
                     Toast.makeText(getContext(), "전송이 완료되었습니다.", Toast.LENGTH_SHORT).show();

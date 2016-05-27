@@ -16,13 +16,16 @@ import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.adapter.UserFileListAdapter;
+import com.corcow.hw.flagproject.fragment.DownloadDialogFragment;
 import com.corcow.hw.flagproject.manager.NetworkManager;
 import com.corcow.hw.flagproject.manager.UserManager;
+import com.corcow.hw.flagproject.model.json.FileInfo;
 import com.corcow.hw.flagproject.model.json.UserFile;
 import com.corcow.hw.flagproject.model.json.UserPageResult;
+import com.corcow.hw.flagproject.view.UserFileChildView;
 import com.yalantis.phoenix.PullToRefreshView;
 
-public class UserPageActivity extends AppCompatActivity {
+public class UserPageActivity extends AppCompatActivity implements UserFileListAdapter.OnAdapterDownloadBtnClickListener {
 
     TextView ownerNameView;
     PullToRefreshView pullToRefreshView;
@@ -39,7 +42,6 @@ public class UserPageActivity extends AppCompatActivity {
      */
 
     String loggedInID;
-    String queryUserID;
     String pageOwner;
 
     @Override
@@ -65,7 +67,7 @@ public class UserPageActivity extends AppCompatActivity {
         Intent intent = getIntent();
         ownerNameView = (TextView)findViewById(R.id.page_owner);
         pageOwner = intent.getStringExtra(MainActivity.EXTRA_KEY_WHOS_PAGE);
-        if (pageOwner.equals(MainActivity.EXTRA_VALUE_MYPAGE)) {
+        if (pageOwner.equals(loggedInID)) {
             ownerNameView.setText("내가 업로드한 파일");
         } else {
             ownerNameView.setText(pageOwner + " 님이 업로드한 파일");
@@ -73,6 +75,7 @@ public class UserPageActivity extends AppCompatActivity {
 
         listView = (ExpandableListView)findViewById(R.id.fileListView);
         mAdapter = new UserFileListAdapter();
+        mAdapter.setOnAdapterBtnClickListener(this);
         listView.setAdapter(mAdapter);
         pullToRefreshView = (PullToRefreshView)findViewById(R.id.pull_to_refresh);
         pullToRefreshView = (PullToRefreshView) findViewById(R.id.pull_to_refresh);
@@ -112,4 +115,21 @@ public class UserPageActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onAdapterDownloadBtnClick(final String pageOwnerID, final String flagName) {
+        NetworkManager.getInstance().fileInfo(this, pageOwnerID, flagName, new NetworkManager.OnResultListener<FileInfo>() {
+            @Override
+            public void onSuccess(FileInfo result) {
+                DownloadDialogFragment dlg = DownloadDialogFragment.newInstance(pageOwnerID, flagName, result.fileName, result.fileSize);
+                dlg.show(UserPageActivity.this.getSupportFragmentManager(), "");
+            }
+
+            @Override
+            public void onFail(int code) {
+                Toast.makeText(UserPageActivity.this, "없는 사용자이거나 FLAG명이 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 }

@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by multimedia on 2016-05-17.
  */
-public class UserFileListAdapter extends BaseExpandableListAdapter {
+public class UserFileListAdapter extends BaseExpandableListAdapter implements UserFileChildView.OnDownloadBtnClickListener {
 
     List<UserFileParent> items = new ArrayList<UserFileParent>();
 
@@ -93,12 +93,28 @@ public class UserFileListAdapter extends BaseExpandableListAdapter {
             view = new UserFileChildView(parent.getContext());
         }
         view.setChildItem(items.get(groupPosition).child, items.get(groupPosition));
+        view.setOnDownloadBtnClickListener(this);
         return view;
     }
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return false;
+    }
+
+
+
+    @Override
+    public void onDownloadBtnClick(String pageOwnerID, String flagName) {
+        mListener.onAdapterDownloadBtnClick(pageOwnerID, flagName);
+    }
+
+    public interface OnAdapterDownloadBtnClickListener {
+        public void onAdapterDownloadBtnClick(String pageOwnerID, String flagName);
+    }
+    OnAdapterDownloadBtnClickListener mListener;
+    public void setOnAdapterBtnClickListener(OnAdapterDownloadBtnClickListener listener) {
+        mListener = listener;
     }
 
 }

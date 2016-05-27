@@ -40,6 +40,15 @@ public class LoginFragment extends Fragment {
         UserManager.getInstance().setUserEmail("");
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        UserManager.getInstance().setLoginState(false);
+        UserManager.getInstance().set_id("");
+        UserManager.getInstance().setUserID("");
+        UserManager.getInstance().setUserPW("");
+        UserManager.getInstance().setUserEmail("");
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

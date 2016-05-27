@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.activity.MainActivity;
 import com.corcow.hw.flagproject.adapter.FileGridAdpater;
+import com.corcow.hw.flagproject.manager.UserManager;
 import com.corcow.hw.flagproject.model.FileGridItem;
 import com.corcow.hw.flagproject.util.Utilities;
 
@@ -36,6 +37,8 @@ import java.io.File;
  */
 public class FileManagerFragment extends Fragment implements MainActivity.OnBackPressedListener {
 
+    // logged in ID
+    String loggedInID;
 
     public FileManagerFragment() {
         // Required empty public constructor
@@ -393,5 +396,10 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         ((MainActivity)context).setOnBackPressedListener(this);
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        // logged in ID
+        loggedInID = UserManager.getInstance().getUserID();
+    }
 }

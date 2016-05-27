@@ -5,6 +5,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -18,6 +19,7 @@ import com.corcow.hw.flagproject.fragment.FlagFragment;
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.fragment.SettingsFragment;
 import com.corcow.hw.flagproject.adapter.TabsAdapter;
+import com.corcow.hw.flagproject.manager.UserManager;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -30,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
 
     // Intent Extra define
     public static final String EXTRA_KEY_WHOS_PAGE = "whosPage";
-    public static final String EXTRA_VALUE_MYPAGE = "myPage";
 
     // Toolbar
     ImageView toolbarLogo;
@@ -46,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
     TabHost tabHost;
     ViewPager pager;
     TabsAdapter mAdapter;
+
+    // logged in User ID
+    String loggedInID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,16 +72,21 @@ public class MainActivity extends AppCompatActivity {
         toolbarLogo.setImageResource(R.drawable.icon_cloud);
         toolbarTitle = (TextView)findViewById(R.id.toolbar_title);
 
-
+        loggedInID = UserManager.getInstance().getUserID();
 
         // fab button
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // 내가 올린 파일 리스트
                 Intent intent = new Intent(MainActivity.this, UserPageActivity.class);
-                intent.putExtra(EXTRA_KEY_WHOS_PAGE, EXTRA_VALUE_MYPAGE);
-                startActivity(intent);
+                if (!TextUtils.isEmpty(loggedInID)) {
+                    intent.putExtra(EXTRA_KEY_WHOS_PAGE, loggedInID);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(MainActivity.this, "로그인해주세요", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -133,6 +142,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void setOnBackPressedListener (OnBackPressedListener listener) {
         mOnBackPressedListener = listener;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loggedInID = UserManager.getInstance().getUserID();
     }
 
     @Override

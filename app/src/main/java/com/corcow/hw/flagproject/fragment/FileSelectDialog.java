@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.adapter.FileGridAdpater;
+import com.corcow.hw.flagproject.manager.UserManager;
 import com.corcow.hw.flagproject.model.FileGridItem;
 import com.corcow.hw.flagproject.util.Utilities;
 
@@ -68,6 +69,9 @@ public class FileSelectDialog extends DialogFragment {
     // select
     int preSelectedPos = -1;
     int selectedPos = -1;
+
+    // logged in ID
+    String loggedInID;
 
 
     // Dialog Result interface
@@ -387,4 +391,9 @@ public class FileSelectDialog extends DialogFragment {
         };
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        loggedInID = UserManager.getInstance().getUserID();
+    }
 }
