@@ -7,6 +7,8 @@ import android.widget.BaseExpandableListAdapter;
 import com.corcow.hw.flagproject.model.UserFileChild;
 import com.corcow.hw.flagproject.model.UserFileParent;
 import com.corcow.hw.flagproject.model.json.UserFile;
+import com.corcow.hw.flagproject.view.UserFileChildView;
+import com.corcow.hw.flagproject.view.UserFileParentView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +20,18 @@ public class UserFileListAdapter extends BaseExpandableListAdapter {
 
     List<UserFileParent> items = new ArrayList<UserFileParent>();
 
-    public void add(UserFile item, String isPublic) {
+    public void add(UserFile item, String isPublic, String pageOwner) {
         UserFileParent parent = new UserFileParent();
         parent._id = item._id;
         parent.fileName = item.fileName;
         parent.flagName = item.flagName;
+        parent.pageOwner = pageOwner;
 
         UserFileChild child = new UserFileChild();
         child.isPublic = isPublic;
         parent.child = child;
+
+        items.add(parent);
 
         notifyDataSetChanged();
     }
@@ -68,14 +73,27 @@ public class UserFileListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-
-
-        return null;
+        UserFileParentView view;
+        if (convertView != null) {
+            view = (UserFileParentView) convertView;
+        } else {
+            view = new UserFileParentView(parent.getContext());
+        }
+        view.setParentItem(items.get(groupPosition));
+        return view;
     }
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        return null;
+        UserFileChildView view;
+        if (convertView != null) {
+            view = (UserFileChildView) convertView;
+        }
+        else {
+            view = new UserFileChildView(parent.getContext());
+        }
+        view.setChildItem(items.get(groupPosition).child, items.get(groupPosition));
+        return view;
     }
 
     @Override

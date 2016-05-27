@@ -6,6 +6,7 @@ import com.corcow.hw.flagproject.model.json.FileInfo;
 import com.corcow.hw.flagproject.model.json.Login;
 import com.corcow.hw.flagproject.model.json.LoginResult;
 import com.corcow.hw.flagproject.model.json.UserPage;
+import com.corcow.hw.flagproject.model.json.UserPageResult;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.BinaryHttpResponseHandler;
@@ -239,11 +240,11 @@ public class NetworkManager {
     }
 
     // UserPage
-    public void userFileList(Context context, String userID, final OnResultListener<UserPage> listener) {
+    public void userFileList(Context context, String userID, final OnResultListener<UserPageResult> listener) {
         RequestParams params = new RequestParams();
         params.put(REQ_TYPE, TYPE_APP);
 
-        client.get(context, SERVER + "/" + userID, params, new TextHttpResponseHandler() {
+        client.post(context, SERVER + "/" + userID, params, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 listener.onFail(statusCode);
@@ -252,10 +253,45 @@ public class NetworkManager {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 UserPage result = gson.fromJson(responseString, UserPage.class);
-                listener.onSuccess(result);
+                listener.onSuccess(result.result);
             }
         });
     }
 
+    public void fileDelete(Context context, String _id, final OnResultListener<String> listener) {
+        RequestParams params = new RequestParams();
+        params.put(REQ_TYPE, TYPE_APP);
+        params.put("_id", _id);
+
+        client.post(context, SERVER + "/fileDelete", params, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                listener.onFail(statusCode);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                listener.onSuccess(responseString);
+            }
+        });
+    }
+
+    public void filePrivate(Context context, String _id, final OnResultListener<String> listener) {
+        RequestParams params = new RequestParams();
+        params.put(REQ_TYPE, TYPE_APP);
+        params.put("_id", _id);
+
+        client.post(context, SERVER + "/filePrivate", params, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                listener.onFail(statusCode);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                listener.onSuccess(responseString);
+            }
+        });
+    }
 
 }

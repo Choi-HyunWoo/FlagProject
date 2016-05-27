@@ -13,27 +13,35 @@
         android:supportsRtl="true"
         android:largeHeap="true"
         android:theme="@style/AppTheme" >
+
         <activity
             android:name=".activity.SplashActivity"
-            android:theme="@style/FullScreen" >
+            android:theme="@style/FullScreen"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateAlwaysHidden" >
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".activity.LoginActivity" >
+
+        <activity android:name=".activity.LoginActivity"
+            android:screenOrientation="portrait" >
         </activity>
+
         <activity
             android:name=".activity.UserPageActivity"
             android:label="@string/title_activity_blank_sample"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait" >
         </activity>
+
     </application>
 
 </manifest>

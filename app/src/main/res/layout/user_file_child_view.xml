@@ -2,27 +2,88 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
+    android:gravity="center_vertical"
     android:background="@color/colorDDDDDD"
+    android:padding="@dimen/activity_horizontal_margin"
     android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btn_download"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:id="@+id/container_download"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_weight="1">
+        <Button
+            android:id="@+id/btn_download"
+            android:background="@drawable/icon_download"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+        <TextView
+            android:id="@+id/text_download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="다운로드"/>
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_copy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/btn_public"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:id="@+id/container_copy"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_weight="1">
+        <Button
+            android:id="@+id/btn_copy"
+            android:background="@drawable/icon_copy"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+        <TextView
+            android:id="@+id/text_copy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="URL복사"/>
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_delete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:id="@+id/container_public"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_weight="1">
+        <Button
+            android:id="@+id/btn_public"
+            android:background="@drawable/icon_private"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+        <TextView
+            android:id="@+id/text_public"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="공개여부"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/container_delete"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_weight="1">
+        <Button
+            android:id="@+id/btn_delete"
+            android:background="@drawable/icon_delete"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+        <TextView
+            android:id="@+id/text_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" 삭제"/>
+    </LinearLayout>
+
 </LinearLayout>

@@ -12,20 +12,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.adapter.UserFileListAdapter;
 import com.corcow.hw.flagproject.manager.NetworkManager;
 import com.corcow.hw.flagproject.manager.UserManager;
 import com.corcow.hw.flagproject.model.json.UserFile;
-import com.corcow.hw.flagproject.model.json.UserPage;
-import com.corcow.hw.flagproject.view.libpackage.PullToRefreshView;
+import com.corcow.hw.flagproject.model.json.UserPageResult;
+import com.yalantis.phoenix.PullToRefreshView;
 
 public class UserPageActivity extends AppCompatActivity {
 
     TextView ownerNameView;
-    String pageOwner;
-
     PullToRefreshView pullToRefreshView;
     ExpandableListView listView;
     UserFileListAdapter mAdapter;
@@ -39,8 +38,9 @@ public class UserPageActivity extends AppCompatActivity {
      *
      */
 
-    String currentUserID;
+    String loggedInID;
     String queryUserID;
+    String pageOwner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,10 +51,7 @@ public class UserPageActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        currentUserID = UserManager.getInstance().getUserID();
-        if (!TextUtils.isEmpty(currentUserID)) {
-            queryUserID = currentUserID;
-        }
+        loggedInID = UserManager.getInstance().getUserID();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -78,6 +75,7 @@ public class UserPageActivity extends AppCompatActivity {
         mAdapter = new UserFileListAdapter();
         listView.setAdapter(mAdapter);
         pullToRefreshView = (PullToRefreshView)findViewById(R.id.pull_to_refresh);
+        pullToRefreshView = (PullToRefreshView) findViewById(R.id.pull_to_refresh);
         pullToRefreshView.setOnRefreshListener(new PullToRefreshView.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -90,26 +88,13 @@ public class UserPageActivity extends AppCompatActivity {
             }
         });
 
-
-        NetworkManager.getInstance().userFileList(this, queryUserID, new NetworkManager.OnResultListener<UserPage>() {
+        NetworkManager.getInstance().userFileList(this, loggedInID, new NetworkManager.OnResultListener<UserPageResult>() {
             @Override
-            public void onSuccess(UserPage result) {
-                for (UserFile userFile : result.result.file) {
-                    mAdapter.add(userFile, userFile.filePrivate);
+            public void onSuccess(UserPageResult result) {
+                for (UserFile userFile : result.file) {
+                    mAdapter.add(userFile, userFile.filePrivate, pageOwner);
                 }
-/*
-                for (NoticeDocs d : result.docsList) {
-                    String createdDate = d.created.substring(0, d.created.indexOf("T"));
-                    if (d.image_ids.size() != 0) {
-                        // mAdapter.add(String createdDate, String title, String content, String imageUrl);
-                        mAdapter.add(createdDate, d.title, d.content, d.image_ids.get(0).uri);
-                    } else {
-                        mAdapter.add(createdDate, d.title, d.content, "");
-                    }
-                }
-*/
             }
-
             @Override
             public void onFail(int code) {
                 Log.d("UserPageActivity ", "network error/" + code);

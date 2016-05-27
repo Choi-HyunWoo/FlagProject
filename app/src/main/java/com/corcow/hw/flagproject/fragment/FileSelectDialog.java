@@ -357,6 +357,8 @@ public class FileSelectDialog extends DialogFragment {
                 item.iconImgResource = R.drawable.icon_file_xls_small;
             } else if (item.extension.equalsIgnoreCase("pdf")) {
                 item.iconImgResource = R.drawable.icon_file_pdf_small;
+            } else if (item.extension.equalsIgnoreCase("zip")) {
+                item.iconImgResource = R.drawable.icon_file_zip;
             } else {
                 item.iconImgResource = R.drawable.icon_file_unknown_small;
             }
