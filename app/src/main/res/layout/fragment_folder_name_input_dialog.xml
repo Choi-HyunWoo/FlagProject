@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
-            android:text="다른 사람의 클라우드를 검색합니다."/>
+            android:text="현재 위치에 폴더를 생성합니다."/>
         <EditText
             android:id="@+id/name_input_view"
             android:layout_width="match_parent"

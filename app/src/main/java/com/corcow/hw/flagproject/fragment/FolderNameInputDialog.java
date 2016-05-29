@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
+import com.corcow.hw.flagproject.util.Utilities;
 
 /**
  * Created by multimedia on 2016-05-29.
@@ -86,13 +87,9 @@ public class FolderNameInputDialog extends DialogFragment {
         return view;
     }
 
-    private boolean folderNameCheck(String input) {
-        return input.matches("/[\\{\\}\\[\\]\\/?.,;:|\\)*~`!^\\-_+<>@\\#$%&\\\\\\=\\(\\'\\\"]/gi");
-    }
-
     private void makeFolder() {
         String folderName = folderInputView.getText().toString();
-        if (folderNameCheck(folderName)) {
+        if (Utilities.specialWordCheck(folderName)) {
             Toast.makeText(getActivity(), "폴더 이름에는 특수문자가 들어갈 수 없습니다.", Toast.LENGTH_SHORT).show();
         } else {
             mDialogResult.onFinishDialog(folderName);

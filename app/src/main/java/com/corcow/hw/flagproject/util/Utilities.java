@@ -343,4 +343,10 @@ public class Utilities {
         float dp = px / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         return dp;
     }
+
+    // 특수문자 찾기 (특수문자가 있으면 true)
+    public static boolean specialWordCheck(String input) {
+        return input.matches("[a-zA-Z0-9`~!@#$%^&*()-=_+\\\\[\\\\]{}:;',./<>?\\\\\\\\|]*$");
+    }
+
 }
