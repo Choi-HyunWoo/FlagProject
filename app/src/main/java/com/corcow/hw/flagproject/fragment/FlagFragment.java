@@ -5,6 +5,7 @@ import android.animation.AnimatorInflater;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -355,9 +356,15 @@ public class FlagFragment extends Fragment {
         @Override
         public void run() {
             fileIconContainer.setVisibility(View.INVISIBLE);
+            final ProgressDialog dlg = new ProgressDialog(getContext());
+            dlg.setMessage("파일을 전송합니다.");
+            dlg.setCancelable(false);
+            dlg.show();
+
             NetworkManager.getInstance().fileUpload(getContext(), selectedFileName, selectedFilePath, inputFlagName, inputisPublic, loggedInID, new NetworkManager.OnFileResultListener<String>() {
                 @Override
                 public void onSuccess(String result) {
+                    dlg.dismiss();
                     Toast.makeText(getContext(), "전송이 완료되었습니다.", Toast.LENGTH_SHORT).show();
                     Animation animAlphaAppear = AnimationUtils.loadAnimation(getContext(), R.anim.alpha_appear);
                     idleContainer.setAnimation(animAlphaAppear);
@@ -371,10 +378,12 @@ public class FlagFragment extends Fragment {
                 @Override
                 public void onProgress(long bytesWritten, long totalSize) {
                     Log.d("PROGRESS", String.format("Progress %d from %d (%2.0f%%)", bytesWritten, selectedFileSize, (selectedFileSize > 0) ? (bytesWritten * 1.0 / selectedFileSize) * 100 : -1));
+                    dlg.setProgress((int)((selectedFileSize > 0) ? (bytesWritten * 1.0 / selectedFileSize) * 100 : -1));
                 }
 
                 @Override
                 public void onFail(int code) {
+                    dlg.dismiss();
                     // setFailAnimation()
                     Toast.makeText(getContext(), "전송에 실패했습니다.", Toast.LENGTH_SHORT).show();
                     fileIconContainer.setVisibility(View.VISIBLE);

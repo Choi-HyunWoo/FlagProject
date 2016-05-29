@@ -6,6 +6,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.manager.UserManager;
 import com.corcow.hw.flagproject.model.UserFileParent;
@@ -40,38 +41,42 @@ public class UserFileParentView extends FrameLayout {
     }
 
     public void setParentItem (UserFileParent item, int num) {
-        setIconImage(item.fileName);
         indexView.setText(""+num);
         flagNameView.setText(item.flagName);
         fileNameView.setText(item.fileName);
         pageOwner = item.pageOwner;
+        setIconImage(item.fileName, item.flagName);
     }
 
-    private void setIconImage(String fileName) {
+    private void setIconImage(String fileName, String flagName) {
         String extension = Utilities.getExtension(fileName);
         if (extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("jpeg")
                 || extension.equalsIgnoreCase("png") || extension.equalsIgnoreCase("bmp")
                 || extension.equalsIgnoreCase("gif")) {
-            fileIconView.setImageResource(R.drawable.icon_file_image);
+            Glide.with(getContext())
+                    .load("http://fflag.me/" + pageOwner + "/" + flagName)
+                    .thumbnail(0.1f)
+                    .dontAnimate()
+                    .into(fileIconView);
         } else if (extension.equalsIgnoreCase("avi") || extension.equalsIgnoreCase("mp4")) {
-            fileIconView.setImageResource(R.drawable.icon_file_video);
+            Glide.with(getContext()).load(R.drawable.icon_file_video).into(fileIconView);
         } else if (extension.equalsIgnoreCase("mp3")) {
-            fileIconView.setImageResource(R.drawable.icon_file_mp3_small);
+            Glide.with(getContext()).load(R.drawable.icon_file_mp3_small).into(fileIconView);
         } else if (extension.equalsIgnoreCase("wmv")) {
-            fileIconView.setImageResource(R.drawable.icon_file_wmv_small);
+            Glide.with(getContext()).load(R.drawable.icon_file_wmv_small).into(fileIconView);
         } else if (extension.equalsIgnoreCase("hwp")) {
-            fileIconView.setImageResource(R.drawable.icon_file_hwp_small);
+            Glide.with(getContext()).load(R.drawable.icon_file_hwp_small).into(fileIconView);
         } else if (extension.equalsIgnoreCase("ppt") || extension.equalsIgnoreCase("pptx")) {
-            fileIconView.setImageResource(R.drawable.icon_file_ppt_small);
+            Glide.with(getContext()).load(R.drawable.icon_file_ppt_small).into(fileIconView);
         } else if (extension.equalsIgnoreCase("xls") || extension.equalsIgnoreCase("xlsx")
                 || extension.equalsIgnoreCase("xlsm") || extension.equalsIgnoreCase("csv")) {
-            fileIconView.setImageResource(R.drawable.icon_file_xls_small);
+            Glide.with(getContext()).load(R.drawable.icon_file_xls_small).into(fileIconView);
         } else if (extension.equalsIgnoreCase("pdf")) {
-            fileIconView.setImageResource(R.drawable.icon_file_pdf_small);
+            Glide.with(getContext()).load(R.drawable.icon_file_pdf_small).into(fileIconView);
         } else if (extension.equalsIgnoreCase("zip")) {
-            fileIconView.setImageResource(R.drawable.icon_file_zip);
+            Glide.with(getContext()).load(R.drawable.icon_file_zip).into(fileIconView);
         } else {
-            fileIconView.setImageResource(R.drawable.icon_file_unknown_small);
+            Glide.with(getContext()).load(R.drawable.icon_file_unknown_small).into(fileIconView);
         }
     }
 
