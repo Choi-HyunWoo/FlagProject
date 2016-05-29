@@ -42,9 +42,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAB_ID_FILEMNG = "tab_filemng";
     private static final String TAB_ID_SETTINGS = "tab_settings";
 
-    // Intent Extra define
-    public static final String EXTRA_KEY_WHOS_PAGE = "whosPage";
-
     // Toolbar
     ImageView toolbarLogo;
     TextView toolbarTitle;
@@ -208,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!TextUtils.isEmpty(loggedInID)) {
                     // 로그인 되있다면,
                     Intent intent = new Intent(MainActivity.this, UserPageActivity.class);
-                    intent.putExtra(EXTRA_KEY_WHOS_PAGE, loggedInID);
+                    intent.putExtra(UserPageActivity.EXTRA_KEY_WHOS_PAGE, loggedInID);
                     startActivity(intent);
                 } else {
                     // 로그인 상태가 아니라면,

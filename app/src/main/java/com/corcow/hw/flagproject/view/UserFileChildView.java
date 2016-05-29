@@ -1,17 +1,13 @@
 package com.corcow.hw.flagproject.view;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
-import com.corcow.hw.flagproject.activity.UserPageActivity;
-import com.corcow.hw.flagproject.fragment.DownloadDialogFragment;
 import com.corcow.hw.flagproject.manager.NetworkManager;
 import com.corcow.hw.flagproject.manager.UserManager;
 import com.corcow.hw.flagproject.model.UserFileChild;
@@ -57,8 +53,6 @@ public class UserFileChildView extends FrameLayout {
                 NetworkManager.getInstance().fileInfo(getContext(), pageOwnerID, flagName, new NetworkManager.OnResultListener<FileInfo>() {
                     @Override
                     public void onSuccess(FileInfo result) {
-//                        DownloadDialogFragment dlg = DownloadDialogFragment.newInstance(pageOwnerID, flagName, result.fileName, result.fileSize);
-                        // dlg.show(UserPageActivity.this.getSupportFragmentManager(), "");
                         mListener.onDownloadBtnClick(pageOwnerID, flagName);
                     }
 
@@ -79,7 +73,7 @@ public class UserFileChildView extends FrameLayout {
                 // copy
                 // 클립보드 복사
                 Toast.makeText(getContext(), "http://fflag.me/" + parent.pageOwner + "/" + parent.flagName + " URL이 복사되었습니다.", Toast.LENGTH_SHORT).show();
-                mListener.onCopyBtnClick("http://fflag.me/"+parent.pageOwner+"/"+parent.flagName);
+                mListener.onCopyBtnClick("http://fflag.me/" + parent.pageOwner + "/" + parent.flagName);
             }
         });
 

@@ -65,7 +65,7 @@ public class UserInputDialog extends DialogFragment {
                         @Override
                         public void onSuccess(UserPageResult result) {
                             Intent intent = new Intent(getActivity(), UserPageActivity.class);
-                            intent.putExtra(MainActivity.EXTRA_KEY_WHOS_PAGE, inputId);
+                            intent.putExtra(UserPageActivity.EXTRA_KEY_WHOS_PAGE, inputId);
                             startActivity(intent);
                         }
 

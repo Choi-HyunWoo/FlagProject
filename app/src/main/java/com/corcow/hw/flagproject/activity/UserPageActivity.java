@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.adapter.UserFileListAdapter;
-import com.corcow.hw.flagproject.fragment.DownloadDialogFragment;
+import com.corcow.hw.flagproject.fragment.DownloadDialog;
 import com.corcow.hw.flagproject.manager.NetworkManager;
 import com.corcow.hw.flagproject.manager.UserManager;
 import com.corcow.hw.flagproject.model.json.FileInfo;
@@ -28,6 +28,9 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
     PullToRefreshView pullToRefreshView;
     ExpandableListView listView;
     UserFileListAdapter mAdapter;
+
+    // Intent Extra define
+    public static final String EXTRA_KEY_WHOS_PAGE = "whosPage";
 
     private static final int REFRESH_DELAY = 1000;
 
@@ -47,7 +50,7 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
 
         Intent intent = getIntent();
         ownerNameView = (TextView)findViewById(R.id.page_owner);
-        pageOwner = intent.getStringExtra(MainActivity.EXTRA_KEY_WHOS_PAGE);
+        pageOwner = intent.getStringExtra(EXTRA_KEY_WHOS_PAGE);
         if (isMyPage()) {
             ownerNameView.setText("내가 업로드한 파일");
         } else {
@@ -117,7 +120,7 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
         NetworkManager.getInstance().fileInfo(this, pageOwnerID, flagName, new NetworkManager.OnResultListener<FileInfo>() {
             @Override
             public void onSuccess(FileInfo result) {
-                DownloadDialogFragment dlg = DownloadDialogFragment.newInstance(pageOwnerID, flagName, result.fileName, result.fileSize);
+                DownloadDialog dlg = DownloadDialog.newInstance(pageOwnerID, flagName, result.fileName, result.fileSize);
                 dlg.show(UserPageActivity.this.getSupportFragmentManager(), "");
             }
 

@@ -18,7 +18,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +26,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -38,13 +36,12 @@ import android.widget.Toast;
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.activity.LoginActivity;
 import com.corcow.hw.flagproject.activity.MainActivity;
+import com.corcow.hw.flagproject.activity.UserPageActivity;
 import com.corcow.hw.flagproject.manager.NetworkManager;
 import com.corcow.hw.flagproject.manager.UserManager;
 import com.corcow.hw.flagproject.model.json.FileInfo;
+import com.corcow.hw.flagproject.model.json.UserPageResult;
 import com.corcow.hw.flagproject.util.Utilities;
-import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
-import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
-import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
 import java.io.File;
 
@@ -93,6 +90,7 @@ public class FlagFragment extends Fragment {
 
     // Current user ID (signed in)
     String loggedInID;
+    String input;
 
     public FlagFragment() {
         // Required empty public constructor
@@ -226,24 +224,45 @@ public class FlagFragment extends Fragment {
         downloadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String input = downloadInputView.getText().toString();
+                input = downloadInputView.getText().toString();
                 if (!TextUtils.isEmpty(input)) {
-                    final String userID = input.split("[/]")[0];
-                    final String flagName = input.split("[/]")[1];
-                    NetworkManager.getInstance().fileInfo(getContext(), userID, flagName, new NetworkManager.OnResultListener<FileInfo>() {
-                        @Override
-                        public void onSuccess(FileInfo result) {
-                            DownloadDialogFragment dlg = DownloadDialogFragment.newInstance(userID, flagName, result.fileName, result.fileSize);
-                            dlg.show(getActivity().getSupportFragmentManager(), "");
-                        }
-
-                        @Override
-                        public void onFail(int code) {
-                            Toast.makeText(getContext(), "없는 사용자이거나 FLAG명이 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    if(input.matches("[/]") && !input.endsWith("/")) {
+                        final String userID = input.split("[/]")[0];
+                        final String flagName = input.split("[/]")[1];
+                        NetworkManager.getInstance().fileInfo(getContext(), userID, flagName, new NetworkManager.OnResultListener<FileInfo>() {
+                            @Override
+                            public void onSuccess(FileInfo result) {
+                                DownloadDialog dlg = DownloadDialog.newInstance(userID, flagName, result.fileName, result.fileSize);
+                                dlg.show(getActivity().getSupportFragmentManager(), "");
+                                downloadInputView.setText("");
+                                input="";
+                            }
+                            @Override
+                            public void onFail(int code) {
+                                Toast.makeText(getContext(), "없는 사용자이거나 FLAG명이 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                    else {
+                        // 유저 페이지 실행
+//                        input = input.replaceAll("[]", "");
+                        NetworkManager.getInstance().userFileList(getContext(), input, new NetworkManager.OnResultListener<UserPageResult>() {
+                            @Override
+                            public void onSuccess(UserPageResult result) {
+                                Intent intent = new Intent(getActivity(), UserPageActivity.class);
+                                intent.putExtra(UserPageActivity.EXTRA_KEY_WHOS_PAGE, input);
+                                startActivity(intent);
+                                downloadInputView.setText("");
+                                input="";
+                            }
+                            @Override
+                            public void onFail(int code) {
+                                Toast.makeText(getContext(), "없는 사용자입니다. ID를 확인해주세요!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
                 } else {
-                    Toast.makeText(getContext(), "/ID/FLAG 를 입력하세요", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "ID 혹은 ID/FLAG 를 입력하세요", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -255,6 +274,8 @@ public class FlagFragment extends Fragment {
     public void onResume() {
         super.onResume();
         loggedInID = UserManager.getInstance().getUserID();
+        input = "";
+
         idleContainer.setVisibility(View.VISIBLE);
         selectedInputContainer.setVisibility(View.INVISIBLE);
         fileIconContainer.setVisibility(View.INVISIBLE);

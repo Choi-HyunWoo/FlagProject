@@ -25,9 +25,9 @@ import is.arontibo.library.ElasticDownloadView;
 /**
  * Created by multimedia on 2016-05-23.
  */
-public class DownloadDialogFragment extends DialogFragment {
+public class DownloadDialog extends DialogFragment {
 
-    public DownloadDialogFragment() {
+    public DownloadDialog() {
 
     }
 
@@ -47,8 +47,8 @@ public class DownloadDialogFragment extends DialogFragment {
     private static final String PARAM_KEY_FILENAME = "fileName";
     private static final String PARAM_KEY_FILESIZE = "fileSize";
 
-    public static DownloadDialogFragment newInstance(String userID, String flagName, String fileName, long fileSize) {
-        DownloadDialogFragment f = new DownloadDialogFragment();
+    public static DownloadDialog newInstance(String userID, String flagName, String fileName, long fileSize) {
+        DownloadDialog f = new DownloadDialog();
         // Supply num input as an argument.
         Bundle args = new Bundle();
         args.putString(PARAM_KEY_USERID, userID);
