@@ -1,7 +1,9 @@
 package com.corcow.hw.flagproject.fragment;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,6 +51,10 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
     DynamicGridView fileGridView;
     TextView currentPathView;
     FileGridAdpater mAdapter;
+
+    // Toolbar
+    ImageView folderAddBtn;
+    ImageView fileDeleteBtn;
 
     // Variables in Editmode
     int originalPosition = -1;
@@ -93,19 +100,6 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         }
     };
 
-    /** TODO .160524
-     *
-     * 1. 선택 상태에서 할 일 구현 (툴바)
-     *   - Copy & Paste
-     *   - Delete
-     *   - Modify..rename?
-     *   - File Upload !!     << 제일중요!
-     *
-     *  <ISSUE>
-     *  1. 파일 이동 시 ISSUE...
-     *     mMobileView의 position 인식 X..
-     * */
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -125,6 +119,10 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         currentPathView = (TextView)view.findViewById(R.id.currentPathView);
         mAdapter = new FileGridAdpater(getActivity(), 3);
         fileGridView.setAdapter(mAdapter);
+
+        // Toolbar view initialize
+        folderAddBtn = (ImageView)getActivity().findViewById(R.id.toolbar_folder_btn);
+        fileDeleteBtn = (ImageView)getActivity().findViewById(R.id.toolbar_delete_btn);
 
 
         // 시작은 최상위 root directory.
@@ -285,7 +283,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                             if (originFile.isDirectory()) {
                                 Toast.makeText(getContext(), originFile.getName() + " 폴더가 " + (droppedFile.getName().equals("0") ? "최상위" : droppedFile.getName()) + " 폴더로 이동되었습니다.", Toast.LENGTH_SHORT).show();
                             } else {
-                                Toast.makeText(getContext(), originFile.getName() + " 파일이 " + droppedFile.getName() + " 폴더로 이동되었습니다.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), originFile.getName() + " 파일이 " + (droppedFile.getName().equals("0") ? "최상위" : droppedFile.getName()) + " 폴더로 이동되었습니다.", Toast.LENGTH_SHORT).show();
                             }
                             Utilities.moveFile(originFile.getAbsolutePath(), droppedFile.getAbsolutePath());
                             mAdapter.delete(originalPosition);          // GridView 에서도 지워준다.
@@ -304,6 +302,30 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                 }
                 selectedPos = -1;
                 preSelectedPos = -1;
+            }
+        });
+
+
+        // Toolbar 기능
+        // 폴더 추가
+        folderAddBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        // 파일 삭제
+        fileDeleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!currentPath.equals(rootPath)) {
+                    if (selectedPos!=0) {
+                        fileDelete();
+                    } 
+                } else {
+                    fileDelete();
+                }
+
             }
         });
 
@@ -360,6 +382,48 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
             if (!f.getName().startsWith(".")) {
                 mAdapter.add(item);
             }
+        }
+    }
+
+    private void fileDelete() {
+        if (selectedPos == -1) {
+            Toast.makeText(getContext(), "삭제할 파일을 선택해 주세요!", Toast.LENGTH_SHORT).show();
+        } else {
+            // 지울 파일
+            final File deleteFile = new File(((FileGridItem) mAdapter.getItem(selectedPos)).absolutePath);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setIcon(R.drawable.icon_warning);
+            if (deleteFile.isDirectory()) {
+                builder.setTitle("폴더 삭제");
+                builder.setMessage(deleteFile.getName() + " 폴더와 폴더 안의 파일을 모두 삭제하시겠습니까?\n삭제된 파일은 복구할 수 없습니다.");
+                builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mAdapter.delete(selectedPos);
+                        Utilities.deleteDir(deleteFile.getAbsolutePath());
+                        Toast.makeText(getContext(), deleteFile.getName() + " 폴더가 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                builder.setTitle("파일 삭제");
+                builder.setMessage(deleteFile.getName() + " 파일을 삭제하시겠습니까?\n삭제한 파일은 복구할 수 없습니다.");
+                builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mAdapter.delete(selectedPos);
+                        deleteFile.delete();
+                        Toast.makeText(getContext(), deleteFile.getName() + " 파일이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            builder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            AlertDialog dlg = builder.create();
+            dlg.show();
         }
     }
 

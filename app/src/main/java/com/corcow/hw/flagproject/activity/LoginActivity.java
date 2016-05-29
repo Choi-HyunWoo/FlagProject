@@ -1,8 +1,10 @@
 package com.corcow.hw.flagproject.activity;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 
 import com.corcow.hw.flagproject.fragment.LoginFragment;
 import com.corcow.hw.flagproject.R;
@@ -33,4 +35,14 @@ public class LoginActivity extends AppCompatActivity {
         getSupportFragmentManager().popBackStack();
     }
 
+    @Override
+    protected void onDestroy() {
+        hideKeyboard();
+        super.onDestroy();
+    }
+
+    private void hideKeyboard(){
+        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
 }

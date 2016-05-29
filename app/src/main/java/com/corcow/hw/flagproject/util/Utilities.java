@@ -238,14 +238,14 @@ public class Utilities {
         }
     }
 
-    public static void DeleteDir (String path)
+    public static void deleteDir (String path)
     {
         File file = new File(path);
         File[] childFileList = file.listFiles();
         for(File childFile : childFileList)
         {
             if(childFile.isDirectory()) {
-                DeleteDir(childFile.getAbsolutePath());     //하위 디렉토리 루프
+                deleteDir(childFile.getAbsolutePath());     //하위 디렉토리 루프
             }
             else {
                 childFile.delete();    //하위 파일삭제

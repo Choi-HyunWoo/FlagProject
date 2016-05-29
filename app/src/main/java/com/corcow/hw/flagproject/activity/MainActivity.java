@@ -44,10 +44,10 @@ public class MainActivity extends AppCompatActivity {
 
     // Toolbar
     ImageView toolbarLogo;
-    TextView toolbarTitle;
-    EditText flagInputField;
-    LinearLayout toolbarFlagContainer;
-    LinearLayout toolbarNonFlagContainer;
+
+    LinearLayout toolbarFlagContainer;  EditText flagInputField;
+    LinearLayout toolbarFMContainer;
+    TextView toolbarSettingsTitle;
 
     // FAB
     FloatingActionButton fab;
@@ -80,10 +80,12 @@ public class MainActivity extends AppCompatActivity {
         toolbarLogo = (ImageView)findViewById(R.id.toolbar_logo);
 
         toolbarFlagContainer = (LinearLayout)findViewById(R.id.toolbar_container_flag);
+        toolbarFMContainer = (LinearLayout)findViewById(R.id.toolbar_container_fm);
+        toolbarSettingsTitle = (TextView)findViewById(R.id.toolbar_settings_title);
+
 
         flagInputField = (EditText)findViewById(R.id.toolbar_download_editText);
         toolbarLogo.setImageResource(R.drawable.icon_cloud);
-        toolbarTitle = (TextView)findViewById(R.id.toolbar_title);
 
         loggedInID = UserManager.getInstance().getUserID();
 
@@ -126,19 +128,20 @@ public class MainActivity extends AppCompatActivity {
                 if (tabId.equals(TAB_ID_FLAG)) {
                     toolbarLogo.setImageResource(R.drawable.icon_cloud);
                     toolbarFlagContainer.setVisibility(View.VISIBLE);
-                    toolbarTitle.setVisibility(View.GONE);
+                    toolbarFMContainer.setVisibility(View.GONE);
+                    toolbarSettingsTitle.setVisibility(View.GONE);
                     fabMenu.close(true);
                 } else if (tabId.equals(TAB_ID_FILEMNG)) {
                     toolbarLogo.setImageResource(R.drawable.icon_toolbar_logo_sdcard);
-                    toolbarTitle.setText("내 파일");
                     toolbarFlagContainer.setVisibility(View.GONE);
-                    toolbarTitle.setVisibility(View.VISIBLE);
+                    toolbarFMContainer.setVisibility(View.VISIBLE);
+                    toolbarSettingsTitle.setVisibility(View.GONE);
                     fabMenu.close(true);
                 } else {
                     toolbarLogo.setImageResource(R.drawable.icon_tap_options);
-                    toolbarTitle.setText("설정");
                     toolbarFlagContainer.setVisibility(View.GONE);
-                    toolbarTitle.setVisibility(View.VISIBLE);
+                    toolbarFMContainer.setVisibility(View.GONE);
+                    toolbarSettingsTitle.setVisibility(View.VISIBLE);
                     fabMenu.close(true);
                 }
             }

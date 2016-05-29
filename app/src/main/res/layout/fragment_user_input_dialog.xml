@@ -11,7 +11,7 @@
         android:padding="@dimen/activity_horizontal_margin"
         android:textColor="@color/colorWhite"
         android:textSize="20sp"
-        android:text="다른 사람이 올린 파일" />
+        android:text="다른 사용자 검색" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,13 +23,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="아이디 입력 : "/>
+            android:textSize="15sp"
+            android:text="다른 사람의 클라우드를 검색합니다."/>
         <EditText
             android:id="@+id/id_input_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:hint="아이디를 입력하세요"/>
+            android:hint="찾으려는 사용자의 아이디를 입력하세요"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -40,6 +41,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="15sp"
             android:background="@color/colorPrimary"
             android:textColor="@color/colorWhite"
             android:text="확인"/>
@@ -49,6 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginLeft="1dp"
+            android:textSize="15sp"
             android:background="@color/colorPrimary"
             android:textColor="@color/colorWhite"
             android:text="취소"/>

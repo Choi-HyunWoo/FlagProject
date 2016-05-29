@@ -20,10 +20,10 @@
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <ImageView
+                android:id="@+id/toolbar_logo"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginRight="5dp"
-                android:id="@+id/toolbar_logo" />
+                android:layout_marginRight="5dp" />
 
             <LinearLayout
                 android:id="@+id/toolbar_container_flag"
@@ -35,34 +35,58 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorWhite"
-                    android:textSize="18sp"
+                    android:textSize="15sp"
                     android:text="http://fflag.me/"/>
                 <EditText
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:id="@+id/toolbar_download_editText"
+                    android:imeOptions="actionGo"
+                    android:inputType="textUri"
                     android:singleLine="true"
                     android:hint=" ID입력/flag입력/" />
                 <ImageView
+                    android:id="@+id/toolbar_download_btn"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:id="@+id/toolbar_download_btn"
-                    android:src="@drawable/icon_download_underline"
-                    android:background="@color/colorAccent"
-                    android:textColor="@color/colorWhite"/>
+                    android:src="@drawable/icon_download_underline"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/toolbar_container_fm"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="18sp"
+                    android:text="내 파일"/>
+                <ImageView
+                    android:id="@+id/toolbar_folder_btn"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/icon_folder_plus"/>
+                <ImageView
+                    android:id="@+id/toolbar_delete_btn"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/icon_trash_can"/>
             </LinearLayout>
 
 
             <TextView
+                android:id="@+id/toolbar_settings_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/toolbar_title"
                 android:textColor="@color/colorWhite"
                 android:textSize="18sp"
-                android:text="http://fflag.me/"/>
-
-
+                android:text="설정"/>
 
          </android.support.v7.widget.Toolbar>
 
@@ -71,14 +95,4 @@
 
     <include layout="@layout/content_main" />
 
-    <!--
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginRight="@dimen/fab_marginRight"
-        android:layout_marginBottom="@dimen/fab_marginBottom"
-        android:src="@drawable/icon_mypage" />
-    -->
 </android.support.design.widget.CoordinatorLayout>

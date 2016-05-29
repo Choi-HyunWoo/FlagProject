@@ -75,6 +75,7 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
             }
         });
 
+
         NetworkManager.getInstance().userFileList(this, pageOwner, new NetworkManager.OnResultListener<UserPageResult>() {
             @Override
             public void onSuccess(UserPageResult result) {

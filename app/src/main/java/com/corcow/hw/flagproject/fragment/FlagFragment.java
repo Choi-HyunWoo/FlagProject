@@ -5,6 +5,7 @@ import android.animation.AnimatorInflater;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -18,12 +19,14 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -174,30 +177,13 @@ public class FlagFragment extends Fragment {
             public void onClick(View v) {
                 inputFlagName = selectedInputFlagView.getText().toString();
                 if (TextUtils.isEmpty(loggedInID)) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setIcon(R.drawable.app_logo);
-                    builder.setTitle("로그인");
-                    builder.setMessage("파일 업로드는 회원만 가능합니다\n로그인 하시겠습니까?");
-                    builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent(getActivity(), LoginActivity.class);
-                            startActivity(intent);
-                        }
-                    });
-                    builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    AlertDialog dlg = builder.create();
-                    dlg.show();
+                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                    Toast.makeText(getContext(), "업로드 시 로그인이 필요합니다 로그인 해주세요!", Toast.LENGTH_SHORT).show();
                 } else {
                     if (!TextUtils.isEmpty(inputFlagName)) {
                         startUpload();
                     } else {
-                        Toast.makeText(getContext(), "파일 별명을 지어주세요!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "업로드할 파일의 별명을 지어주세요!", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -224,48 +210,23 @@ public class FlagFragment extends Fragment {
         downloadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                input = downloadInputView.getText().toString();
-                if (!TextUtils.isEmpty(input)) {
-                    if(input.matches("[/]") && !input.endsWith("/")) {
-                        final String userID = input.split("[/]")[0];
-                        final String flagName = input.split("[/]")[1];
-                        NetworkManager.getInstance().fileInfo(getContext(), userID, flagName, new NetworkManager.OnResultListener<FileInfo>() {
-                            @Override
-                            public void onSuccess(FileInfo result) {
-                                DownloadDialog dlg = DownloadDialog.newInstance(userID, flagName, result.fileName, result.fileSize);
-                                dlg.show(getActivity().getSupportFragmentManager(), "");
-                                downloadInputView.setText("");
-                                input="";
-                            }
-                            @Override
-                            public void onFail(int code) {
-                                Toast.makeText(getContext(), "없는 사용자이거나 FLAG명이 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                    else {
-                        // 유저 페이지 실행
-//                        input = input.replaceAll("[]", "");
-                        NetworkManager.getInstance().userFileList(getContext(), input, new NetworkManager.OnResultListener<UserPageResult>() {
-                            @Override
-                            public void onSuccess(UserPageResult result) {
-                                Intent intent = new Intent(getActivity(), UserPageActivity.class);
-                                intent.putExtra(UserPageActivity.EXTRA_KEY_WHOS_PAGE, input);
-                                startActivity(intent);
-                                downloadInputView.setText("");
-                                input="";
-                            }
-                            @Override
-                            public void onFail(int code) {
-                                Toast.makeText(getContext(), "없는 사용자입니다. ID를 확인해주세요!", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                } else {
-                    Toast.makeText(getContext(), "ID 혹은 ID/FLAG 를 입력하세요", Toast.LENGTH_SHORT).show();
-                }
+                startDownload();
             }
         });
+
+        // 툴바 엔터 입력 시 이동
+        downloadInputView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    startDownload();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
 
         return view;
     }
@@ -280,6 +241,50 @@ public class FlagFragment extends Fragment {
         selectedInputContainer.setVisibility(View.INVISIBLE);
         fileIconContainer.setVisibility(View.INVISIBLE);
         resetVariables();
+    }
+
+    private void startDownload() {
+        input = downloadInputView.getText().toString();
+        if (!TextUtils.isEmpty(input)) {
+            if(input.matches("[/]") && !input.endsWith("/")) {
+                final String userID = input.split("[/]")[0];
+                final String flagName = input.split("[/]")[1];
+                NetworkManager.getInstance().fileInfo(getContext(), userID, flagName, new NetworkManager.OnResultListener<FileInfo>() {
+                    @Override
+                    public void onSuccess(FileInfo result) {
+                        DownloadDialog dlg = DownloadDialog.newInstance(userID, flagName, result.fileName, result.fileSize);
+                        dlg.show(getActivity().getSupportFragmentManager(), "");
+                        downloadInputView.setText("");
+                        input="";
+                    }
+                    @Override
+                    public void onFail(int code) {
+                        Toast.makeText(getContext(), "없는 사용자이거나 FLAG명이 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            else {
+                // 유저 페이지 실행
+                // input = input.replaceAll("[]", "");
+                NetworkManager.getInstance().userFileList(getContext(), input, new NetworkManager.OnResultListener<UserPageResult>() {
+                    @Override
+                    public void onSuccess(UserPageResult result) {
+                        Intent intent = new Intent(getActivity(), UserPageActivity.class);
+                        intent.putExtra(UserPageActivity.EXTRA_KEY_WHOS_PAGE, input);
+                        startActivity(intent);
+                        downloadInputView.setText("");
+                        input="";
+                    }
+                    @Override
+                    public void onFail(int code) {
+                        Toast.makeText(getContext(), "없는 사용자입니다. ID를 확인해주세요!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                hideKeyboard();
+            }
+        } else {
+            Toast.makeText(getContext(), "ID 혹은 ID/FLAG 를 입력하세요", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -455,6 +460,11 @@ public class FlagFragment extends Fragment {
         animator.setPropertyName("rotation");
         animator.setTarget(v);
         return animator;
+    }
+
+    private void hideKeyboard(){
+        InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 }
 

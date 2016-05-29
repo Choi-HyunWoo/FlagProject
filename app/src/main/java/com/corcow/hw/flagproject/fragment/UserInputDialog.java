@@ -1,6 +1,7 @@
 package com.corcow.hw.flagproject.fragment;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,12 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
-import com.corcow.hw.flagproject.activity.MainActivity;
 import com.corcow.hw.flagproject.activity.UserPageActivity;
 import com.corcow.hw.flagproject.manager.NetworkManager;
 import com.corcow.hw.flagproject.model.json.UserPageResult;
@@ -41,12 +42,12 @@ public class UserInputDialog extends DialogFragment {
         dlg.getWindow().setAttributes(params);
 
         getDialog().getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         View view = inflater.inflate(R.layout.fragment_user_input_dialog, container);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
@@ -54,12 +55,13 @@ public class UserInputDialog extends DialogFragment {
         okBtn = (Button)view.findViewById(R.id.btn_ok);
         cancelBtn = (Button)view.findViewById(R.id.btn_cancel);
 
+
         okBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final String inputId = idInputView.getText().toString();
                 if (TextUtils.isEmpty(inputId)) {
-                    Toast.makeText(getActivity(), "사용자명을 입력해주세요!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "검색할 사용자 ID을 입력해주세요!", Toast.LENGTH_SHORT).show();
                 } else {
                     NetworkManager.getInstance().userFileList(getContext(), inputId, new NetworkManager.OnResultListener<UserPageResult>() {
                         @Override
