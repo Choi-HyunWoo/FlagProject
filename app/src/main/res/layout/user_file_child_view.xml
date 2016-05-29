@@ -14,9 +14,9 @@
         android:orientation="horizontal"
         android:gravity="center"
         android:layout_weight="1">
-        <Button
+        <ImageView
             android:id="@+id/btn_download"
-            android:background="@drawable/icon_download"
+            android:src="@drawable/icon_download"
             android:layout_width="30dp"
             android:layout_height="30dp" />
         <TextView
@@ -34,9 +34,9 @@
         android:orientation="horizontal"
         android:gravity="center"
         android:layout_weight="1">
-        <Button
+        <ImageView
             android:id="@+id/btn_copy"
-            android:background="@drawable/icon_copy"
+            android:src="@drawable/icon_copy"
             android:layout_width="30dp"
             android:layout_height="30dp" />
         <TextView
@@ -54,9 +54,9 @@
         android:orientation="horizontal"
         android:gravity="center"
         android:layout_weight="1">
-        <Button
+        <ImageView
             android:id="@+id/btn_public"
-            android:background="@drawable/icon_private"
+            android:src="@drawable/icon_private"
             android:layout_width="30dp"
             android:layout_height="30dp" />
         <TextView
@@ -74,9 +74,9 @@
         android:orientation="horizontal"
         android:gravity="center"
         android:layout_weight="1">
-        <Button
+        <ImageView
             android:id="@+id/btn_delete"
-            android:background="@drawable/icon_delete"
+            android:src="@drawable/icon_delete"
             android:layout_width="30dp"
             android:layout_height="30dp" />
         <TextView

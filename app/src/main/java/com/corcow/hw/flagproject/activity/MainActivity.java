@@ -243,6 +243,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        loggedInID = UserManager.getInstance().getUserID();
+    }
+    @Override
     protected void onResume() {
         super.onResume();
         loggedInID = UserManager.getInstance().getUserID();

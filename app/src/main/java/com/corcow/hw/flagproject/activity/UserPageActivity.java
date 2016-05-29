@@ -1,5 +1,7 @@
 package com.corcow.hw.flagproject.activity;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -46,7 +48,7 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
         Intent intent = getIntent();
         ownerNameView = (TextView)findViewById(R.id.page_owner);
         pageOwner = intent.getStringExtra(MainActivity.EXTRA_KEY_WHOS_PAGE);
-        if (pageOwner.equals(loggedInID)) {
+        if (isMyPage()) {
             ownerNameView.setText("내가 업로드한 파일");
         } else {
             ownerNameView.setText(pageOwner + " 님이 업로드한 파일");
@@ -73,9 +75,22 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
         NetworkManager.getInstance().userFileList(this, pageOwner, new NetworkManager.OnResultListener<UserPageResult>() {
             @Override
             public void onSuccess(UserPageResult result) {
+                mAdapter.setIsMyPage(isMyPage());
                 for (UserFile userFile : result.file) {
-                    mAdapter.add(userFile, userFile.filePrivate, pageOwner);
+                    // 내 페이지라면,
+                    if (isMyPage()) {
+                        mAdapter.add(userFile, userFile.filePrivate, pageOwner);
+                        mAdapter.setIsMyPage(isMyPage());
+                    }
+                    // 내 페이지가 아니라면,
+                    else {
+                        // public 인 파일들만 담는다.
+                        if (userFile.filePrivate.equals("public")) {
+                            mAdapter.add(userFile, userFile.filePrivate, pageOwner);
+                        }
+                    }
                 }
+                mAdapter.setIsMyPage(isMyPage());
             }
             @Override
             public void onFail(int code) {
@@ -83,8 +98,10 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
             }
         });
 
+    }
 
-
+    private boolean isMyPage() {
+        return (pageOwner.equalsIgnoreCase(loggedInID));
     }
 
     @Override
@@ -111,4 +128,11 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
         });
     }
 
+    private static final String LABEL_COPY_URL= "DOWNLOAD_URL";
+    @Override
+    public void onAdapterCopyBtnClick(String copyUrl) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(LABEL_COPY_URL, copyUrl);
+        clipboard.setPrimaryClip(clip);
+    }
 }

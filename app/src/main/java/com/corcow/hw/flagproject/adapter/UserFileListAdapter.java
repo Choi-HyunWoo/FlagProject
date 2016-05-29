@@ -16,9 +16,10 @@ import java.util.List;
 /**
  * Created by multimedia on 2016-05-17.
  */
-public class UserFileListAdapter extends BaseExpandableListAdapter implements UserFileChildView.OnDownloadBtnClickListener {
+public class UserFileListAdapter extends BaseExpandableListAdapter implements UserFileChildView.OnChildBtnClickListener {
 
     List<UserFileParent> items = new ArrayList<UserFileParent>();
+    boolean isMyPage = false;
 
     public void add(UserFile item, String isPublic, String pageOwner) {
         UserFileParent parent = new UserFileParent();
@@ -35,6 +36,11 @@ public class UserFileListAdapter extends BaseExpandableListAdapter implements Us
 
         notifyDataSetChanged();
     }
+
+    public void setIsMyPage(boolean isMyPage) {
+        this.isMyPage = isMyPage;
+    }
+
 
     @Override
     public int getGroupCount() {
@@ -92,8 +98,9 @@ public class UserFileListAdapter extends BaseExpandableListAdapter implements Us
         else {
             view = new UserFileChildView(parent.getContext());
         }
+        view.setIsMyPage(isMyPage);
         view.setChildItem(items.get(groupPosition).child, items.get(groupPosition));
-        view.setOnDownloadBtnClickListener(this);
+        view.setOnChildBtnClickListener(this);
         return view;
     }
 
@@ -103,18 +110,23 @@ public class UserFileListAdapter extends BaseExpandableListAdapter implements Us
     }
 
 
-
+    // set Child item click listener
     @Override
     public void onDownloadBtnClick(String pageOwnerID, String flagName) {
         mListener.onAdapterDownloadBtnClick(pageOwnerID, flagName);
     }
 
+    @Override
+    public void onCopyBtnClick(String copyUrl) {
+        mListener.onAdapterCopyBtnClick(copyUrl);
+    }
+
     public interface OnAdapterDownloadBtnClickListener {
         public void onAdapterDownloadBtnClick(String pageOwnerID, String flagName);
+        public void onAdapterCopyBtnClick(String copyUrl);
     }
     OnAdapterDownloadBtnClickListener mListener;
     public void setOnAdapterBtnClickListener(OnAdapterDownloadBtnClickListener listener) {
         mListener = listener;
     }
-
 }

@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -26,8 +27,10 @@ public class UserFileChildView extends FrameLayout {
     String isPublic;
     String logedInID;
     UserFileParent parent;
+    boolean isMyPage;
 
     LinearLayout downloadButton, copyButton, publicButton, deleteButton;
+    ImageView publicImage;
 
     public UserFileChildView(Context context) {
         super(context);
@@ -37,6 +40,8 @@ public class UserFileChildView extends FrameLayout {
     private void init() {
         inflate(getContext(), R.layout.user_file_child_view, this);
         logedInID = UserManager.getInstance().getUserID();
+
+        publicImage = (ImageView) findViewById(R.id.btn_public);
 
         // 다운로드
         // Private, Public
@@ -73,7 +78,8 @@ public class UserFileChildView extends FrameLayout {
             public void onClick(View v) {
                 // copy
                 // 클립보드 복사
-                Toast.makeText(getContext(), "http://fflag.me/"+parent.pageOwner+"/"+parent.flagName, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "http://fflag.me/" + parent.pageOwner + "/" + parent.flagName + " URL이 복사되었습니다.", Toast.LENGTH_SHORT).show();
+                mListener.onCopyBtnClick("http://fflag.me/"+parent.pageOwner+"/"+parent.flagName);
             }
         });
 
@@ -90,7 +96,16 @@ public class UserFileChildView extends FrameLayout {
                 NetworkManager.getInstance().filePrivate(getContext(), _id, new NetworkManager.OnResultListener<String>() {
                     @Override
                     public void onSuccess(String result) {
-                        Toast.makeText(getContext(), "" + result, Toast.LENGTH_SHORT).show();
+                        // 공개 상태일 때 눌렸다면,
+                        if (isPublic.equals("public")) {
+                            Toast.makeText(getContext(), parent.flagName + " 파일을 공개하지 않습니다.." + result, Toast.LENGTH_SHORT).show();
+                            publicImage.setImageResource(R.drawable.icon_private);
+                            isPublic = "private";
+                        } else {
+                            Toast.makeText(getContext(), parent.flagName + " 파일을 공개합니다.", Toast.LENGTH_SHORT).show();
+                            publicImage.setImageResource(R.drawable.icon_public);
+                            isPublic = "public";
+                        }
                     }
 
                     @Override
@@ -98,7 +113,6 @@ public class UserFileChildView extends FrameLayout {
                         Toast.makeText(getContext(), "공개범위 변경 실패:" + code, Toast.LENGTH_SHORT).show();
                     }
                 });
-
             }
         });
 
@@ -113,17 +127,21 @@ public class UserFileChildView extends FrameLayout {
                 NetworkManager.getInstance().fileDelete(getContext(), _id, new NetworkManager.OnResultListener<String>() {
                     @Override
                     public void onSuccess(String result) {
-                        Toast.makeText(getContext(), ""+result, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "" + result, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onFail(int code) {
-                        Toast.makeText(getContext(), "파일 삭제 실패:"+code, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "파일 삭제 실패:" + code, Toast.LENGTH_SHORT).show();
                     }
                 });
 
             }
         });
+        if (isMyPage) {
+            deleteButton.setVisibility(GONE);
+            publicButton.setVisibility(GONE);
+        }
     }
 
 
@@ -131,15 +149,24 @@ public class UserFileChildView extends FrameLayout {
         isPublic = child.isPublic;
         this.parent = parent;
         this._id = parent._id;
+        if (isPublic.equals("public")) {
+            publicImage.setImageResource(R.drawable.icon_public);
+        } else {
+            publicImage.setImageResource(R.drawable.icon_private);
+        }
     }
 
+    public void setIsMyPage(boolean isMyPage) {
+        this.isMyPage = isMyPage;
+    }
 
-    public interface OnDownloadBtnClickListener {
+    public interface OnChildBtnClickListener {
         public void onDownloadBtnClick(String pageOwnerID, String flagName);
+        public void onCopyBtnClick(String copyUrl);
         // 다른 Button click methods 추가 가능
     }
-    OnDownloadBtnClickListener mListener;
-    public void setOnDownloadBtnClickListener(OnDownloadBtnClickListener listener) {
+    OnChildBtnClickListener mListener;
+    public void setOnChildBtnClickListener(OnChildBtnClickListener listener) {
         mListener = listener;
     }
 

@@ -256,6 +256,7 @@ public class FileSelectDialog extends DialogFragment {
                 draggingPosition = newPosition;
             }
         });
+
         fileGridView.setOnDropListener(new DynamicGridView.OnDropListener() {
             @Override
             public void onActionDrop() {
@@ -266,9 +267,15 @@ public class FileSelectDialog extends DialogFragment {
                     // Drop position의 아이템이 파일인지 폴더인지 판별.
                     // 폴더라면 해당 폴더로 파일이 이동된다.  /  파일이라면 아무일 안생김.
                     if (draggingPosition != -1 && draggingPosition != originalPosition) {
+                        File originFile = new File(((FileGridItem) mAdapter.getItem(originalPosition)).absolutePath);
                         File droppedFile = new File(((FileGridItem) mAdapter.getItem(draggingPosition)).absolutePath);
                         if (droppedFile.isDirectory()) {
-                            Utilities.moveFile(((FileGridItem) mAdapter.getItem(originalPosition)).absolutePath, droppedFile.getAbsolutePath());
+                            if (originFile.isDirectory()) {
+                                Toast.makeText(getContext(), originFile.getName() + " 폴더가 " + (droppedFile.getName().equals("0") ? "최상위" : droppedFile.getName()) + " 폴더로 이동되었습니다.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getContext(), originFile.getName() + " 파일이 " + droppedFile.getName() + " 폴더로 이동되었습니다.", Toast.LENGTH_SHORT).show();
+                            }
+                            Utilities.moveFile(originFile.getAbsolutePath(), droppedFile.getAbsolutePath());
                             mAdapter.delete(originalPosition);          // GridView 에서도 지워준다.
                         }
                     }
