@@ -39,6 +39,7 @@ public class FileSelectDialog extends DialogFragment {
     // 더블클릭 시 파일 실행
     boolean isFirstClicked = false;
     int mFirstTouchedPosition = -1;
+    boolean isSelected = false;
     private static final int MESSAGE_DOUBLE_TOUCH_TIMEOUT = 2;         // Handler message
     private static final int TIMEOUT_DOUBLE_TOUCH_DELAY = 1000;        // timeout delay
     // Timeout handler
@@ -124,6 +125,7 @@ public class FileSelectDialog extends DialogFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                // 파일 선택
                 // Item select
                 selectedPos = position;
                 if (preSelectedPos == -1) {
@@ -177,7 +179,7 @@ public class FileSelectDialog extends DialogFragment {
                     mFirstTouchedPosition = position;        // TIMEOUT 뒤에 position -1로 초기화
                     mHandler.sendEmptyMessageDelayed(MESSAGE_DOUBLE_TOUCH_TIMEOUT, TIMEOUT_DOUBLE_TOUCH_DELAY);           // TIMEOUT_FILE_OPEN_DELAY (1초) 기다림
                 }
-                // 첫 클릭 후 TIMEOUT 대기상태라면 (첫 클릭이 있은 후 시간제한이 지나지 않았다면)
+                // 첫 클릭 후 TIMEOUT 대기상태에 클릭되었다면 (첫 클릭이 있은 후 시간제한이 지나지 않았다면)
                 else {
                     // 뭐가 눌렸는지 확인하자
                     // TIMEOUT_DOUBLE_TOUCH_DELAY 안에 같은 아이템이 또 눌린경우 (더블터치 된 경우)
@@ -217,6 +219,7 @@ public class FileSelectDialog extends DialogFragment {
                         mHandler.sendEmptyMessageDelayed(MESSAGE_DOUBLE_TOUCH_TIMEOUT, TIMEOUT_DOUBLE_TOUCH_DELAY);           // TIMEOUT_FILE_OPEN_DELAY (1초) 기다림
                     }
                 }
+
             }
         });
         fileGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -229,70 +232,6 @@ public class FileSelectDialog extends DialogFragment {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
-            }
-        });
-        fileGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                // LongClick 시 편집 모드 시작 (Drag Start)
-                boolean isParentDir = ((FileGridItem)mAdapter.getItem(position)).iconImgResource==R.drawable.icon_file_folder_parent;
-                if (!isParentDir) {
-                    fileGridView.startEditMode(position);
-                }
-                return true;
-            }
-        });
-        fileGridView.setOnDragListener(new DynamicGridView.OnDragListener() {
-            @Override
-            public void onDragStarted(int position) {
-                // Drag 시작 위치 저장
-                originalPosition = position;
-                isScrolled = false;
-            }
-
-            @Override
-            public void onDragPositionsChanged(int oldPosition, int newPosition) {
-                // Drag position이 변화 시 draggingPosition 갱신
-                draggingPosition = newPosition;
-            }
-        });
-
-        fileGridView.setOnDropListener(new DynamicGridView.OnDropListener() {
-            @Override
-            public void onActionDrop() {
-                if (!isScrolled) {
-                    // 스크롤 되지 않았을 때만 파일 이동이 가능!
-
-                    // Drop 시 draggingPosition에 grid 아이템이 존재한다면, (draggingPosition != -1)
-                    // Drop position의 아이템이 파일인지 폴더인지 판별.
-                    // 폴더라면 해당 폴더로 파일이 이동된다.  /  파일이라면 아무일 안생김.
-                    if (draggingPosition != -1 && draggingPosition != originalPosition) {
-                        File originFile = new File(((FileGridItem) mAdapter.getItem(originalPosition)).absolutePath);
-                        File droppedFile = new File(((FileGridItem) mAdapter.getItem(draggingPosition)).absolutePath);
-                        if (droppedFile.isDirectory()) {
-                            if (originFile.isDirectory()) {
-                                Toast.makeText(getContext(), originFile.getName() + " 폴더가 " + (droppedFile.getName().equals("0") ? "최상위" : droppedFile.getName()) + " 폴더로 이동되었습니다.", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(getContext(), originFile.getName() + " 파일이 " + droppedFile.getName() + " 폴더로 이동되었습니다.", Toast.LENGTH_SHORT).show();
-                            }
-                            Utilities.moveFile(originFile.getAbsolutePath(), droppedFile.getAbsolutePath());
-                            mAdapter.delete(originalPosition);          // GridView 에서도 지워준다.
-                        }
-                    }
-
-                    // Drop 시 Editmode는 종료, Drag를 시작한 position, Edit중인 current position을 초기화
-                    fileGridView.stopEditMode();
-                    originalPosition = -1;
-                    draggingPosition = -1;
-                } else {
-                    // 스크롤 되었다면 Drop 시 스크롤 변수를 False로 초기화
-                    isScrolled = false;
-                    fileGridView.stopEditMode();
-                    originalPosition = -1;
-                    draggingPosition = -1;
-                }
-                selectedPos = -1;
-                preSelectedPos = -1;
             }
         });
 

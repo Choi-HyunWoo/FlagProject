@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.model.FileGridItem;
 import com.corcow.hw.flagproject.util.Utilities;
@@ -58,6 +59,10 @@ public class FileGridAdpater extends BaseDynamicGridAdapter {
         notifyDataSetChanged();
     }
 
+    public boolean getSelectedState(int selectedPos) {
+        return ((FileGridItem) super.getItem(selectedPos)).getSelectedState();
+    }
+
     @Override
     public Object getItem(int position) {
         return super.getItem(position);
@@ -94,18 +99,20 @@ public class FileGridAdpater extends BaseDynamicGridAdapter {
         }
         public void build(FileGridItem item) {
             if (item.iconImgResource == FileGridItem.IS_IMAGE_FILE) {
-                File imgFile = new File(Utilities.getThumnailPath(getContext(), item.absolutePath));
-                if(imgFile.exists()){
-                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                    fileIconView.setImageBitmap(myBitmap);
-                }
+                Glide.with(getContext())
+                        .load(item.absolutePath)
+                        .thumbnail(0.1f)
+                        .dontAnimate()
+                        .into(fileIconView);
             } else if (item.iconImgResource == FileGridItem.IS_VIDEO_FILE) {
-                Bitmap bmThumbnail = ThumbnailUtils.createVideoThumbnail(item.absolutePath, MediaStore.Video.Thumbnails.MICRO_KIND);
-                fileIconView.setImageBitmap(bmThumbnail);
+                Glide.with(getContext())
+                        .load(item.absolutePath)
+                        .thumbnail(0.1f)
+                        .dontAnimate()
+                        .into(fileIconView);
             } else {
-                fileIconView.setImageResource(item.iconImgResource);
+                Glide.with(getContext()).load(item.iconImgResource).into(fileIconView);
             }
-
             fileNameView.setText(item.fileName);
         }
 

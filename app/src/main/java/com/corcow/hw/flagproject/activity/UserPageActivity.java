@@ -155,6 +155,7 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
                     @Override
                     public void onSuccess(String result) {
                         Toast.makeText(UserPageActivity.this, flagName + "파일이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                        mAdapter.delete(flagName);
                     }
                     @Override
                     public void onFail(int code) {

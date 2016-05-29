@@ -346,7 +346,7 @@ public class Utilities {
 
     // 특수문자 찾기 (특수문자가 있으면 true)
     public static boolean specialWordCheck(String input) {
-        return input.matches("[a-zA-Z0-9`~!@#$%^&*()-=_+\\\\[\\\\]{}:;',./<>?\\\\\\\\|]*$");
+        return input.matches("[0-9`~!@#$%^&*()-=_+\\\\[\\\\]{}:;',./<>?\\\\\\\\|]*$");
     }
 
 }

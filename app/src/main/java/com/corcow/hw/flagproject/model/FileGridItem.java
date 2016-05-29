@@ -32,4 +32,8 @@ public class FileGridItem {
         isSelected = selectedState;
     }
 
+    public boolean getSelectedState() {
+        return isSelected;
+    }
+
 }

@@ -37,6 +37,14 @@ public class UserFileListAdapter extends BaseExpandableListAdapter implements Us
         notifyDataSetChanged();
     }
 
+    public void delete(String flagName) {
+        for(UserFileParent parent : items) {
+            if (parent.flagName.equals(flagName))
+                items.remove(parent);
+        }
+        notifyDataSetChanged();
+    }
+
     public void setIsMyPage(boolean isMyPage) {
         this.isMyPage = isMyPage;
     }

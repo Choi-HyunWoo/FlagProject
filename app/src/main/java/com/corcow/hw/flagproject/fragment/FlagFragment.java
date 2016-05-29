@@ -147,6 +147,12 @@ public class FlagFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // 파일 선택 Dialog 출력
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm.isAcceptingText()) {
+                    hideKeyboard();Log.d("KEYBOARD", "보임");
+                } else {
+                    Log.d("KEYBOARD", "안보임");
+                }
                 dialog = new FileSelectDialog();
                 dialog.setDialogResult(new FileSelectDialog.OnDialogResult() {
                     @Override
@@ -185,6 +191,13 @@ public class FlagFragment extends Fragment {
                     } else if (Utilities.specialWordCheck(inputFlagName)) {
                         Toast.makeText(getContext(), "파일의 별명에 특수문자를 붙일 수 없습니다.", Toast.LENGTH_SHORT).show();
                     } else {
+                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (imm.isAcceptingText()) {
+                            hideKeyboard();
+                            Log.d("KEYBOARD", "보임");
+                        } else {
+                            Log.d("KEYBOARD", "안보임");
+                        }
                         startUpload();
                     }
                 }
