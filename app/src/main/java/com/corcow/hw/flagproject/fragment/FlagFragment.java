@@ -18,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -35,10 +37,14 @@ import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.activity.LoginActivity;
+import com.corcow.hw.flagproject.activity.MainActivity;
 import com.corcow.hw.flagproject.manager.NetworkManager;
 import com.corcow.hw.flagproject.manager.UserManager;
 import com.corcow.hw.flagproject.model.json.FileInfo;
 import com.corcow.hw.flagproject.util.Utilities;
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
+import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
 import java.io.File;
 
@@ -173,7 +179,7 @@ public class FlagFragment extends Fragment {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setIcon(R.drawable.app_logo);
                     builder.setTitle("로그인");
-                    builder.setMessage("파일 업로드는 회원만 가능합니다\n로그인 페이지로 이동하시겠습니까?");
+                    builder.setMessage("파일 업로드는 회원만 가능합니다\n로그인 하시겠습니까?");
                     builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -184,6 +190,7 @@ public class FlagFragment extends Fragment {
                     builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
                         }
                     });
                     AlertDialog dlg = builder.create();
@@ -253,6 +260,7 @@ public class FlagFragment extends Fragment {
         fileIconContainer.setVisibility(View.INVISIBLE);
         resetVariables();
     }
+
 
     private void setSelectedAnimation() {
         // 파일 선택 후 정보 입력 모드

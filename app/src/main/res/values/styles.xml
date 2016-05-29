@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -27,6 +27,12 @@
     <style name="DialogAnimation">
         <item name="android:windowEnterAnimation">@anim/slide_up</item>
         <item name="android:windowExitAnimation">@anim/slide_down</item>
+    </style>
+
+    <style name="FabTheme">
+        <item name="android:background">@color/colorAccent</item>
+        <item name="android:layout_marginBottom">@dimen/fab_marginBottom</item>
+        <item name="android:layout_marginRight">@dimen/fab_marginRight</item>
     </style>
 
 </resources>

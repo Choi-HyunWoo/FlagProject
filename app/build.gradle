@@ -31,5 +31,6 @@ dependencies {
     compile 'com.github.tibolte:elasticdownload:1.0.+'
     compile 'com.yalantis:phoenix:1.2.3'
 
+    compile 'com.oguzdev:CircularFloatingActionMenu:1.0.2'
 
 }

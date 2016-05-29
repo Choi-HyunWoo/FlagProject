@@ -103,7 +103,7 @@ public class FileSelectDialog extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_file_select, container);
+        View view = inflater.inflate(R.layout.fragment_file_select_dialog, container);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
         // View Initialize

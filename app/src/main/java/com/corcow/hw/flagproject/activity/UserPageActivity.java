@@ -2,14 +2,10 @@ package com.corcow.hw.flagproject.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +18,6 @@ import com.corcow.hw.flagproject.manager.UserManager;
 import com.corcow.hw.flagproject.model.json.FileInfo;
 import com.corcow.hw.flagproject.model.json.UserFile;
 import com.corcow.hw.flagproject.model.json.UserPageResult;
-import com.corcow.hw.flagproject.view.UserFileChildView;
 import com.yalantis.phoenix.PullToRefreshView;
 
 public class UserPageActivity extends AppCompatActivity implements UserFileListAdapter.OnAdapterDownloadBtnClickListener {
@@ -33,13 +28,6 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
     UserFileListAdapter mAdapter;
 
     private static final int REFRESH_DELAY = 1000;
-
-    /** TODO 160517
-     *
-     * 1. 리스트뷰는 Expandable , PullToRefresh 로 구현
-     * 2. Expand child item에 copy 버튼 및 public/private 설정 가능하도록...
-     *
-     */
 
     String loggedInID;
     String pageOwner;
@@ -54,15 +42,6 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         loggedInID = UserManager.getInstance().getUserID();
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         Intent intent = getIntent();
         ownerNameView = (TextView)findViewById(R.id.page_owner);
@@ -91,7 +70,7 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
             }
         });
 
-        NetworkManager.getInstance().userFileList(this, loggedInID, new NetworkManager.OnResultListener<UserPageResult>() {
+        NetworkManager.getInstance().userFileList(this, pageOwner, new NetworkManager.OnResultListener<UserPageResult>() {
             @Override
             public void onSuccess(UserPageResult result) {
                 for (UserFile userFile : result.file) {

@@ -71,6 +71,7 @@
 
     <include layout="@layout/content_main" />
 
+    <!--
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
@@ -79,5 +80,5 @@
         android:layout_marginRight="@dimen/fab_marginRight"
         android:layout_marginBottom="@dimen/fab_marginBottom"
         android:src="@drawable/icon_mypage" />
-
+    -->
 </android.support.design.widget.CoordinatorLayout>
