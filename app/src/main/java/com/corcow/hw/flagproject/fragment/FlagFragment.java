@@ -324,6 +324,7 @@ public class FlagFragment extends Fragment {
             mHandler.removeCallbacks(this);
         }
     };
+
     /** 실제 파일 전송
      *
      */

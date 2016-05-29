@@ -14,7 +14,7 @@
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/icon_otherspage_white"/>
+            android:src="@drawable/icon_white_folder"/>
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -23,16 +23,15 @@
             android:background="@color/colorPrimary"
             android:textColor="@color/colorWhite"
             android:textSize="20sp"
-            android:text="다른 사용자 검색" />
+            android:text="폴더 생성" />
     </LinearLayout>
-
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center_vertical"
         android:padding="@dimen/activity_horizontal_margin"
+        android:gravity="center_vertical"
         android:orientation="vertical">
         <TextView
             android:layout_width="wrap_content"
@@ -40,13 +39,13 @@
             android:textSize="15sp"
             android:text="다른 사람의 클라우드를 검색합니다."/>
         <EditText
-            android:id="@+id/id_input_view"
+            android:id="@+id/name_input_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:singleLine="true"
             android:imeOptions="actionGo"
-            android:hint="찾으려는 사용자의 아이디를 입력하세요"/>
+            android:hint="폴더 이름을 입력하세요"/>
     </LinearLayout>
 
     <LinearLayout
@@ -73,6 +72,5 @@
             android:textColor="@color/colorWhite"
             android:text="취소"/>
     </LinearLayout>
-
 
 </LinearLayout>

@@ -1,7 +1,6 @@
 package com.corcow.hw.flagproject.fragment;
 
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -9,6 +8,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -311,7 +310,24 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         folderAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Toast.makeText(getContext(), "폴더생성", Toast.LENGTH_SHORT).show();
+                FolderNameInputDialog dialog = new FolderNameInputDialog();
+                dialog.setDialogResult(new FolderNameInputDialog.OnDialogResult() {
+                    @Override
+                    public void onFinishDialog(String folderName) {
+                        // 폴더 생성
+                        File newFolder = new File(currentPath + "/" + folderName);
+                        if(!newFolder.exists()) {
+                            newFolder.mkdir();
+                        }
+                        // Grid Item 추가
+                        FileGridItem parentItem = new FileGridItem(folderName, newFolder.getAbsolutePath());
+                        parentItem.iconImgResource = R.drawable.icon_file_folder_small;
+                        fileGridView.smoothScrollToPosition(mAdapter.getCount());
+                        mAdapter.add(parentItem);
+                    }
+                });
+                dialog.show(getActivity().getSupportFragmentManager(), "");
             }
         });
         // 파일 삭제
@@ -321,7 +337,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                 if (!currentPath.equals(rootPath)) {
                     if (selectedPos!=0) {
                         fileDelete();
-                    } 
+                    }
                 } else {
                     fileDelete();
                 }

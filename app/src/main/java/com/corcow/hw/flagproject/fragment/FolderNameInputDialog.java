@@ -1,34 +1,35 @@
 package com.corcow.hw.flagproject.fragment;
 
 import android.app.Dialog;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
-import com.corcow.hw.flagproject.activity.UserPageActivity;
-import com.corcow.hw.flagproject.manager.NetworkManager;
-import com.corcow.hw.flagproject.model.json.UserPageResult;
 
 /**
  * Created by multimedia on 2016-05-29.
  */
-public class UserInputDialog extends DialogFragment {
+public class FolderNameInputDialog extends DialogFragment {
 
-    EditText idInputView;
+    public interface OnDialogResult {
+        void onFinishDialog (String folderName);
+    }
+    OnDialogResult mDialogResult; // the callback
+    public void setDialogResult(OnDialogResult dialogResult){
+        mDialogResult = dialogResult;
+    }
+
+    EditText folderInputView;
     Button okBtn, cancelBtn;
 
     @Override
@@ -49,19 +50,19 @@ public class UserInputDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        View view = inflater.inflate(R.layout.fragment_user_input_dialog, container);
+        View view = inflater.inflate(R.layout.fragment_folder_name_input_dialog, container);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-        idInputView = (EditText)view.findViewById(R.id.id_input_view);
+        folderInputView = (EditText)view.findViewById(R.id.name_input_view);
         okBtn = (Button)view.findViewById(R.id.btn_ok);
         cancelBtn = (Button)view.findViewById(R.id.btn_cancel);
 
 
-        idInputView.setOnKeyListener(new View.OnKeyListener() {
+        folderInputView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
-                    searchUser();
+                    makeFolder();
                     return true;
                 }
                 return false;
@@ -70,7 +71,7 @@ public class UserInputDialog extends DialogFragment {
         okBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchUser();
+                makeFolder();
             }
         });
 
@@ -85,27 +86,17 @@ public class UserInputDialog extends DialogFragment {
         return view;
     }
 
+    private boolean folderNameCheck(String input) {
+        return input.matches("/[\\{\\}\\[\\]\\/?.,;:|\\)*~`!^\\-_+<>@\\#$%&\\\\\\=\\(\\'\\\"]/gi");
+    }
 
-    private void searchUser() {
-        final String inputId = idInputView.getText().toString();
-        if (TextUtils.isEmpty(inputId)) {
-            Toast.makeText(getActivity(), "검색할 사용자 ID을 입력해주세요!", Toast.LENGTH_SHORT).show();
-        } else if (inputId.contains("/")) {
-            Toast.makeText(getActivity(), "ID에는 특수문자가 들어갈 수 없습니다.", Toast.LENGTH_SHORT).show();
+    private void makeFolder() {
+        String folderName = folderInputView.getText().toString();
+        if (folderNameCheck(folderName)) {
+            Toast.makeText(getActivity(), "폴더 이름에는 특수문자가 들어갈 수 없습니다.", Toast.LENGTH_SHORT).show();
         } else {
-            NetworkManager.getInstance().userFileList(getContext(), inputId, new NetworkManager.OnResultListener<UserPageResult>() {
-                @Override
-                public void onSuccess(UserPageResult result) {
-                    Intent intent = new Intent(getActivity(), UserPageActivity.class);
-                    intent.putExtra(UserPageActivity.EXTRA_KEY_WHOS_PAGE, inputId);
-                    startActivity(intent);
-                }
-
-                @Override
-                public void onFail(int code) {
-                    Toast.makeText(getContext(), "없는 사용자입니다. ID를 확인해주세요!", Toast.LENGTH_SHORT).show();
-                }
-            });
+            mDialogResult.onFinishDialog(folderName);
+            FolderNameInputDialog.this.dismiss();
         }
     }
 }

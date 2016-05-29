@@ -148,7 +148,7 @@ public class UserFileChildView extends FrameLayout {
 
             }
         });
-        if (isMyPage) {
+        if (!isMyPage) {
             deleteButton.setVisibility(GONE);
             publicButton.setVisibility(GONE);
         }
