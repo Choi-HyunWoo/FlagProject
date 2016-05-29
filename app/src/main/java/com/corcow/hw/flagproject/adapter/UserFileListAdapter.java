@@ -115,15 +115,19 @@ public class UserFileListAdapter extends BaseExpandableListAdapter implements Us
     public void onDownloadBtnClick(String pageOwnerID, String flagName) {
         mListener.onAdapterDownloadBtnClick(pageOwnerID, flagName);
     }
-
     @Override
     public void onCopyBtnClick(String copyUrl) {
         mListener.onAdapterCopyBtnClick(copyUrl);
+    }
+    @Override
+    public void onDeleteBtnClick(String flagName, String _id) {
+        mListener.onAdapterDeleteBtnClick(flagName, _id);
     }
 
     public interface OnAdapterDownloadBtnClickListener {
         public void onAdapterDownloadBtnClick(String pageOwnerID, String flagName);
         public void onAdapterCopyBtnClick(String copyUrl);
+        public void onAdapterDeleteBtnClick(String flagName, String _id);
     }
     OnAdapterDownloadBtnClickListener mListener;
     public void setOnAdapterBtnClickListener(OnAdapterDownloadBtnClickListener listener) {

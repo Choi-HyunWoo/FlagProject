@@ -267,7 +267,6 @@ public class FlagFragment extends Fragment {
             }
             else {
                 // 유저 페이지 실행
-                // input = input.replaceAll("[]", "");
                 NetworkManager.getInstance().userFileList(getContext(), input, new NetworkManager.OnResultListener<UserPageResult>() {
                     @Override
                     public void onSuccess(UserPageResult result) {

@@ -119,38 +119,15 @@ public class UserFileChildView extends FrameLayout {
             @Override
             public void onClick(View v) {
                 // delete
-                // 삭제 전에 dialog로 한번 물어보자!!
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setIcon(R.drawable.icon_warning);
-                builder.setTitle("파일을 삭제하시겠습니까?");
-                builder.setMessage(parent.flagName + " 파일을 삭제하시겠습니까?\n삭제한 파일은 복구할 수 없습니다.");
-                builder.setNeutralButton("예", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        NetworkManager.getInstance().fileDelete(getContext(), _id, new NetworkManager.OnResultListener<String>() {
-                            @Override
-                            public void onSuccess(String result) {
-                                Toast.makeText(getContext(), parent.flagName + "파일이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
-                            }
-                            @Override
-                            public void onFail(int code) {
-                                Toast.makeText(getContext(), "파일 삭제 실패:" + code, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                });
-                builder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
+                mListener.onDeleteBtnClick(parent.flagName, _id);
             }
         });
         if (!isMyPage) {
             deleteButton.setVisibility(GONE);
             publicButton.setVisibility(GONE);
+        } else {
+            deleteButton.setVisibility(VISIBLE);
+            publicButton.setVisibility(VISIBLE);
         }
     }
 
@@ -164,6 +141,13 @@ public class UserFileChildView extends FrameLayout {
         } else {
             publicImage.setImageResource(R.drawable.icon_private);
         }
+        if (!isMyPage) {
+            deleteButton.setVisibility(GONE);
+            publicButton.setVisibility(GONE);
+        } else {
+            deleteButton.setVisibility(VISIBLE);
+            publicButton.setVisibility(VISIBLE);
+        }
     }
 
     public void setIsMyPage(boolean isMyPage) {
@@ -173,6 +157,7 @@ public class UserFileChildView extends FrameLayout {
     public interface OnChildBtnClickListener {
         public void onDownloadBtnClick(String pageOwnerID, String flagName);
         public void onCopyBtnClick(String copyUrl);
+        public void onDeleteBtnClick(String flagName, String _id);
         // 다른 Button click methods 추가 가능
     }
     OnChildBtnClickListener mListener;

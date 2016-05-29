@@ -2,8 +2,10 @@ package com.corcow.hw.flagproject.activity;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -116,6 +118,8 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
         return super.onOptionsItemSelected(item);
     }
 
+
+    // Child Item click event listeners
     @Override
     public void onAdapterDownloadBtnClick(final String pageOwnerID, final String flagName) {
         NetworkManager.getInstance().fileInfo(this, pageOwnerID, flagName, new NetworkManager.OnResultListener<FileInfo>() {
@@ -131,12 +135,41 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
             }
         });
     }
-
     private static final String LABEL_COPY_URL= "DOWNLOAD_URL";
     @Override
     public void onAdapterCopyBtnClick(String copyUrl) {
         ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText(LABEL_COPY_URL, copyUrl);
         clipboard.setPrimaryClip(clip);
+    }
+    @Override
+    public void onAdapterDeleteBtnClick(final String flagName, final String _id) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(UserPageActivity.this);
+        builder.setIcon(R.drawable.icon_warning);
+        builder.setTitle("파일을 삭제하시겠습니까?");
+        builder.setMessage(flagName + " 파일을 삭제하시겠습니까?\n삭제한 파일은 복구할 수 없습니다.");
+        builder.setNeutralButton("예", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                NetworkManager.getInstance().fileDelete(UserPageActivity.this, _id, new NetworkManager.OnResultListener<String>() {
+                    @Override
+                    public void onSuccess(String result) {
+                        Toast.makeText(UserPageActivity.this, flagName + "파일이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                    @Override
+                    public void onFail(int code) {
+                        Toast.makeText(UserPageActivity.this, "파일 삭제 실패:" + code, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+        builder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
