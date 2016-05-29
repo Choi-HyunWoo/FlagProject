@@ -357,6 +357,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         currentPathView.setText(currentPath);        // 현재 Path 를 보여줌
         File currentDir = new File(currentPath);
         File[] files = currentDir.listFiles();       // 현재 경로의 File 리스트를 받아옴
+        Utilities.sortByFilename(files);
 
         mAdapter.clear();
         if (!currentPath.equals(rootPath)) {

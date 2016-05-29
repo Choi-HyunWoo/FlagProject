@@ -26,6 +26,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * Created by HYUNWOO on 2016-05-06.
@@ -254,6 +256,17 @@ public class Utilities {
         file.delete();    //root 삭제
     }
 
+    public static void sortByFilename(File[] files){
+        // 파일명으로 정렬한다.
+        Arrays.sort(files, new Comparator() {
+            public int compare(Object arg0, Object arg1) {
+                File file1 = (File) arg0;
+                File file2 = (File) arg1;
+                return file1.getName().compareToIgnoreCase(file2.getName());
+            }
+        });
+    }
+
 
 
     public static File downloadFile (Context context, String url, String filename) {
@@ -283,18 +296,8 @@ public class Utilities {
         return direct;
     }
 
-    public static void deleteFile(String inputPath, String inputFile) {
-        try {
-            // delete the original file
-            new File(inputPath + inputFile).delete();
-        }
-        catch (Exception e) {
-            Log.e("tag", e.getMessage());
-        }
-    }
 
     public static void copyFile(String inputPath, String inputFile, String outputPath) {
-
         InputStream in = null;
         OutputStream out = null;
         try {
@@ -304,11 +307,8 @@ public class Utilities {
             {
                 dir.mkdirs();
             }
-
-
             in = new FileInputStream(inputPath + inputFile);
             out = new FileOutputStream(outputPath + inputFile);
-
             byte[] buffer = new byte[1024];
             int read;
             while ((read = in.read(buffer)) != -1) {
@@ -316,7 +316,6 @@ public class Utilities {
             }
             in.close();
             in = null;
-
             // write the output file (You have now copied the file)
             out.flush();
             out.close();
@@ -328,7 +327,6 @@ public class Utilities {
         catch (Exception e) {
             Log.e("tag", e.getMessage());
         }
-
     }
 
     public static float convertDpToPixel(float dp, Context context){

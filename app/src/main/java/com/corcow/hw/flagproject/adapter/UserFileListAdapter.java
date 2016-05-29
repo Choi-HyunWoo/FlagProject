@@ -45,6 +45,12 @@ public class UserFileListAdapter extends BaseExpandableListAdapter implements Us
         notifyDataSetChanged();
     }
 
+    public void clear() {
+        items.clear();
+        notifyDataSetChanged();
+    }
+
+
     public void setIsMyPage(boolean isMyPage) {
         this.isMyPage = isMyPage;
     }
@@ -93,7 +99,7 @@ public class UserFileListAdapter extends BaseExpandableListAdapter implements Us
         } else {
             view = new UserFileParentView(parent.getContext());
         }
-        view.setParentItem(items.get(groupPosition));
+        view.setParentItem(items.get(groupPosition), groupPosition+1);
         return view;
     }
 

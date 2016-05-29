@@ -18,11 +18,10 @@ import com.corcow.hw.flagproject.util.Utilities;
 public class UserFileParentView extends FrameLayout {
 
     ImageView fileIconView;
-    TextView flagNameView, fileNameView;
+    TextView indexView, flagNameView, fileNameView;
 
     String pageOwner;
     String loggedInID;
-
 
     public UserFileParentView(Context context) {
         super(context);
@@ -34,14 +33,17 @@ public class UserFileParentView extends FrameLayout {
         loggedInID = UserManager.getInstance().getUserID();
 
         fileIconView = (ImageView) findViewById(R.id.image_file_icon);
+
+        indexView = (TextView) findViewById(R.id.text_index);
         flagNameView = (TextView) findViewById(R.id.text_flag_name);
         fileNameView = (TextView) findViewById(R.id.text_file_name);
     }
 
-    public void setParentItem (UserFileParent item) {
+    public void setParentItem (UserFileParent item, int num) {
         setIconImage(item.fileName);
-        flagNameView.setText(item.fileName);
-        fileNameView.setText(item.flagName);
+        indexView.setText(""+num);
+        flagNameView.setText(item.flagName);
+        fileNameView.setText(item.fileName);
         pageOwner = item.pageOwner;
     }
 

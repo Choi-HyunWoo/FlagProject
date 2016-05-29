@@ -120,6 +120,22 @@ public class FileSelectDialog extends DialogFragment {
         currentPath = rootPath;               // current path 를 root directory로
         showFileList(currentPath);
 
+        fileGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                String selectedFileName = ((FileGridItem)mAdapter.getItem(position)).fileName;
+                String selectedFilePath = ((FileGridItem)mAdapter.getItem(position)).absolutePath;
+                File selectedFile = new File(selectedFilePath);
+                if (selectedFile.isDirectory()) {
+                    Toast.makeText(getContext(), "폴더는 선택할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    mDialogResult.finish(selectedFileName, selectedFilePath);
+                    FileSelectDialog.this.dismiss();
+                }
+                return true;
+            }
+        });
+
         // FileGridView listeners
         fileGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -275,6 +291,7 @@ public class FileSelectDialog extends DialogFragment {
         currentPathView.setText(currentPath);        // 현재 Path 를 보여줌
         File currentDir = new File(currentPath);
         File[] files = currentDir.listFiles();       // 현재 경로의 File 리스트를 받아옴
+        Utilities.sortByFilename(files);
 
         mAdapter.clear();
         if (!currentPath.equals(rootPath)) {

@@ -39,6 +39,18 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
     String loggedInID;
     String pageOwner;
 
+
+    int prev = -1;
+
+    Runnable refreshRunnable = new Runnable() {
+        @Override
+        public void run() {
+            pullToRefreshView.setRefreshing(false);
+            pullToRefreshView.removeCallbacks(this);
+        }
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,19 +80,31 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
         pullToRefreshView.setOnRefreshListener(new PullToRefreshView.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                pullToRefreshView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        pullToRefreshView.setRefreshing(false);
-                    }
-                }, REFRESH_DELAY);
+                postUserFileList();
+                pullToRefreshView.postDelayed(refreshRunnable, REFRESH_DELAY);
             }
         });
 
+        // ListItem 클릭시 한 개만 expand되도록.
+        listView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+            @Override
+            public void onGroupExpand(int groupPosition) {
+                if (prev != -1 && prev != groupPosition) {
+                    listView.collapseGroup(prev);
+                }
+                prev = groupPosition;
+            }
+        });
 
+        // 유저 파일 리스트 가져오기
+        postUserFileList();
+    }
+
+    private void postUserFileList() {
         NetworkManager.getInstance().userFileList(this, pageOwner, new NetworkManager.OnResultListener<UserPageResult>() {
             @Override
             public void onSuccess(UserPageResult result) {
+                mAdapter.clear();
                 mAdapter.setIsMyPage(isMyPage());
                 for (UserFile userFile : result.file) {
                     // 내 페이지라면,
@@ -103,7 +127,6 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
                 Log.d("UserPageActivity ", "network error/" + code);
             }
         });
-
     }
 
     private boolean isMyPage() {
