@@ -262,7 +262,7 @@ public class FlagFragment extends Fragment {
     private void startDownload() {
         input = downloadInputView.getText().toString();
         if (!TextUtils.isEmpty(input)) {
-            if(input.matches("[/]") && !input.endsWith("/")) {
+            if(input.contains("/") && !input.endsWith("/")) {
                 final String userID = input.split("[/]")[0];
                 final String flagName = input.split("[/]")[1];
                 NetworkManager.getInstance().fileInfo(getContext(), userID, flagName, new NetworkManager.OnResultListener<FileInfo>() {
