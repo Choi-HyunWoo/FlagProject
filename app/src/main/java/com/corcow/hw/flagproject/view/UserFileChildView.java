@@ -74,7 +74,8 @@ public class UserFileChildView extends FrameLayout {
             public void onClick(View v) {
                 // copy
                 // 클립보드 복사
-                Toast.makeText(getContext(), "http://fflag.me/" + parent.pageOwner + "/" + parent.flagName + " URL이 복사되었습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "http://fflag.me/" + parent.pageOwner + "/" + parent.flagName + " URL이 복사되었습니다.\n" +
+                        "친구에게 URL로 파일을 공유하세요!", Toast.LENGTH_SHORT).show();
                 mListener.onCopyBtnClick("http://fflag.me/" + parent.pageOwner + "/" + parent.flagName);
             }
         });
@@ -95,13 +96,11 @@ public class UserFileChildView extends FrameLayout {
                         // 공개 상태일 때 눌렸다면,
                         if (isPublic.equals("public")) {
                             Toast.makeText(getContext(), parent.flagName + " 파일을 공개하지 않습니다.." + result, Toast.LENGTH_SHORT).show();
-//                            publicImage.setImageResource(R.drawable.icon_private);
                             isPublic = "private";
                             mListener.onPublicBtnClick(isPublic, parent.position);
 
                         } else {
                             Toast.makeText(getContext(), parent.flagName + " 파일을 공개합니다.", Toast.LENGTH_SHORT).show();
-//                            publicImage.setImageResource(R.drawable.icon_public);
                             isPublic = "public";
                             mListener.onPublicBtnClick(isPublic, parent.position);
                         }

@@ -55,11 +55,6 @@ import java.io.File;
  */
 public class FlagFragment extends Fragment {
 
-    /** TODO : 160524
-     *  다운로드
-     *  업로드 UI (Relative)
-     */
-
     private static final String UPLOAD_MODE_PRIVATE = "private";
     private static final String UPLOAD_MODE_PUBLIC = "public";
 
@@ -147,26 +142,32 @@ public class FlagFragment extends Fragment {
         selectStartView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 파일 선택 Dialog 출력
-                ((MainActivity)getActivity()).fabMenu.close(true);
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                if (imm.isAcceptingText()) {
-                    hideKeyboard();Log.d("KEYBOARD", "보임");
+                if (TextUtils.isEmpty(loggedInID)) {
+                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                    Toast.makeText(getContext(), "업로드 시 로그인이 필요합니다 로그인 해주세요!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Log.d("KEYBOARD", "안보임");
-                }
-                dialog = new FileSelectDialog();
-                dialog.setDialogResult(new FileSelectDialog.OnDialogResult() {
-                    @Override
-                    public void finish(String name, String path) {
-                        ((MainActivity)getActivity()).fabMenu.close(true);
-                        selectedFileName = name;
-                        selectedFilePath = path;
-                        setFileIcon();
-                        setSelectedAnimation();
+                    // 파일 선택 Dialog 출력
+                    ((MainActivity) getActivity()).fabMenu.close(true);
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm.isAcceptingText()) {
+                        hideKeyboard();
+                        Log.d("KEYBOARD", "보임");
+                    } else {
+                        Log.d("KEYBOARD", "안보임");
                     }
-                });
-                dialog.show(getActivity().getSupportFragmentManager(), "");
+                    dialog = new FileSelectDialog();
+                    dialog.setDialogResult(new FileSelectDialog.OnDialogResult() {
+                        @Override
+                        public void finish(String name, String path) {
+                            ((MainActivity) getActivity()).fabMenu.close(true);
+                            selectedFileName = name;
+                            selectedFilePath = path;
+                            setFileIcon();
+                            setSelectedAnimation();
+                        }
+                    });
+                    dialog.show(getActivity().getSupportFragmentManager(), "");
+                }
             }
         });
 
@@ -177,6 +178,7 @@ public class FlagFragment extends Fragment {
         selectedCancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // 초기 화면으로 돌아감
                 setIdleAnimation();
             }
         });
@@ -186,24 +188,19 @@ public class FlagFragment extends Fragment {
             public void onClick(View v) {
                 ((MainActivity)getActivity()).fabMenu.close(true);
                 inputFlagName = selectedInputFlagView.getText().toString();
-                if (TextUtils.isEmpty(loggedInID)) {
-                    startActivity(new Intent(getActivity(), LoginActivity.class));
-                    Toast.makeText(getContext(), "업로드 시 로그인이 필요합니다 로그인 해주세요!", Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(inputFlagName)) {
+                    Toast.makeText(getContext(), "업로드할 파일의 별명을 지어주세요!", Toast.LENGTH_SHORT).show();
+                } else if (Utilities.specialWordCheck(inputFlagName)) {
+                    Toast.makeText(getContext(), "파일의 별명에 특수문자를 붙일 수 없습니다.", Toast.LENGTH_SHORT).show();
                 } else {
-                    if (TextUtils.isEmpty(inputFlagName)) {
-                        Toast.makeText(getContext(), "업로드할 파일의 별명을 지어주세요!", Toast.LENGTH_SHORT).show();
-                    } else if (Utilities.specialWordCheck(inputFlagName)) {
-                        Toast.makeText(getContext(), "파일의 별명에 특수문자를 붙일 수 없습니다.", Toast.LENGTH_SHORT).show();
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm.isAcceptingText()) {
+                        hideKeyboard();
+                        Log.d("KEYBOARD", "보임");
                     } else {
-                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        if (imm.isAcceptingText()) {
-                            hideKeyboard();
-                            Log.d("KEYBOARD", "보임");
-                        } else {
-                            Log.d("KEYBOARD", "안보임");
-                        }
-                        startUpload();
+                        Log.d("KEYBOARD", "안보임");
                     }
+                    startUpload();
                 }
             }
         });
@@ -262,6 +259,9 @@ public class FlagFragment extends Fragment {
         resetVariables();
     }
 
+    /** 다운로드
+     *
+     */
     private void startDownload() {
         ((MainActivity)getActivity()).fabMenu.close(true);
         input = downloadInputView.getText().toString();
@@ -371,7 +371,27 @@ public class FlagFragment extends Fragment {
                 @Override
                 public void onSuccess(String result) {
                     dlg.dismiss();
+
+                    // 업로드 완료 창
+                    UploadCompleteDialog dlg = UploadCompleteDialog.newInstance("http://fflag.me/"+loggedInID+"/"+inputFlagName);
+                    dlg.show(getActivity().getSupportFragmentManager(), "");
+                    dlg.setOnUploadCompleteDialogResult(new UploadCompleteDialog.OnUploadCompleteDialogResult() {
+                        @Override
+                        public void finish() {
+                            // 초기화면으로 돌아가는 Animation -
+                            Animation animAlphaAppear = AnimationUtils.loadAnimation(getContext(), R.anim.alpha_appear);
+                            idleContainer.setAnimation(animAlphaAppear);
+                            stopWobble();
+                            idleContainer.setVisibility(View.VISIBLE);
+                            selectedInputContainer.setVisibility(View.INVISIBLE);
+                            fileIconContainer.setVisibility(View.INVISIBLE);
+                            mHandler.removeCallbacks(uploadRunnable);
+                        }
+                    });
                     Toast.makeText(getContext(), "전송이 완료되었습니다.", Toast.LENGTH_SHORT).show();
+
+                    // 초기화면으로 돌아가는 Animation -
+                    /*
                     Animation animAlphaAppear = AnimationUtils.loadAnimation(getContext(), R.anim.alpha_appear);
                     idleContainer.setAnimation(animAlphaAppear);
                     stopWobble();
@@ -379,6 +399,7 @@ public class FlagFragment extends Fragment {
                     selectedInputContainer.setVisibility(View.INVISIBLE);
                     fileIconContainer.setVisibility(View.INVISIBLE);
                     mHandler.removeCallbacks(uploadRunnable);
+                    */
                 }
 
                 @Override

@@ -16,6 +16,9 @@
     <dimen name="id_input_dialog_width">360dp</dimen>
     <dimen name="id_input_dialog_height">240dp</dimen>
 
+    <dimen name="upload_complete_dialog_width">360dp</dimen>
+    <dimen name="upload_complete_dialog_height">300dp</dimen>
+
     <!-- MaterialTextField -->
     <dimen name="mtf_cardHeight_initial">4dp</dimen>
     <dimen name="mtf_cardHeight_final">55dp</dimen>

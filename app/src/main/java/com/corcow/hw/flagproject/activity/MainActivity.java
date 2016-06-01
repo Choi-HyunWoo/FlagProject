@@ -253,11 +253,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         loggedInID = UserManager.getInstance().getUserID();
+        fabMenu.close(true);
     }
     @Override
     protected void onResume() {
         super.onResume();
         loggedInID = UserManager.getInstance().getUserID();
+        fabMenu.close(true);
     }
 
     @Override

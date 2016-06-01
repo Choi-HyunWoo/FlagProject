@@ -29,6 +29,11 @@
         <item name="android:windowExitAnimation">@anim/slide_down</item>
     </style>
 
+    <style name="UploadCompleteDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/alpha_appear</item>
+        <item name="android:windowExitAnimation">@anim/alpha_disappear</item>
+    </style>
+
     <style name="FabTheme">
         <item name="android:background">@color/colorAccent</item>
         <item name="android:layout_marginBottom">@dimen/fab_marginBottom</item>
