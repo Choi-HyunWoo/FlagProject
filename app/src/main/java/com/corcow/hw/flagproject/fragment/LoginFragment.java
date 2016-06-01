@@ -1,6 +1,7 @@
 package com.corcow.hw.flagproject.fragment;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -88,7 +90,7 @@ public class LoginFragment extends Fragment {
                             UserManager.getInstance().setUserID(result.user.userID);
                             UserManager.getInstance().setUserPW(result.user.userPW);
                             UserManager.getInstance().setUserEmail(result.user.email);
-
+                            hideKeyboard();
                             getActivity().finish();
                         }
 
@@ -109,11 +111,17 @@ public class LoginFragment extends Fragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((LoginActivity)getActivity()).pushSignUpFragment();
+                ((LoginActivity) getActivity()).pushSignUpFragment();
             }
         });
         return view;
     }
 
+
+    private void hideKeyboard(){
+        InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
+    }
 
 }

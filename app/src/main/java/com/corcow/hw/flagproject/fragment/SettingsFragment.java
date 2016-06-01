@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.activity.LoginActivity;
+import com.corcow.hw.flagproject.activity.MainActivity;
 import com.corcow.hw.flagproject.manager.NetworkManager;
 import com.corcow.hw.flagproject.manager.PropertyManager;
 import com.corcow.hw.flagproject.manager.UserManager;
@@ -71,6 +72,7 @@ public class SettingsFragment extends Fragment {
                 PropertyManager.getInstance().setAutoLoginMode(getContext(), false);        // Auto Login 해제
                 UserManager.getInstance().logoutClear();        // UserManager clear
                 isLogined = false;      // 변수 갱신후
+                ((MainActivity)getActivity()).loggedInID = UserManager.getInstance().getUserID();
                 setViewLogined();       // 뷰 갱신
             }
 

@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     TabsAdapter mAdapter;
 
     // logged in User ID
-    String loggedInID;
+    public String loggedInID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,8 +117,8 @@ public class MainActivity extends AppCompatActivity {
         pager = (ViewPager)findViewById(R.id.pager);
         mAdapter = new TabsAdapter(this, getSupportFragmentManager(), tabHost, pager);
 
-        mAdapter.addTab(tabHost.newTabSpec(TAB_ID_FLAG).setIndicator("",getResources().getDrawable(R.drawable.icon_cloud)), FlagFragment.class, null);
-        mAdapter.addTab(tabHost.newTabSpec(TAB_ID_FILEMNG).setIndicator("",getResources().getDrawable(R.drawable.icon_tap_fm)), FileManagerFragment.class, null);
+        mAdapter.addTab(tabHost.newTabSpec(TAB_ID_FLAG).setIndicator("", getResources().getDrawable(R.drawable.icon_cloud)), FlagFragment.class, null);
+        mAdapter.addTab(tabHost.newTabSpec(TAB_ID_FILEMNG).setIndicator("", getResources().getDrawable(R.drawable.icon_tap_fm)), FileManagerFragment.class, null);
         mAdapter.addTab(tabHost.newTabSpec(TAB_ID_SETTINGS).setIndicator("", getResources().getDrawable(R.drawable.icon_tap_options)), SettingsFragment.class, null);
         setTabColor(tabHost);
 
@@ -228,7 +228,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+        loggedInID = UserManager.getInstance().getUserID();
+    }
 
     public int convertToDp(int inputDp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, inputDp, getResources().getDisplayMetrics());

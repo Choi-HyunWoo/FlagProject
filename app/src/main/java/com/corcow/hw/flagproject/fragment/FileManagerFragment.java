@@ -310,7 +310,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
         folderAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "폴더생성", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "폴더생성", Toast.LENGTH_SHORT).show();
                 FolderNameInputDialog dialog = new FolderNameInputDialog();
                 dialog.setDialogResult(new FolderNameInputDialog.OnDialogResult() {
                     @Override
