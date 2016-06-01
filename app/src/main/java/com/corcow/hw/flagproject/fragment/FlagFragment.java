@@ -170,6 +170,37 @@ public class FlagFragment extends Fragment {
                 }
             }
         });
+        // 선택 후에도 아이콘 변경시 변경가능
+        selectedFileIconView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (TextUtils.isEmpty(loggedInID)) {
+                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                    Toast.makeText(getContext(), "업로드 시 로그인이 필요합니다 로그인 해주세요!", Toast.LENGTH_SHORT).show();
+                } else {
+                    // 파일 선택 Dialog 출력
+                    ((MainActivity) getActivity()).fabMenu.close(true);
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm.isAcceptingText()) {
+                        hideKeyboard();
+                        Log.d("KEYBOARD", "보임");
+                    } else {
+                        Log.d("KEYBOARD", "안보임");
+                    }
+                    dialog = new FileSelectDialog();
+                    dialog.setDialogResult(new FileSelectDialog.OnDialogResult() {
+                        @Override
+                        public void finish(String name, String path) {
+                            ((MainActivity) getActivity()).fabMenu.close(true);
+                            selectedFileName = name;
+                            selectedFilePath = path;
+                            setFileIcon();
+                        }
+                    });
+                    dialog.show(getActivity().getSupportFragmentManager(), "");
+                }
+            }
+        });
 
         /** 파일 선택 후
          *  FLAG/공개여부 입력  >>  파일 업로드

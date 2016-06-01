@@ -413,7 +413,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
             if (deleteFile.isDirectory()) {
                 builder.setTitle("폴더 삭제");
                 builder.setMessage(deleteFile.getName() + " 폴더와 폴더 안의 파일을 모두 삭제하시겠습니까?\n삭제된 파일은 복구할 수 없습니다.");
-                builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                builder.setNeutralButton("예", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mAdapter.delete(selectedPos);

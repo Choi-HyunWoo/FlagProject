@@ -16,7 +16,7 @@
         android:layout_weight="1">
         <ImageView
             android:id="@+id/btn_download"
-            android:src="@drawable/icon_download"
+            android:src="@drawable/icon_download_black"
             android:layout_width="30dp"
             android:layout_height="30dp" />
         <TextView
