@@ -100,6 +100,12 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
         postUserFileList();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loggedInID = UserManager.getInstance().getUserID();
+    }
+
     private void postUserFileList() {
         NetworkManager.getInstance().userFileList(this, pageOwner, new NetworkManager.OnResultListener<UserPageResult>() {
             @Override
@@ -109,18 +115,16 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
                 for (UserFile userFile : result.file) {
                     // 내 페이지라면,
                     if (isMyPage()) {
-                        mAdapter.add(userFile, userFile.filePrivate, pageOwner);
-                        mAdapter.setIsMyPage(isMyPage());
+                        mAdapter.add(userFile, pageOwner);
                     }
                     // 내 페이지가 아니라면,
                     else {
                         // public 인 파일들만 담는다.
-                        if (userFile.filePrivate.equals("public")) {
-                            mAdapter.add(userFile, userFile.filePrivate, pageOwner);
+                        if (userFile.filePrivate.equalsIgnoreCase("public")) {
+                            mAdapter.add(userFile, pageOwner);
                         }
                     }
                 }
-                mAdapter.setIsMyPage(isMyPage());
             }
             @Override
             public void onFail(int code) {
@@ -166,7 +170,7 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
         clipboard.setPrimaryClip(clip);
     }
     @Override
-    public void onAdapterDeleteBtnClick(final String flagName, final String _id) {
+    public void onAdapterDeleteBtnClick(final String flagName, final String _id, final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(UserPageActivity.this);
         builder.setIcon(R.drawable.icon_warning);
         builder.setTitle("파일을 삭제하시겠습니까?");
@@ -178,7 +182,7 @@ public class UserPageActivity extends AppCompatActivity implements UserFileListA
                     @Override
                     public void onSuccess(String result) {
                         Toast.makeText(UserPageActivity.this, flagName + "파일이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
-                        mAdapter.delete(flagName);
+                        mAdapter.delete(position);
                     }
                     @Override
                     public void onFail(int code) {

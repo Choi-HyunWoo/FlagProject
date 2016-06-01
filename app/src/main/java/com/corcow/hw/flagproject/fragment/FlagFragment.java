@@ -148,6 +148,7 @@ public class FlagFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // 파일 선택 Dialog 출력
+                ((MainActivity)getActivity()).fabMenu.close(true);
                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (imm.isAcceptingText()) {
                     hideKeyboard();Log.d("KEYBOARD", "보임");
@@ -158,6 +159,7 @@ public class FlagFragment extends Fragment {
                 dialog.setDialogResult(new FileSelectDialog.OnDialogResult() {
                     @Override
                     public void finish(String name, String path) {
+                        ((MainActivity)getActivity()).fabMenu.close(true);
                         selectedFileName = name;
                         selectedFilePath = path;
                         setFileIcon();
@@ -182,6 +184,7 @@ public class FlagFragment extends Fragment {
         uploadStartBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ((MainActivity)getActivity()).fabMenu.close(true);
                 inputFlagName = selectedInputFlagView.getText().toString();
                 if (TextUtils.isEmpty(loggedInID)) {
                     startActivity(new Intent(getActivity(), LoginActivity.class));
@@ -260,6 +263,7 @@ public class FlagFragment extends Fragment {
     }
 
     private void startDownload() {
+        ((MainActivity)getActivity()).fabMenu.close(true);
         input = downloadInputView.getText().toString();
         if (!TextUtils.isEmpty(input)) {
             if(input.contains("/") && !input.endsWith("/")) {
@@ -304,6 +308,7 @@ public class FlagFragment extends Fragment {
 
 
     private void setSelectedAnimation() {
+        ((MainActivity)getActivity()).fabMenu.close(true);
         // 파일 선택 후 정보 입력 모드
         idleContainer.setVisibility(View.INVISIBLE);
         selectedInputContainer.setVisibility(View.VISIBLE);
@@ -317,6 +322,7 @@ public class FlagFragment extends Fragment {
     }
 
     private void setIdleAnimation() {
+        ((MainActivity)getActivity()).fabMenu.close(true);
         // 평소 모드
         stopWobble();
         Animation animAlphaAppear = AnimationUtils.loadAnimation(getContext(), R.anim.alpha_appear);
@@ -490,5 +496,6 @@ public class FlagFragment extends Fragment {
         InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
+
 }
 

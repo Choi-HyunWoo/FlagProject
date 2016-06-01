@@ -40,11 +40,11 @@ public class UserFileParentView extends FrameLayout {
         fileNameView = (TextView) findViewById(R.id.text_file_name);
     }
 
-    public void setParentItem (UserFileParent item, int num) {
-        indexView.setText(""+num);
-        flagNameView.setText(item.flagName);
-        fileNameView.setText(item.fileName);
-        pageOwner = item.pageOwner;
+    public void setParentItem (UserFileParent item, int position) {
+        this.indexView.setText(""+(position+1));
+        this.flagNameView.setText(item.flagName);
+        this.fileNameView.setText(item.fileName);
+        this.pageOwner = item.pageOwner;
         setIconImage(item.fileName, item.flagName);
     }
 
@@ -58,12 +58,11 @@ public class UserFileParentView extends FrameLayout {
                     .thumbnail(0.1f)
                     .dontAnimate()
                     .into(fileIconView);
-        } else if (extension.equalsIgnoreCase("avi") || extension.equalsIgnoreCase("mp4")) {
+        } else if (extension.equalsIgnoreCase("avi") || extension.equalsIgnoreCase("mp4")
+                || extension.equalsIgnoreCase("wmv")) {
             Glide.with(getContext()).load(R.drawable.icon_file_video).into(fileIconView);
         } else if (extension.equalsIgnoreCase("mp3")) {
             Glide.with(getContext()).load(R.drawable.icon_file_mp3_small).into(fileIconView);
-        } else if (extension.equalsIgnoreCase("wmv")) {
-            Glide.with(getContext()).load(R.drawable.icon_file_wmv_small).into(fileIconView);
         } else if (extension.equalsIgnoreCase("hwp")) {
             Glide.with(getContext()).load(R.drawable.icon_file_hwp_small).into(fileIconView);
         } else if (extension.equalsIgnoreCase("ppt") || extension.equalsIgnoreCase("pptx")) {

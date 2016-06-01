@@ -164,14 +164,14 @@ public class NetworkManager {
         params.put(REQ_TYPE, TYPE_APP);
         params.put("fileName", fileName);
         params.put("flagName", flagName);
+        params.put("filePrivate", filePrivate);
+        params.put("userID", userID);
         File file = new File(absolutePath);
         try {
             params.put("flagFile", file);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        params.put("filePrivate", filePrivate);
-        params.put("userID", userID);
 
         client.post(context, SERVER + "/fileUpload", params, new TextHttpResponseHandler() {
             @Override

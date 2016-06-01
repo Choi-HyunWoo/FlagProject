@@ -21,27 +21,27 @@ public class UserFileListAdapter extends BaseExpandableListAdapter implements Us
     List<UserFileParent> items = new ArrayList<UserFileParent>();
     boolean isMyPage = false;
 
-    public void add(UserFile item, String isPublic, String pageOwner) {
+    public void add(UserFile item, String pageOwner) {
         UserFileParent parent = new UserFileParent();
         parent._id = item._id;
         parent.fileName = item.fileName;
         parent.flagName = item.flagName;
+        parent.position = items.size();
         parent.pageOwner = pageOwner;
 
         UserFileChild child = new UserFileChild();
-        child.isPublic = isPublic;
+        child.isPublic = item.filePrivate;
         parent.child = child;
-
         items.add(parent);
 
         notifyDataSetChanged();
     }
 
-    public void delete(String flagName) {
-        for(UserFileParent parent : items) {
-            if (parent.flagName.equals(flagName))
-                items.remove(parent);
+    public void delete(int position) {
+        for (int i=position+1; i<items.size(); i++) {
+            items.get(i).position--;
         }
+        items.remove(position);
         notifyDataSetChanged();
     }
 
@@ -50,11 +50,9 @@ public class UserFileListAdapter extends BaseExpandableListAdapter implements Us
         notifyDataSetChanged();
     }
 
-
     public void setIsMyPage(boolean isMyPage) {
         this.isMyPage = isMyPage;
     }
-
 
     @Override
     public int getGroupCount() {
@@ -67,12 +65,12 @@ public class UserFileListAdapter extends BaseExpandableListAdapter implements Us
     }
 
     @Override
-    public Object getGroup(int groupPosition) {
+    public UserFileParent getGroup(int groupPosition) {
         return items.get(groupPosition);
     }
 
     @Override
-    public Object getChild(int groupPosition, int childPosition) {
+    public UserFileChild getChild(int groupPosition, int childPosition) {
         return items.get(groupPosition).child;
     }
 
@@ -99,7 +97,7 @@ public class UserFileListAdapter extends BaseExpandableListAdapter implements Us
         } else {
             view = new UserFileParentView(parent.getContext());
         }
-        view.setParentItem(items.get(groupPosition), groupPosition+1);
+        view.setParentItem(items.get(groupPosition), groupPosition);
         return view;
     }
 
@@ -133,15 +131,23 @@ public class UserFileListAdapter extends BaseExpandableListAdapter implements Us
     public void onCopyBtnClick(String copyUrl) {
         mListener.onAdapterCopyBtnClick(copyUrl);
     }
+
     @Override
-    public void onDeleteBtnClick(String flagName, String _id) {
-        mListener.onAdapterDeleteBtnClick(flagName, _id);
+    public void onPublicBtnClick(String isPublic, int position) {
+        ((UserFileParent)items.get(position)).child.isPublic = isPublic;
+        notifyDataSetChanged();
     }
+
+    @Override
+    public void onDeleteBtnClick(String flagName, String _id, int position) {
+        mListener.onAdapterDeleteBtnClick(flagName, _id, position);
+    }
+
 
     public interface OnAdapterDownloadBtnClickListener {
         public void onAdapterDownloadBtnClick(String pageOwnerID, String flagName);
         public void onAdapterCopyBtnClick(String copyUrl);
-        public void onAdapterDeleteBtnClick(String flagName, String _id);
+        public void onAdapterDeleteBtnClick(String flagName, String _id, int position);
     }
     OnAdapterDownloadBtnClickListener mListener;
     public void setOnAdapterBtnClickListener(OnAdapterDownloadBtnClickListener listener) {

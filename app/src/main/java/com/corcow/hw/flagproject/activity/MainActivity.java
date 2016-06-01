@@ -4,6 +4,7 @@ package com.corcow.hw.flagproject.activity;
 import android.app.ActionBar;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     // FAB
     FloatingActionButton fab;
-    FloatingActionMenu fabMenu;
+    public FloatingActionMenu fabMenu;
 
     // Tab Pager
     TabHost tabHost;
@@ -226,6 +227,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     public int convertToDp(int inputDp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, inputDp, getResources().getDisplayMetrics());

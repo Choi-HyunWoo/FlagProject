@@ -95,12 +95,15 @@ public class UserFileChildView extends FrameLayout {
                         // 공개 상태일 때 눌렸다면,
                         if (isPublic.equals("public")) {
                             Toast.makeText(getContext(), parent.flagName + " 파일을 공개하지 않습니다.." + result, Toast.LENGTH_SHORT).show();
-                            publicImage.setImageResource(R.drawable.icon_private);
+//                            publicImage.setImageResource(R.drawable.icon_private);
                             isPublic = "private";
+                            mListener.onPublicBtnClick(isPublic, parent.position);
+
                         } else {
                             Toast.makeText(getContext(), parent.flagName + " 파일을 공개합니다.", Toast.LENGTH_SHORT).show();
-                            publicImage.setImageResource(R.drawable.icon_public);
+//                            publicImage.setImageResource(R.drawable.icon_public);
                             isPublic = "public";
+                            mListener.onPublicBtnClick(isPublic, parent.position);
                         }
                     }
 
@@ -119,7 +122,7 @@ public class UserFileChildView extends FrameLayout {
             @Override
             public void onClick(View v) {
                 // delete
-                mListener.onDeleteBtnClick(parent.flagName, _id);
+                mListener.onDeleteBtnClick(parent.flagName, _id, parent.position);
             }
         });
         if (!isMyPage) {
@@ -157,7 +160,8 @@ public class UserFileChildView extends FrameLayout {
     public interface OnChildBtnClickListener {
         public void onDownloadBtnClick(String pageOwnerID, String flagName);
         public void onCopyBtnClick(String copyUrl);
-        public void onDeleteBtnClick(String flagName, String _id);
+        public void onPublicBtnClick(String isPublic, int position);
+        public void onDeleteBtnClick(String flagName, String _id, int position);
         // 다른 Button click methods 추가 가능
     }
     OnChildBtnClickListener mListener;
