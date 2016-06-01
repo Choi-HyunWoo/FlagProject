@@ -2,7 +2,6 @@ package com.corcow.hw.flagproject.util;
 
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -14,7 +13,6 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 

@@ -98,7 +98,7 @@ public class SettingsFragment extends Fragment {
         if (isLogined) {
             // 로그인 상태
             userImageView.setImageResource(R.drawable.icon_user_login_true);
-            userIdView.setText(UserManager.getInstance().getUserID());
+            userIdView.setText(UserManager.getInstance().getUserID()+"님 환영합니다.");
             loginBtn.setText("로그아웃");
         }
         else {

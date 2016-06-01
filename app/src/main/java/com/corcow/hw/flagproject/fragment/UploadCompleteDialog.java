@@ -15,7 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
-import com.corcow.hw.flagproject.activity.MainActivity;
 
 /**
  * Created by multimedia on 2016-06-02.

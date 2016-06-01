@@ -1,10 +1,6 @@
 package com.corcow.hw.flagproject.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.ThumbnailUtils;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +10,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.model.FileGridItem;
-import com.corcow.hw.flagproject.util.Utilities;
 
 import org.askerov.dynamicgrid.BaseDynamicGridAdapter;
 
-import java.io.File;
 
 /**
  * Created by multimedia on 2016-04-29.

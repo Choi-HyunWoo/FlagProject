@@ -9,7 +9,6 @@ import com.corcow.hw.flagproject.model.json.UserPage;
 import com.corcow.hw.flagproject.model.json.UserPageResult;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.BinaryHttpResponseHandler;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
