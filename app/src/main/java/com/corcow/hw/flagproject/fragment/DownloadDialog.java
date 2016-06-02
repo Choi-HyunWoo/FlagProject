@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.corcow.hw.flagproject.R;
 import com.corcow.hw.flagproject.manager.NetworkManager;
@@ -152,5 +153,4 @@ public class DownloadDialog extends DialogFragment {
         }
     };
 }
-
 

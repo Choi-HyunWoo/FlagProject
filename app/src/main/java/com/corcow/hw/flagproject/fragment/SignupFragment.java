@@ -3,8 +3,11 @@ package com.corcow.hw.flagproject.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -32,6 +35,7 @@ public class SignupFragment extends Fragment {
 
     public SignupFragment() {
         // Required empty public constructor
+        this.setHasOptionsMenu(true);
     }
 
 
@@ -39,6 +43,9 @@ public class SignupFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("회원가입");
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_signup, container, false);
@@ -108,5 +115,16 @@ public class SignupFragment extends Fragment {
     }
     private boolean emailCheck(String inputEmail) {
         return inputEmail.matches("^[_a-zA-Z0-9-\\.]+@[\\.a-zA-Z0-9-]+\\.[a-zA-Z]+$");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                ((LoginActivity)getActivity()).popSignUpFragment();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

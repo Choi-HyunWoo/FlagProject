@@ -4,8 +4,11 @@ package com.corcow.hw.flagproject.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -35,6 +38,7 @@ public class LoginFragment extends Fragment {
 
     public LoginFragment() {
         // Required empty public constructor
+        this.setHasOptionsMenu(true);
         UserManager.getInstance().setLoginState(false);
         UserManager.getInstance().set_id("");
         UserManager.getInstance().setUserID("");
@@ -44,21 +48,23 @@ public class LoginFragment extends Fragment {
 
     @Override
     public void onResume() {
-        super.onResume();
         UserManager.getInstance().setLoginState(false);
         UserManager.getInstance().set_id("");
         UserManager.getInstance().setUserID("");
         UserManager.getInstance().setUserPW("");
         UserManager.getInstance().setUserEmail("");
+        super.onResume();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_login, container, false);
+        ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("로그인");
 
         inputIdView = (EditText)view.findViewById(R.id.edit_id);
         inputPasswordView = (EditText)view.findViewById(R.id.edit_password);
@@ -96,8 +102,8 @@ public class LoginFragment extends Fragment {
 
                         @Override
                         public void onFail(int code) {
-                            if (code == 500) {
-                                Toast.makeText(getContext(), "연결에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                            if (code == 500 || code == 0) {
+                                Toast.makeText(getContext(), "연결에 실패했습니다. 네트워크 연결상태를 확인하세요", Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(getActivity(), "로그인 실패. 아이디와 비밀번호를 확인하세요", Toast.LENGTH_SHORT).show();
                             }
@@ -117,6 +123,17 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                getActivity().finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private void hideKeyboard(){
         InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);

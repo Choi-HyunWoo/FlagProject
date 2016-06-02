@@ -47,7 +47,7 @@ public class UserFileChildView extends FrameLayout {
             public void onClick(View v) {
                 // download
                 // 다운로드 다이얼로그 출력
-                Toast.makeText(getContext(), parent.pageOwner+"의 "+parent.flagName+"플래그 파일 다운로드", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), parent.pageOwner+" 님의 "+parent.flagName+" 파일 다운로드", Toast.LENGTH_SHORT).show();
                 final String pageOwnerID = parent.pageOwner;
                 final String flagName = parent.flagName;
                 NetworkManager.getInstance().fileInfo(getContext(), pageOwnerID, flagName, new NetworkManager.OnResultListener<FileInfo>() {
@@ -86,14 +86,12 @@ public class UserFileChildView extends FrameLayout {
             public void onClick(View v) {
                 // public
                 // Toast로 변경상태 알림
-                Toast.makeText(getContext(), _id, Toast.LENGTH_SHORT).show();
-
                 NetworkManager.getInstance().filePrivate(getContext(), _id, new NetworkManager.OnResultListener<String>() {
                     @Override
                     public void onSuccess(String result) {
                         // 공개 상태일 때 눌렸다면,
                         if (isPublic.equals("public")) {
-                            Toast.makeText(getContext(), parent.flagName + " 파일을 공개하지 않습니다.." + result, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), parent.flagName + " 파일을 공개하지 않습니다.", Toast.LENGTH_SHORT).show();
                             isPublic = "private";
                             mListener.onPublicBtnClick(isPublic, parent.position);
 

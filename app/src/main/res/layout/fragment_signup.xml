@@ -15,6 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
+        android:textSize="18sp"
         android:text="아이디" />
 
     <EditText
@@ -27,6 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
+        android:textSize="18sp"
         android:text="비밀번호" />
 
     <EditText
@@ -41,6 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
+        android:textSize="18sp"
         android:text="비밀번호 확인" />
 
     <EditText
@@ -55,6 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
+        android:textSize="18sp"
         android:text="이메일" />
 
     <EditText
@@ -73,6 +77,7 @@
             android:layout_weight="1"
             android:layout_marginRight="1dp"
             android:text="가입"
+            android:textSize="18sp"
             android:id="@+id/btn_submit"
             android:background="@color/colorAccent"
             android:textColor="@color/colorWhite"
@@ -83,6 +88,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="취소"
+            android:textSize="18sp"
             android:id="@+id/btn_cancel"
             android:background="@color/colorAccent"
             android:textColor="@color/colorWhite"

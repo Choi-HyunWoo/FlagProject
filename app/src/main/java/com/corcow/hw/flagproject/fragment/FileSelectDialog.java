@@ -309,12 +309,11 @@ public class FileSelectDialog extends DialogFragment {
                     || item.extension.equalsIgnoreCase("png") || item.extension.equalsIgnoreCase("bmp")
                     || item.extension.equalsIgnoreCase("gif")) {
                 item.iconImgResource = FileGridItem.IS_IMAGE_FILE;
-            } else if (item.extension.equalsIgnoreCase("avi") || item.extension.equalsIgnoreCase("mp4")) {
+            } else if (item.extension.equalsIgnoreCase("avi") || item.extension.equalsIgnoreCase("mp4")
+                    || item.extension.equalsIgnoreCase("wmv")) {
                 item.iconImgResource = FileGridItem.IS_VIDEO_FILE;
             } else if (item.extension.equalsIgnoreCase("mp3")) {
                 item.iconImgResource = R.drawable.icon_file_mp3_small;
-            } else if (item.extension.equalsIgnoreCase("wmv")) {
-                item.iconImgResource = R.drawable.icon_file_wmv_small;
             } else if (item.extension.equalsIgnoreCase("hwp")) {
                 item.iconImgResource = R.drawable.icon_file_hwp_small;
             } else if (item.extension.equalsIgnoreCase("ppt") || (item.extension.equalsIgnoreCase("pptx"))) {

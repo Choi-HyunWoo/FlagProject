@@ -335,7 +335,7 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
             @Override
             public void onClick(View v) {
                 if (!currentPath.equals(rootPath)) {
-                    if (selectedPos!=0) {
+                    if (selectedPos != 0) {
                         fileDelete();
                     }
                 } else {
@@ -375,12 +375,11 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                     || item.extension.equalsIgnoreCase("png") || item.extension.equalsIgnoreCase("bmp")
                     || item.extension.equalsIgnoreCase("gif")) {
                 item.iconImgResource = FileGridItem.IS_IMAGE_FILE;
-            } else if (item.extension.equalsIgnoreCase("avi") || item.extension.equalsIgnoreCase("mp4")) {
+            } else if (item.extension.equalsIgnoreCase("avi") || item.extension.equalsIgnoreCase("mp4")
+                    || item.extension.equalsIgnoreCase("wmv")) {
                 item.iconImgResource = FileGridItem.IS_VIDEO_FILE;
             } else if (item.extension.equalsIgnoreCase("mp3")) {
                 item.iconImgResource = R.drawable.icon_file_mp3_small;
-            } else if (item.extension.equalsIgnoreCase("wmv")) {
-                item.iconImgResource = R.drawable.icon_file_wmv_small;
             } else if (item.extension.equalsIgnoreCase("hwp")) {
                 item.iconImgResource = R.drawable.icon_file_hwp_small;
             } else if (item.extension.equalsIgnoreCase("ppt") || (item.extension.equalsIgnoreCase("pptx"))) {
@@ -419,6 +418,11 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                         mAdapter.delete(selectedPos);
                         Utilities.deleteDir(deleteFile.getAbsolutePath());
                         Toast.makeText(getContext(), deleteFile.getName() + " 폴더가 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                        // select 변수 초기화
+                        originalPosition = -1;
+                        draggingPosition = -1;
+                        selectedPos = -1;
+                        preSelectedPos = -1;
                     }
                 });
             } else {
@@ -430,6 +434,11 @@ public class FileManagerFragment extends Fragment implements MainActivity.OnBack
                         mAdapter.delete(selectedPos);
                         deleteFile.delete();
                         Toast.makeText(getContext(), deleteFile.getName() + " 파일이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                        // select 변수 초기화
+                        originalPosition = -1;
+                        draggingPosition = -1;
+                        selectedPos = -1;
+                        preSelectedPos = -1;
                     }
                 });
             }

@@ -57,6 +57,7 @@ public class NetworkManager {
         }
 */
         client = new AsyncHttpClient();
+        client.setMaxRetriesAndTimeout(1, 3000);
         gson = new Gson();
 //        client.setCookieStore(new PersistentCookieStore(MyApplication.getContext()));
 

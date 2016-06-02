@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -402,7 +403,7 @@ public class FlagFragment extends Fragment {
                     dlg.dismiss();
 
                     // 업로드 완료 창
-                    UploadCompleteDialog dlg = UploadCompleteDialog.newInstance("http://fflag.me/"+loggedInID+"/"+inputFlagName);
+                    UploadCompleteDialog dlg = UploadCompleteDialog.newInstance("http://fflag.me/" + loggedInID + "/" + inputFlagName);
                     dlg.show(getActivity().getSupportFragmentManager(), "");
                     dlg.setOnUploadCompleteDialogResult(new UploadCompleteDialog.OnUploadCompleteDialogResult() {
                         @Override
@@ -434,21 +435,25 @@ public class FlagFragment extends Fragment {
                 @Override
                 public void onProgress(long bytesWritten, long totalSize) {
                     Log.d("PROGRESS", String.format("Progress %d from %d (%2.0f%%)", bytesWritten, selectedFileSize, (selectedFileSize > 0) ? (bytesWritten * 1.0 / selectedFileSize) * 100 : -1));
-                    dlg.setProgress((int)((selectedFileSize > 0) ? (bytesWritten * 1.0 / selectedFileSize) * 100 : -1));
+                    dlg.setProgress((int) ((selectedFileSize > 0) ? (bytesWritten * 1.0 / selectedFileSize) * 100 : -1));
                 }
 
                 @Override
                 public void onFail(int code) {
                     dlg.dismiss();
                     // setFailAnimation()
-                    Toast.makeText(getContext(), "전송에 실패했습니다.", Toast.LENGTH_SHORT).show();
-                    fileIconContainer.setVisibility(View.VISIBLE);
-                    selectedInputContainer.setVisibility(View.VISIBLE);
-                    Animation animationUploadFailDrop = AnimationUtils.loadAnimation(getContext(), R.anim.upload_fail_drop);
-                    Animation animAlphaAppear = AnimationUtils.loadAnimation(getContext(), R.anim.alpha_appear);
-                    fileIconContainer.setAnimation(animationUploadFailDrop);
-                    selectedInputContainer.setAnimation(animAlphaAppear);
-                    mHandler.removeCallbacks(uploadRunnable);
+                    if (code == 0) {
+                        Toast.makeText(getContext(), "서버와의 접속에 실패했습니다. 네트워크 연결상태를 확인하세요!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "같은 별명을 가진 파일이 존재합니다. 다른 별명을 지어주세요!.", Toast.LENGTH_SHORT).show();
+                        fileIconContainer.setVisibility(View.VISIBLE);
+                        selectedInputContainer.setVisibility(View.VISIBLE);
+                        Animation animationUploadFailDrop = AnimationUtils.loadAnimation(getContext(), R.anim.upload_fail_drop);
+                        Animation animAlphaAppear = AnimationUtils.loadAnimation(getContext(), R.anim.alpha_appear);
+                        fileIconContainer.setAnimation(animationUploadFailDrop);
+                        selectedInputContainer.setAnimation(animAlphaAppear);
+                        mHandler.removeCallbacks(uploadRunnable);
+                    }
                 }
             });
         }

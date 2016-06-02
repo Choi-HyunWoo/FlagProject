@@ -96,13 +96,11 @@ public class FileGridAdpater extends BaseDynamicGridAdapter {
                 Glide.with(getContext())
                         .load(item.absolutePath)
                         .thumbnail(0.1f)
-                        .dontAnimate()
                         .into(fileIconView);
             } else if (item.iconImgResource == FileGridItem.IS_VIDEO_FILE) {
                 Glide.with(getContext())
                         .load(item.absolutePath)
                         .thumbnail(0.1f)
-                        .dontAnimate()
                         .into(fileIconView);
             } else {
                 Glide.with(getContext()).load(item.iconImgResource).into(fileIconView);

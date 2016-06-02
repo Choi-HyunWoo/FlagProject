@@ -15,6 +15,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
         android:text="아이디" />
 
     <EditText
@@ -26,6 +27,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
         android:text="비밀번호" />
 
     <EditText
@@ -40,12 +42,14 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:text="자동 로그인 설정"
+        android:textSize="18sp"
         android:id="@+id/checkBox_autologin" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="로그인"
+        android:textSize="18sp"
         android:background="@color/colorAccent"
         android:textColor="@color/colorWhite"
         android:id="@+id/btn_login"
